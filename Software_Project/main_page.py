@@ -41,7 +41,7 @@ def create_login_window():
     top_frame = tk.Frame(root, bg="#ADD8E6", width=width, height=height)
     top_frame.pack(fill="both", expand=True)
 
-    image_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\SoftwareLogo.png"
+    image_path = "C:\\Users\\user\\Documents\\GitHub\\SoftwareEng\\Software_Project\\SoftwareLogo.png"
     logo_image = create_rounded_image(image_path, (150, 150), 30)
     photo = ImageTk.PhotoImage(logo_image)
     logo_label = tk.Label(top_frame, image=photo, bg="#ADD8E6")
@@ -60,11 +60,11 @@ def create_login_window():
     button_size = (200, 200)
     corner_radius = 20
 
-    doctor_image_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Doctor.png"
+    doctor_image_path = "C:\\Users\\user\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Doctor.png"
     doctor_image = create_rounded_button_image(doctor_image_path, button_size, corner_radius)
     doctor_photo = ImageTk.PhotoImage(doctor_image)
 
-    patient_image_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Patient.png"
+    patient_image_path = "C:\\Users\\user\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Patient.png"
     patient_image = create_rounded_button_image(patient_image_path, button_size, corner_radius)
     patient_photo = ImageTk.PhotoImage(patient_image)
 
