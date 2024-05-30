@@ -13,9 +13,6 @@ def create_rounded_image(image_path, size, corner_radius):
 def create_rounded_button_image(image_path, size, corner_radius):
     return create_rounded_image(image_path, size, corner_radius)
 
-def doctor_button_clicked():
-    print("Doctor button clicked")
-
 def patient_button_clicked():
     print("Patient button clicked")
 
@@ -48,18 +45,14 @@ def create_register_window():
     login_text = tk.Label(top_frame, text="Registration", font=("Arial", 14), bg="#ADD8E6", fg="black")
     login_text.place(relx=0.01, rely=0.01, anchor="nw")
 
-    welcome_label = tk.Label(top_frame, text="Welcome to Registration", font=("Arial", 24), bg="#ADD8E6", fg="white")
+    welcome_label = tk.Label(top_frame, text="Welcome to Registration", font=("Arial", 24), bg="#ADD8E6", fg="#13126C")
     welcome_label.place(relx=0.5, rely=0.2, anchor="center")
 
-    login_type_label = tk.Label(top_frame, text="Are you?", font=("Arial", 24), bg="#ADD8E6", fg="white")
+    login_type_label = tk.Label(top_frame, text="Are you?", font=("Arial", 24), bg="#ADD8E6", fg="#13126C")
     login_type_label.place(relx=0.5, rely=0.25, anchor="center")
 
     button_size = (200, 200)
     corner_radius = 20
-
-    doctor_image_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Doctor.png"
-    doctor_image = create_rounded_button_image(doctor_image_path, button_size, corner_radius)
-    doctor_photo = ImageTk.PhotoImage(doctor_image)
 
     patient_image_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Patient.png"
     patient_image = create_rounded_button_image(patient_image_path, button_size, corner_radius)
@@ -69,23 +62,17 @@ def create_register_window():
     clinic_image = create_rounded_button_image(clinic_image_path, button_size, corner_radius)
     clinic_photo = ImageTk.PhotoImage(clinic_image)
 
-    doctor_button = tk.Button(top_frame, image=doctor_photo, command=doctor_button_clicked, borderwidth=0, bg="#ADD8E6")
-    doctor_button.place(relx=0.3, rely=0.45, anchor="center")
-
     patient_button = tk.Button(top_frame, image=patient_photo, command=patient_button_clicked, borderwidth=0, bg="#ADD8E6")
-    patient_button.place(relx=0.5, rely=0.45, anchor="center")
+    patient_button.place(relx=0.4, rely=0.45, anchor="center")
 
     clinic_button = tk.Button(top_frame, image=clinic_photo, command=clinic_button_clicked, borderwidth=0, bg="#ADD8E6")
-    clinic_button.place(relx=0.7, rely=0.45, anchor="center")
-
-    doctor_label = tk.Label(top_frame, text="Doctor", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    doctor_label.place(relx=0.3, rely=0.60, anchor="center")
+    clinic_button.place(relx=0.6, rely=0.45, anchor="center")
 
     patient_label = tk.Label(top_frame, text="Patient", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    patient_label.place(relx=0.5, rely=0.60, anchor="center")
+    patient_label.place(relx=0.4, rely=0.60, anchor="center")
 
     clinic_label = tk.Label(top_frame, text="Clinic", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    clinic_label.place(relx=0.7, rely=0.60, anchor="center")
+    clinic_label.place(relx=0.6, rely=0.60, anchor="center")
 
     login_frame = tk.Frame(top_frame, bg="#ADD8E6")
     login_frame.place(relx=0.99, rely=0.99, anchor="se")
