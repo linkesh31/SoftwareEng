@@ -25,15 +25,19 @@ def on_entry_click(event, entry, default_text):
         entry.delete(0, "end")  # delete all the text in the entry
         entry.insert(0, '')  # Insert blank for user input
         entry.config(fg='black')
+        if entry == password_entry:
+            entry.config(show='*')  # Mask password
 
 def on_focusout(event, entry, default_text):
     """Function that gets called when entry loses focus"""
     if entry.get() == '':
         entry.insert(0, default_text)
         entry.config(fg='grey')
+        if entry == password_entry:
+            entry.config(show='')  # Unmask password
 
 def create_login_window():
-    global login_root
+    global login_root, password_entry
     login_root = tk.Tk()
     login_root.title("Login")
     width = 1480
