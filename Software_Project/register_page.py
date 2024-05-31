@@ -14,10 +14,14 @@ def create_rounded_button_image(image_path, size, corner_radius):
     return create_rounded_image(image_path, size, corner_radius)
 
 def patient_button_clicked():
-    print("Patient button clicked")
+    register_root.destroy()
+    import patientregister
+    patientregister.create_patient_register_window()
 
 def clinic_button_clicked():
-    print("Clinic button clicked")
+    register_root.destroy()
+    import clinicregister
+    clinicregister.create_clinic_register_window()
 
 def open_login_page():
     register_root.destroy()
