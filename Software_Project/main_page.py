@@ -10,97 +10,91 @@ def create_rounded_image(image_path, size, corner_radius):
     rounded_image.paste(image, (0, 0), mask)
     return rounded_image
 
-def create_rounded_button_image(image_path, size, corner_radius):
-    return create_rounded_image(image_path, size, corner_radius)
-
-def doctor_button_clicked():
-    pass
-
-def patient_button_clicked():
-    pass
-
-def clinic_button_clicked():
-    pass
-
-def admin_login_clicked(event):
-    print("Admin login clicked")  # Placeholder action
+def call_doctor_button_clicked():
+    print("Call a Doctor button clicked")
 
 def open_register_page():
-    root.destroy()
+    login_root.destroy()
     import register_page
     register_page.create_register_window()
+    # Add code to open register page
+
+def on_entry_click(event, entry, default_text):
+    """Function that gets called when entry is clicked"""
+    if entry.get() == default_text:
+        entry.delete(0, "end")  # delete all the text in the entry
+        entry.insert(0, '')  # Insert blank for user input
+        entry.config(fg='black')
+        if entry == password_entry:
+            entry.config(show='*')
+
+def on_focusout(event, entry, default_text):
+    """Function that gets called when entry loses focus"""
+    if entry.get() == '':
+        entry.insert(0, default_text)
+        entry.config(fg='grey')
+        if entry == password_entry:
+            entry.config(show='')
 
 def create_login_window():
-    global root
-    root = tk.Tk()
-    root.title("Login")
+    global login_root, password_entry
+    login_root = tk.Tk()
+    login_root.title("Login")
     width = 1480
     height = 750
-    root.geometry(f"{width}x{height}")
+    login_root.geometry(f"{width}x{height}")
 
-    top_frame = tk.Frame(root, bg="#ADD8E6", width=width, height=height)
+    top_frame = tk.Frame(login_root, bg="#ADD8E6", width=width, height=height)
     top_frame.pack(fill="both", expand=True)
 
-    image_path = "C:\\Users\\user\\Documents\\GitHub\\SoftwareEng\\Software_Project\\SoftwareLogo.png"
-    logo_image = create_rounded_image(image_path, (150, 150), 30)
-    photo = ImageTk.PhotoImage(logo_image)
-    logo_label = tk.Label(top_frame, image=photo, bg="#ADD8E6")
-    logo_label.image = photo
+    # Create and place the logo at the top right
+    logo_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\SoftwareLogo.png"
+    logo_image = create_rounded_image(logo_path, (150, 150), 30)
+    logo_photo = ImageTk.PhotoImage(logo_image)
+    logo_label = tk.Label(top_frame, image=logo_photo, bg="#ADD8E6")
+    logo_label.image = logo_photo
     logo_label.place(relx=1.0, rely=0.0, anchor="ne")
 
-    login_text = tk.Label(top_frame, text="Login", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    login_text.place(relx=0.01, rely=0.01, anchor="nw")
-
-    welcome_label = tk.Label(top_frame, text="Welcome to Login", font=("Arial", 24), bg="#ADD8E6", fg="white")
+    # Create and place the "Welcome to Login" message
+    welcome_label = tk.Label(top_frame, text="Welcome to Login", font=("Arial", 24, "bold"), bg="#ADD8E6", fg="#000080")
     welcome_label.place(relx=0.5, rely=0.2, anchor="center")
 
-    login_type_label = tk.Label(top_frame, text="Are you?", font=("Arial", 24), bg="#ADD8E6", fg="white")
-    login_type_label.place(relx=0.5, rely=0.25, anchor="center")
+    # Create and place the user icon
+    user_icon_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Patientnobg.png"
+    user_icon = create_rounded_image(user_icon_path, (150, 150), 20)  # Adjusted size
+    user_photo = ImageTk.PhotoImage(user_icon)
+    user_icon_label = tk.Label(top_frame, image=user_photo, bg="#ADD8E6")
+    user_icon_label.image = user_photo
+    user_icon_label.place(relx=0.5, rely=0.35, anchor="center")
 
-    button_size = (200, 200)
-    corner_radius = 20
+    # Create and place the username and password fields with placeholder text
+    default_username = "Username"
+    default_password = "Password"
 
-    doctor_image_path = "C:\\Users\\user\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Doctor.png"
-    doctor_image = create_rounded_button_image(doctor_image_path, button_size, corner_radius)
-    doctor_photo = ImageTk.PhotoImage(doctor_image)
+    username_entry = tk.Entry(top_frame, font=("Arial", 16), fg='grey')
+    username_entry.insert(0, default_username)
+    username_entry.bind('<FocusIn>', lambda event: on_entry_click(event, username_entry, default_username))
+    username_entry.bind('<FocusOut>', lambda event: on_focusout(event, username_entry, default_username))
+    username_entry.place(relx=0.5, rely=0.5, anchor="center", width=300, height=30)
 
-    patient_image_path = "C:\\Users\\user\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Patient.png"
-    patient_image = create_rounded_button_image(patient_image_path, button_size, corner_radius)
-    patient_photo = ImageTk.PhotoImage(patient_image)
+    password_entry = tk.Entry(top_frame, font=("Arial", 16), fg='grey', show='')
+    password_entry.insert(0, default_password)
+    password_entry.bind('<FocusIn>', lambda event: on_entry_click(event, password_entry, default_password))
+    password_entry.bind('<FocusOut>', lambda event: on_focusout(event, password_entry, default_password))
+    password_entry.place(relx=0.5, rely=0.55, anchor="center", width=300, height=30)
 
-    doctor_button = tk.Button(top_frame, image=doctor_photo, command=doctor_button_clicked, borderwidth=0, bg="#ADD8E6")
-    doctor_button.place(relx=0.4, rely=0.45, anchor="center")
-
-    patient_button = tk.Button(top_frame, image=patient_photo, command=patient_button_clicked, borderwidth=0, bg="#ADD8E6")
-    patient_button.place(relx=0.6, rely=0.45, anchor="center")
-
-    doctor_label = tk.Label(top_frame, text="Doctor", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    doctor_label.place(relx=0.4, rely=0.60, anchor="center")
-
-    patient_label = tk.Label(top_frame, text="Patient", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    patient_label.place(relx=0.6, rely=0.60, anchor="center")
-
-    admin_frame = tk.Frame(top_frame, bg="#ADD8E6")
-    admin_frame.place(relx=0.01, rely=0.99, anchor="sw")
-
-    admin_label = tk.Label(admin_frame, text="If you're the admin,", font=("Arial", 12), bg="#ADD8E6", fg="white")
-    admin_label.pack(side="left")
-
-    click_here_label = tk.Label(admin_frame, text="Click here", font=("Arial", 12), bg="#ADD8E6", fg="#0000EE", cursor="hand2")
-    click_here_label.pack(side="left")
-    click_here_label.bind("<Button-1>", admin_login_clicked)
-
+    # Create and place the "Don't have an account?" message
     login_frame = tk.Frame(top_frame, bg="#ADD8E6")
     login_frame.place(relx=0.99, rely=0.99, anchor="se")
 
-    login_label_text = tk.Label(login_frame, text="Don’t have an account, ", font=("Arial", 12), bg="#ADD8E6", fg="white")
+    login_label_text = tk.Label(login_frame, text="Don't have an account? ", font=("Arial", 12), bg="#ADD8E6", fg="white")
     login_label_text.pack(side="left")
 
-    click_here_login_label = tk.Label(login_frame, text="click here", font=("Arial", 12), bg="#ADD8E6", fg="#0000EE", cursor="hand2")
-    click_here_login_label.pack(side="left")
-    click_here_login_label.bind("<Button-1>", lambda event: open_register_page())
+    click_here_register_label = tk.Label(login_frame, text="Click here", font=("Arial", 12), bg="#ADD8E6", fg="#0000EE", cursor="hand2")
+    click_here_register_label.pack(side="left")
+    click_here_register_label.bind("<Button-1>", lambda event: open_register_page())
 
-    root.mainloop()
+    login_root.mainloop()
 
 if __name__ == "__main__":
     create_login_window()
