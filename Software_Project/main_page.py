@@ -48,7 +48,7 @@ def create_login_window():
     top_frame.pack(fill="both", expand=True)
 
     # Create and place the logo at the top right
-    logo_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\SoftwareLogo.png"
+    logo_path = "C:\\Users\\user\\Documents\\GitHub\\SoftwareEng\\Software_Project\\SoftwareLogo.png"
     logo_image = create_rounded_image(logo_path, (150, 150), 30)
     logo_photo = ImageTk.PhotoImage(logo_image)
     logo_label = tk.Label(top_frame, image=logo_photo, bg="#ADD8E6")
@@ -60,7 +60,7 @@ def create_login_window():
     welcome_label.place(relx=0.5, rely=0.2, anchor="center")
 
     # Create and place the user icon
-    user_icon_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Patientnobg.png"
+    user_icon_path = "C:\\Users\\user\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Patientnobg.png"
     user_icon = create_rounded_image(user_icon_path, (150, 150), 20)  # Adjusted size
     user_photo = ImageTk.PhotoImage(user_icon)
     user_icon_label = tk.Label(top_frame, image=user_photo, bg="#ADD8E6")
