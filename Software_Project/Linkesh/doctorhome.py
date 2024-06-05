@@ -20,7 +20,7 @@ def logout_action():
     response = messagebox.askyesno("Logout", "Are you sure you want to logout?")
     if response:
         root.destroy()
-        os.system('python "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/main_page.py"')
+        os.system('python "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/main_page.py"')
 
 def notification_action():
     messagebox.showinfo("Notification", "You have new notifications")
@@ -32,7 +32,7 @@ root.geometry("800x600")
 root.configure(bg="white")
 
 # Image file path
-image_path = "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Images/"
+image_path = "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/Images/"
 
 # Function to load and resize images
 def load_image(image_name, size):

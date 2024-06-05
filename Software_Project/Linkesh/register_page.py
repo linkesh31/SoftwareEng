@@ -39,7 +39,7 @@ def create_register_window():
     top_frame = tk.Frame(register_root, bg="#ADD8E6", width=width, height=height)
     top_frame.pack(fill="both", expand=True)
 
-    image_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Images\\SoftwareLogo.png"
+    image_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Linkesh\\Images\\SoftwareLogo.png"
     logo_image = create_rounded_image(image_path, (150, 150), 30)
     photo = ImageTk.PhotoImage(logo_image)
     logo_label = tk.Label(top_frame, image=photo, bg="#ADD8E6")
@@ -58,11 +58,11 @@ def create_register_window():
     button_size = (200, 200)
     corner_radius = 20
 
-    patient_image_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Images\\Patient.png"
+    patient_image_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Linkesh\\Images\\Patient.png"
     patient_image = create_rounded_button_image(patient_image_path, button_size, corner_radius)
     patient_photo = ImageTk.PhotoImage(patient_image)
 
-    clinic_image_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Images\\Clinic.png"
+    clinic_image_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Linkesh\\Images\\Clinic.png"
     clinic_image = create_rounded_button_image(clinic_image_path, button_size, corner_radius)
     clinic_photo = ImageTk.PhotoImage(clinic_image)
 

@@ -83,7 +83,7 @@ def create_login_window():
     top_frame = tk.Frame(login_root, bg="#ADD8E6", width=width, height=height)
     top_frame.pack(fill="both", expand=True)
 
-    logo_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Images\\SoftwareLogo.png"
+    logo_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Linkesh\\Images\\SoftwareLogo.png"
     logo_image = create_rounded_image(logo_path, (150, 150), 30)
     logo_photo = ImageTk.PhotoImage(logo_image)
     logo_label = tk.Label(top_frame, image=logo_photo, bg="#ADD8E6")
@@ -93,7 +93,7 @@ def create_login_window():
     welcome_label = tk.Label(top_frame, text="Welcome to Login", font=("Arial", 24, "bold"), bg="#ADD8E6", fg="#000080")
     welcome_label.place(relx=0.5, rely=0.2, anchor="center")
 
-    user_icon_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Images\\Patientnobg.png"
+    user_icon_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Linkesh\\Images\\Patientnobg.png"
     user_icon = create_rounded_image(user_icon_path, (150, 150), 20)
     user_photo = ImageTk.PhotoImage(user_icon)
     user_icon_label = tk.Label(top_frame, image=user_photo, bg="#ADD8E6")
