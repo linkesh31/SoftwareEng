@@ -46,12 +46,21 @@ def authenticate_user(username, password):
             database='calladoctor'
         )
         cursor = connection.cursor()
-        cursor.execute("SELECT role FROM Users WHERE username=%s AND password=%s", (username, password))
+        cursor.execute("SELECT user_id, role FROM users WHERE username=%s AND password=%s", (username, password))
         result = cursor.fetchone()
-        connection.close()
         if result:
-            return result[0]
+            user_id, role = result
+            if role == 'doctor':
+                cursor.execute("SELECT doctor_id FROM doctors WHERE user_id=%s", (user_id,))
+                doctor_result = cursor.fetchone()
+                doctor_id = doctor_result[0] if doctor_result else None
+                connection.close()
+                return role, doctor_id
+            else:
+                connection.close()
+                return role, None
         else:
+            connection.close()
             return None
     except Error as e:
         print(f"The error '{e}' occurred")
@@ -60,13 +69,14 @@ def authenticate_user(username, password):
 def login():
     username = username_entry.get()
     password = password_entry.get()
-    role = authenticate_user(username, password)
-    if role:
+    result = authenticate_user(username, password)
+    if result:
+        role, doctor_id = result
         login_root.destroy()
         if role == 'admin':
             subprocess.run(['python', 'adminhome.py'])
         elif role == 'doctor':
-            subprocess.run(['python', 'doctorhome.py'])
+            subprocess.run(['python', 'doctorhome.py', str(doctor_id)])
         elif role == 'patient':
             subprocess.run(['python', 'patienthome.py'])
     else:
