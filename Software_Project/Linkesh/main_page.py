@@ -46,19 +46,25 @@ def authenticate_user(username, password):
             database='calladoctor'
         )
         cursor = connection.cursor()
-        cursor.execute("SELECT user_id, role FROM users WHERE username=%s AND password=%s", (username, password))
+        cursor.execute("SELECT user_id, role, fullname FROM users WHERE username=%s AND password=%s", (username, password))
         result = cursor.fetchone()
         if result:
-            user_id, role = result
+            user_id, role, fullname = result
             if role == 'doctor':
                 cursor.execute("SELECT doctor_id FROM doctors WHERE user_id=%s", (user_id,))
                 doctor_result = cursor.fetchone()
                 doctor_id = doctor_result[0] if doctor_result else None
                 connection.close()
-                return role, doctor_id
+                return role, doctor_id, fullname
+            elif role == 'clinic_admin':
+                cursor.execute("SELECT clinic_id FROM admin_clinics WHERE admin_id=%s", (user_id,))
+                clinic_result = cursor.fetchone()
+                clinic_id = clinic_result[0] if clinic_result else None
+                connection.close()
+                return role, clinic_id, fullname
             else:
                 connection.close()
-                return role, None
+                return role, None, fullname
         else:
             connection.close()
             return None
@@ -71,12 +77,14 @@ def login():
     password = password_entry.get()
     result = authenticate_user(username, password)
     if result:
-        role, doctor_id = result
+        role, clinic_or_doctor_id, fullname = result
         login_root.destroy()
         if role == 'admin':
-            subprocess.run(['python', 'adminhome.py'])
+            subprocess.run(['python', 'adminhome.py', fullname])
+        elif role == 'clinic_admin':
+            subprocess.run(['python', 'adminclinichome.py', str(clinic_or_doctor_id), fullname])
         elif role == 'doctor':
-            subprocess.run(['python', 'doctorhome.py', str(doctor_id)])
+            subprocess.run(['python', 'doctorhome.py', str(clinic_or_doctor_id)])
         elif role == 'patient':
             subprocess.run(['python', 'patienthome.py'])
     else:
