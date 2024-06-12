@@ -19,7 +19,10 @@ def get_doctor_fullname(doctor_id):
         result = cursor.fetchone()
         db.close()
         print(f"Doctor ID: {doctor_id}, Fullname: {result}")  # Debug print statement
-        return result[0] if result else "Doctor"
+        if result:
+            return result[0]
+        else:
+            raise ValueError(f"No doctor found with ID {doctor_id}")
     except mysql.connector.Error as err:
         print(f"Database Error: {err}")
         messagebox.showerror("Database Error", f"Error: {err}")
@@ -93,8 +96,16 @@ main_frame = tk.Frame(root, bg="white")
 main_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
 # Get doctor_id from command-line arguments
-doctor_id = int(sys.argv[1])
-doctor_fullname = get_doctor_fullname(doctor_id)
+doctor_id = sys.argv[1] if len(sys.argv) > 1 else None
+if doctor_id:
+    try:
+        doctor_id = int(doctor_id)
+        doctor_fullname = get_doctor_fullname(doctor_id)
+    except ValueError as ve:
+        print(f"ValueError: {ve}")
+        doctor_fullname = "Unknown Doctor"
+else:
+    doctor_fullname = "Unknown Doctor"
 
 # Welcome text
 welcome_label = tk.Label(main_frame, text=f"Welcome DR. {doctor_fullname}", font=("Arial", 24), bg="white")

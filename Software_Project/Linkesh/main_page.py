@@ -9,7 +9,7 @@ def create_rounded_image(image_path, size, corner_radius):
     image = Image.open(image_path).resize(size, Image.Resampling.LANCZOS)
     mask = Image.new("L", image.size, 0)
     draw = ImageDraw.Draw(mask)
-    draw.rounded_rectangle((0, 0, size[0], size[1]), corner_radius, fill=255)
+    draw.rounded_rectangle([0, 0, size[0], size[1]], corner_radius, fill=255)
     rounded_image = Image.new("RGBA", image.size)
     rounded_image.paste(image, (0, 0), mask)
     return rounded_image
@@ -76,8 +76,12 @@ def login():
     username = username_entry.get()
     password = password_entry.get()
     result = authenticate_user(username, password)
+    print(f"Login result: {result}")  # Debug print statement
     if result:
         role, clinic_or_doctor_id, fullname = result
+        if role == 'doctor' and clinic_or_doctor_id is None:
+            messagebox.showerror("Login Failed", "Doctor ID not found")
+            return
         login_root.destroy()
         if role == 'admin':
             subprocess.run(['python', 'adminhome.py', fullname])
