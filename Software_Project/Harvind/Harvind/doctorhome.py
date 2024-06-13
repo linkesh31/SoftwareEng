@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 import os
 import mysql.connector
 import sys
+import subprocess
 
 # Database connection function
 def get_doctor_fullname(doctor_id):
@@ -30,7 +31,8 @@ def home_action():
     messagebox.showinfo("Home", "Home Button Clicked")
 
 def list_of_patients_action():
-    messagebox.showinfo("List of Patients", "List of Patients Button Clicked")
+    root.destroy()
+    subprocess.run(['python', 'listofpatient.py'])
 
 def profile_action():
     messagebox.showinfo("Profile", "Profile Button Clicked")
@@ -61,7 +63,6 @@ def load_image(image_name, size):
     img = Image.open(image_path + image_name)
     img = img.resize(size, Image.Resampling.LANCZOS)
     return ImageTk.PhotoImage(img)
-
 
 # Load images with specified size
 button_size = (40, 40)
