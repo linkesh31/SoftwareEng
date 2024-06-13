@@ -2,8 +2,9 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import os
-import sys
+import subprocess
 import mysql.connector
+import sys
 
 # Get clinic admin's clinic ID and full name from command line arguments
 if len(sys.argv) > 2:
@@ -63,16 +64,10 @@ def notification_action():
     messagebox.showinfo("Notification", "You have new notifications")
 
 def add_doctor_action():
-    new_window = tk.Toplevel(root)
-    new_window.title("Add Doctor")
-    new_window.geometry("400x300")
-    tk.Label(new_window, text="Add Doctor Page").pack(pady=20)
+    subprocess.run(['python', 'adddoctor.py', clinic_id, admin_fullname])
 
 def delete_doctor_action():
-    new_window = tk.Toplevel(root)
-    new_window.title("Delete Doctor")
-    new_window.geometry("400x300")
-    tk.Label(new_window, text="Delete Doctor Page").pack(pady=20)
+    subprocess.run(['python', 'deletedoctor.py', clinic_id])
 
 # Function to show options on hover
 def show_doctor_management_menu(event):
@@ -109,31 +104,33 @@ logout_img = load_image("logout.jpg", button_size)
 notification_img = load_image("bell.jpg", (30, 30))  # Load and resize the notification bell icon
 
 # Left side menu
-menu_frame = tk.Frame(root, bg="white")
+menu_frame = tk.Frame(root, bg="#E6E6FA")
 menu_frame.pack(side=tk.LEFT, fill=tk.Y, padx=10, pady=10)
 
 # Menu buttons with images and labels
 def create_button(frame, image, text, command):
-    btn = tk.Button(frame, image=image, command=command, bg="white", compound=tk.TOP)
-    btn.pack(pady=5)
-    label = tk.Label(frame, text=text, bg="white", font=("Arial", 10))
-    label.pack()
+    button_frame = tk.Frame(frame, bg="#E6E6FA")
+    button_frame.pack(fill=tk.X, pady=5, padx=5)
+    btn = tk.Button(button_frame, image=image, command=command, bg="white", compound=tk.TOP)
+    btn.pack(pady=0)
+    label = tk.Label(button_frame, text=text, bg="#E6E6FA", font=("Arial", 12, "bold"))
+    label.pack(pady=5)
+    return button_frame
 
 create_button(menu_frame, home_img, "HOME", home_action)
 create_button(menu_frame, patients_management_img, "PATIENTS MANAGEMENT", patients_management_action)
 
 # Doctor Management button
-doctor_management_button = tk.Button(menu_frame, image=doctors_management_img, bg="white", compound=tk.TOP)
-doctor_management_button.pack(pady=5)
-doctor_management_label = tk.Label(menu_frame, text="DOCTORS MANAGEMENT", bg="white", font=("Arial", 10))
-doctor_management_label.pack()
+doctor_management_button_frame = create_button(menu_frame, doctors_management_img, "DOCTORS MANAGEMENT", None)
 
 # Create hover menu for Doctor Management
-doctor_management_menu = tk.Menu(root, tearoff=0)
+doctor_management_menu = tk.Menu(root, tearoff=0, bg="lightgrey", font=("Arial", 10))
 doctor_management_menu.add_command(label="Add Doctor", command=add_doctor_action)
 doctor_management_menu.add_command(label="Delete Doctor", command=delete_doctor_action)
 
 # Bind hover event to Doctor Management button and label
+doctor_management_button = doctor_management_button_frame.winfo_children()[0]
+doctor_management_label = doctor_management_button_frame.winfo_children()[1]
 doctor_management_button.bind("<Enter>", show_doctor_management_menu)
 doctor_management_button.bind("<Leave>", hide_doctor_management_menu)
 doctor_management_label.bind("<Enter>", show_doctor_management_menu)
@@ -147,12 +144,12 @@ doctor_management_menu.bind("<Leave>", hide_doctor_management_menu)
 create_button(menu_frame, appointment_management_img, "APPOINTMENT MANAGEMENT", appointment_management_action)
 
 # Logout button at the bottom
-logout_frame = tk.Frame(menu_frame, bg="white")
-logout_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=10)
+logout_frame = tk.Frame(menu_frame, bg="#E6E6FA")
+logout_frame.pack(fill=tk.X, pady=5, padx=5)
 logout_btn = tk.Button(logout_frame, image=logout_img, command=logout_action, bg="white", bd=0)
-logout_btn.pack(pady=5)
-logout_label = tk.Label(logout_frame, text="LOGOUT", bg="white", font=("Arial", 10))
-logout_label.pack()
+logout_btn.pack(pady=0)
+logout_label = tk.Label(logout_frame, text="LOGOUT", bg="#E6E6FA", font=("Arial", 12, "bold"))
+logout_label.pack(pady=5)
 
 # Main content area
 main_frame = tk.Frame(root, bg="white")
@@ -178,9 +175,6 @@ total_doctors_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
 # Notification button with image
 notification_btn = tk.Button(root, image=notification_img, command=notification_action, bg="white", bd=0)
 notification_btn.place(x=760, y=20)
-
-# Add some design to the hover menu
-doctor_management_menu.configure(bg="lightgrey", font=("Arial", 10))
 
 # Initialize hide menu job
 hide_menu_job = None
