@@ -2,6 +2,13 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import os
+import sys
+
+# Get patient's full name from command line argument
+if len(sys.argv) > 1:
+    patient_fullname = sys.argv[1]
+else:
+    patient_fullname = "PATIENT"
 
 # Function for button actions
 def home_action():
@@ -76,7 +83,7 @@ main_frame = tk.Frame(root, bg="white")
 main_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
 # Welcome text
-welcome_label = tk.Label(main_frame, text="Welcome LINKESH", font=("Arial", 24), bg="white")
+welcome_label = tk.Label(main_frame, text=f"Welcome {patient_fullname}", font=("Arial", 24), bg="white")
 welcome_label.pack(pady=20)
 
 # Appointment history section

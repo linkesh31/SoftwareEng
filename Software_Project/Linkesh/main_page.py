@@ -90,9 +90,10 @@ def login():
         elif role == 'doctor':
             subprocess.run(['python', 'doctorhome.py', str(clinic_or_doctor_id)])
         elif role == 'patient':
-            subprocess.run(['python', 'patienthome.py'])
+            subprocess.run(['python', 'patienthome.py', fullname])
     else:
         messagebox.showerror("Login Failed", "Invalid username or password")
+
 
 def create_login_window():
     global login_root, password_entry, username_entry
