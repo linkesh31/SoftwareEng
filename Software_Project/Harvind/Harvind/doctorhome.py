@@ -2,37 +2,13 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import os
-import mysql.connector
-import sys
-import subprocess
-
-# Database connection function
-def get_doctor_fullname(doctor_id):
-    try:
-        db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="calladoctor1234",
-            database="calladoctor"
-        )
-        cursor = db.cursor()
-        cursor.execute("SELECT fullname FROM doctors WHERE doctor_id = %s", (doctor_id,))
-        result = cursor.fetchone()
-        db.close()
-        print(f"Doctor ID: {doctor_id}, Fullname: {result}")  # Debug print statement
-        return result[0] if result else "Doctor"
-    except mysql.connector.Error as err:
-        print(f"Database Error: {err}")
-        messagebox.showerror("Database Error", f"Error: {err}")
-        return "Doctor"
 
 # Function for button actions
 def home_action():
     messagebox.showinfo("Home", "Home Button Clicked")
 
 def list_of_patients_action():
-    root.destroy()
-    subprocess.run(['python', 'listofpatient.py'])
+    messagebox.showinfo("List of Patients", "List of Patients Button Clicked")
 
 def profile_action():
     messagebox.showinfo("Profile", "Profile Button Clicked")
@@ -94,12 +70,8 @@ create_button(menu_frame, logout_img, "LOGOUT", logout_action)
 main_frame = tk.Frame(root, bg="white")
 main_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
-# Get doctor_id from command-line arguments
-doctor_id = int(sys.argv[1])
-doctor_fullname = get_doctor_fullname(doctor_id)
-
 # Welcome text
-welcome_label = tk.Label(main_frame, text=f"Welcome DR. {doctor_fullname}", font=("Arial", 24), bg="white")
+welcome_label = tk.Label(main_frame, text="Welcome DR.LINKESH", font=("Arial", 24), bg="white")
 welcome_label.pack(pady=20)
 
 # Appointment history section
