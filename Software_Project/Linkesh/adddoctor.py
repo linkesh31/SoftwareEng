@@ -105,6 +105,12 @@ def back_action():
     root.destroy()
     os.system(f'python clinicadminhome.py {clinic_id} {admin_fullname}')
 
+# Validation function for IC entry
+def limit_ic_length(*args):
+    value = ic_var.get()
+    if len(value) > 12:
+        ic_var.set(value[:12])
+
 # Create main window
 root = tk.Tk()
 root.title("Add Doctor")
@@ -120,7 +126,7 @@ form_frame = tk.Frame(root, bg="lightblue")
 form_frame.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
 
 # Form fields
-labels = ["Fullname:", "Username:", "Password:", "Confirm Password:", "Gender:", "IC:", "Email:", "Phone:", "Address:"]
+labels = ["Fullname:", "Username:", "Password:", "Confirm Password:", "Gender:", "IC(without dash):", "Email:", "Phone:", "Address:"]
 entries = {}
 
 for i, label_text in enumerate(labels):
@@ -168,9 +174,14 @@ username_entry = entries["Username:"]
 password_entry = entries["Password:"]
 confirm_password_entry = entries["Confirm Password:"]
 gender_combobox = entries["Gender:"]
-ic_entry = entries["IC:"]
+ic_entry = entries["IC(without dash):"]
 email_entry = entries["Email:"]
 phone_entry = entries["Phone:"]
 address_entry = entries["Address:"]
+
+# Set up IC entry variable and trace for validation
+ic_var = tk.StringVar()
+ic_var.trace_add("write", limit_ic_length)
+ic_entry.config(textvariable=ic_var)
 
 root.mainloop()

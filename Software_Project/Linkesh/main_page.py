@@ -57,9 +57,12 @@ def authenticate_user(username, password):
                 connection.close()
                 return role, doctor_id, fullname
             elif role == 'clinic_admin':
-                cursor.execute("SELECT clinic_id FROM admin_clinics WHERE admin_id=%s", (user_id,))
+                cursor.execute("SELECT c.clinic_id, c.is_approved FROM admin_clinics ac JOIN clinics c ON ac.clinic_id = c.clinic_id WHERE ac.admin_id=%s", (user_id,))
                 clinic_result = cursor.fetchone()
-                clinic_id = clinic_result[0] if clinic_result else None
+                clinic_id, is_approved = clinic_result if clinic_result else (None, None)
+                if is_approved == 0:
+                    connection.close()
+                    return None
                 connection.close()
                 return role, clinic_id, fullname
             else:
@@ -93,7 +96,6 @@ def login():
             subprocess.run(['python', 'patienthome.py', fullname])
     else:
         messagebox.showerror("Login Failed", "Invalid username or password")
-
 
 def create_login_window():
     global login_root, password_entry, username_entry

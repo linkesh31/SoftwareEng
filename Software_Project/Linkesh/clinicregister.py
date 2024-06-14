@@ -32,7 +32,7 @@ def submit_clinic_data(clinic_name, clinic_address, clinic_license_path, admin_f
         cursor.execute(insert_admin_clinic_query, admin_clinic_data)
 
         connection.commit()
-        messagebox.showinfo("Success", "Clinic registered successfully!")
+        messagebox.showinfo("Success", "Request for clinic registration has been sent! Wait for approval.")
         clinic_register_root.destroy()
         import main_page
         main_page.create_login_window()
@@ -44,7 +44,7 @@ def submit_clinic_data(clinic_name, clinic_address, clinic_license_path, admin_f
             connection.close()
 
 def browse_file():
-    filename = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")])
+    filename = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg *.jpeg *.png *.bmp *.gif *.tiff"), ("All files", "*.*")])
     return filename
 
 def create_clinic_register_window():
@@ -52,37 +52,41 @@ def create_clinic_register_window():
     clinic_register_root = tk.Tk()
     clinic_register_root.title("Clinic Registration")
     width = 600
-    height = 700
+    height = 800
     clinic_register_root.geometry(f"{width}x{height}")
 
     top_frame = tk.Frame(clinic_register_root, bg="#ADD8E6", width=width, height=height)
     top_frame.pack(fill="both", expand=True)
 
     title_label = tk.Label(top_frame, text="Call a Doctor", font=("Arial", 24), bg="#ADD8E6", fg="#13126C")
-    title_label.place(relx=0.5, rely=0.05, anchor="center")
+    title_label.pack(pady=10)
 
     sub_title_label = tk.Label(top_frame, text="Welcome to Registration", font=("Arial", 18), bg="#ADD8E6", fg="#13126C")
-    sub_title_label.place(relx=0.5, rely=0.15, anchor="center")
+    sub_title_label.pack(pady=10)
 
-    clinic_info_label = tk.Label(top_frame, text="Clinic info", font=("Arial", 16), bg="#ADD8E6", fg="black")
-    clinic_info_label.place(relx=0.1, rely=0.2, anchor="w")
+    form_frame = tk.Frame(top_frame, bg="#ADD8E6")
+    form_frame.pack(pady=10)
 
-    clinic_name_label = tk.Label(top_frame, text="Clinic Name:", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    clinic_name_label.place(relx=0.1, rely=0.25, anchor="w")
-    clinic_name_entry = tk.Entry(top_frame, font=("Arial", 14))
-    clinic_name_entry.place(relx=0.4, rely=0.25, anchor="w")
+    # Clinic info section
+    clinic_info_label = tk.Label(form_frame, text="Clinic info", font=("Arial", 16), bg="#ADD8E6", fg="black")
+    clinic_info_label.grid(row=0, column=0, columnspan=2, pady=1)
 
-    clinic_address_label = tk.Label(top_frame, text="Clinic Address:", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    clinic_address_label.place(relx=0.1, rely=0.3, anchor="w")
-    clinic_address_entry = tk.Entry(top_frame, font=("Arial", 14))
-    clinic_address_entry.place(relx=0.4, rely=0.3, anchor="w")
+    clinic_name_label = tk.Label(form_frame, text="Clinic Name:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    clinic_name_label.grid(row=1, column=0, sticky="e", pady=5)
+    clinic_name_entry = tk.Entry(form_frame, font=("Arial", 14))
+    clinic_name_entry.grid(row=1, column=1, pady=5)
 
-    clinic_license_label = tk.Label(top_frame, text="Clinic License:", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    clinic_license_label.place(relx=0.1, rely=0.35, anchor="w")
-    clinic_license_button = tk.Button(top_frame, text="Choose File", font=("Arial", 12), command=lambda: browse_file())
-    clinic_license_button.place(relx=0.4, rely=0.35, anchor="w")
-    clinic_license_path_label = tk.Label(top_frame, text="", font=("Arial", 12), bg="#ADD8E6", fg="black")
-    clinic_license_path_label.place(relx=0.6, rely=0.35, anchor="w")
+    clinic_address_label = tk.Label(form_frame, text="Clinic Address:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    clinic_address_label.grid(row=2, column=0, sticky="e", pady=5)
+    clinic_address_entry = tk.Entry(form_frame, font=("Arial", 14))
+    clinic_address_entry.grid(row=2, column=1, pady=5)
+
+    clinic_license_label = tk.Label(form_frame, text="Clinic License:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    clinic_license_label.grid(row=3, column=0, sticky="e", pady=5)
+    clinic_license_button = tk.Button(form_frame, text="Choose File", font=("Arial", 12))
+    clinic_license_button.grid(row=3, column=1, pady=5)
+    clinic_license_path_label = tk.Label(form_frame, text="", font=("Arial", 12), bg="#ADD8E6", fg="black")
+    clinic_license_path_label.grid(row=4, column=0, columnspan=2, pady=5)
 
     def choose_file():
         path = browse_file()
@@ -90,68 +94,69 @@ def create_clinic_register_window():
 
     clinic_license_button.config(command=choose_file)
 
-    clinic_admin_info_label = tk.Label(top_frame, text="Clinic Admin info", font=("Arial", 16), bg="#ADD8E6", fg="black")
-    clinic_admin_info_label.place(relx=0.1, rely=0.4, anchor="w")
+    # Clinic admin info section
+    clinic_admin_info_label = tk.Label(form_frame, text="Clinic Admin info", font=("Arial", 16), bg="#ADD8E6", fg="black")
+    clinic_admin_info_label.grid(row=5, column=0, columnspan=2, pady=5)
 
-    fullname_label = tk.Label(top_frame, text="Fullname:", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    fullname_label.place(relx=0.1, rely=0.45, anchor="w")
-    fullname_entry = tk.Entry(top_frame, font=("Arial", 14))
-    fullname_entry.place(relx=0.4, rely=0.45, anchor="w")
+    fullname_label = tk.Label(form_frame, text="Fullname:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    fullname_label.grid(row=6, column=0, sticky="e", pady=5)
+    fullname_entry = tk.Entry(form_frame, font=("Arial", 14))
+    fullname_entry.grid(row=6, column=1, pady=5)
 
-    email_label = tk.Label(top_frame, text="Email:", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    email_label.place(relx=0.1, rely=0.5, anchor="w")
-    email_entry = tk.Entry(top_frame, font=("Arial", 14))
-    email_entry.place(relx=0.4, rely=0.5, anchor="w")
+    email_label = tk.Label(form_frame, text="Email:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    email_label.grid(row=7, column=0, sticky="e", pady=5)
+    email_entry = tk.Entry(form_frame, font=("Arial", 14))
+    email_entry.grid(row=7, column=1, pady=5)
 
-    username_label = tk.Label(top_frame, text="Username:", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    username_label.place(relx=0.1, rely=0.55, anchor="w")
-    username_entry = tk.Entry(top_frame, font=("Arial", 14))
-    username_entry.place(relx=0.4, rely=0.55, anchor="w")
+    username_label = tk.Label(form_frame, text="Username:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    username_label.grid(row=8, column=0, sticky="e", pady=5)
+    username_entry = tk.Entry(form_frame, font=("Arial", 14))
+    username_entry.grid(row=8, column=1, pady=5)
 
-    password_label = tk.Label(top_frame, text="Password:", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    password_label.place(relx=0.1, rely=0.6, anchor="w")
-    password_entry = tk.Entry(top_frame, font=("Arial", 14), show="*")
-    password_entry.place(relx=0.4, rely=0.6, anchor="w")
+    password_label = tk.Label(form_frame, text="Password:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    password_label.grid(row=9, column=0, sticky="e", pady=5)
+    password_entry = tk.Entry(form_frame, font=("Arial", 14), show="*")
+    password_entry.grid(row=9, column=1, pady=5)
 
-    confirm_password_label = tk.Label(top_frame, text="Confirm Password:", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    confirm_password_label.place(relx=0.1, rely=0.65, anchor="w")
-    confirm_password_entry = tk.Entry(top_frame, font=("Arial", 14), show="*")
-    confirm_password_entry.place(relx=0.4, rely=0.65, anchor="w")
+    confirm_password_label = tk.Label(form_frame, text="Confirm Password:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    confirm_password_label.grid(row=10, column=0, sticky="e", pady=5)
+    confirm_password_entry = tk.Entry(form_frame, font=("Arial", 14), show="*")
+    confirm_password_entry.grid(row=10, column=1, pady=5)
 
-    phone_number_label = tk.Label(top_frame, text="Phone Number:", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    phone_number_label.place(relx=0.1, rely=0.7, anchor="w")
-    phone_number_entry = tk.Entry(top_frame, font=("Arial", 14))
-    phone_number_entry.place(relx=0.4, rely=0.7, anchor="w")
+    phone_number_label = tk.Label(form_frame, text="Phone Number:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    phone_number_label.grid(row=11, column=0, sticky="e", pady=5)
+    phone_number_entry = tk.Entry(form_frame, font=("Arial", 14))
+    phone_number_entry.grid(row=11, column=1, pady=5)
 
-    admin_address_label = tk.Label(top_frame, text="Admin Address:", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    admin_address_label.place(relx=0.1, rely=0.75, anchor="w")
-    admin_address_entry = tk.Entry(top_frame, font=("Arial", 14))
-    admin_address_entry.place(relx=0.4, rely=0.75, anchor="w")
+    admin_address_label = tk.Label(form_frame, text="Admin Address:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    admin_address_label.grid(row=12, column=0, sticky="e", pady=5)
+    admin_address_entry = tk.Entry(form_frame, font=("Arial", 14))
+    admin_address_entry.grid(row=12, column=1, pady=5)
 
-    date_of_birth_label = tk.Label(top_frame, text="Date of Birth:", font=("Arial", 14), bg="#ADD8E6", fg="black")
-    date_of_birth_label.place(relx=0.1, rely=0.8, anchor="w")
+    date_of_birth_label = tk.Label(form_frame, text="Date of Birth:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    date_of_birth_label.grid(row=13, column=0, sticky="e", pady=5)
 
     years = [str(year) for year in range(1900, 2025)]
     months = [str(month).zfill(2) for month in range(1, 13)]
     days = [str(day).zfill(2) for day in range(1, 32)]
 
-    year_var = tk.StringVar(top_frame)
+    year_var = tk.StringVar(form_frame)
     year_var.set(years[0])
-    month_var = tk.StringVar(top_frame)
+    month_var = tk.StringVar(form_frame)
     month_var.set(months[0])
-    day_var = tk.StringVar(top_frame)
+    day_var = tk.StringVar(form_frame)
     day_var.set(days[0])
 
-    year_menu = ttk.Combobox(top_frame, textvariable=year_var, values=years)
-    year_menu.place(relx=0.4, rely=0.8, anchor="w")
+    year_menu = ttk.Combobox(form_frame, textvariable=year_var, values=years)
+    year_menu.grid(row=13, column=1, sticky="w", pady=5)
     year_menu.config(state="readonly")
 
-    month_menu = ttk.Combobox(top_frame, textvariable=month_var, values=months)
-    month_menu.place(relx=0.55, rely=0.8, anchor="w")
+    month_menu = ttk.Combobox(form_frame, textvariable=month_var, values=months)
+    month_menu.grid(row=13, column=1, pady=5)
     month_menu.config(state="readonly")
 
-    day_menu = ttk.Combobox(top_frame, textvariable=day_var, values=days)
-    day_menu.place(relx=0.7, rely=0.8, anchor="w")
+    day_menu = ttk.Combobox(form_frame, textvariable=day_var, values=days)
+    day_menu.grid(row=13, column=1, sticky="e", pady=5)
     day_menu.config(state="readonly")
 
     def on_register_click():
@@ -172,16 +177,16 @@ def create_clinic_register_window():
 
         submit_clinic_data(clinic_name, clinic_address, clinic_license_path, admin_fullname, admin_username, admin_password, admin_email, admin_phone_number, admin_date_of_birth, admin_address)
 
-    register_button = tk.Button(top_frame, text="Register", font=("Arial", 14), command=on_register_click)
-    register_button.place(relx=0.5, rely=0.9, anchor="center")
+    register_button = tk.Button(form_frame, text="Register", font=("Arial", 14), command=on_register_click)
+    register_button.grid(row=14, column=0, columnspan=2, pady=10)
 
     def on_back_click():
         clinic_register_root.destroy()
         import register_page
         register_page.create_register_window()
 
-    back_button = tk.Button(top_frame, text="Back", font=("Arial", 14), command=on_back_click)
-    back_button.place(relx=0.1, rely=0.9, anchor="center")
+    back_button = tk.Button(form_frame, text="Back", font=("Arial", 14), command=on_back_click)
+    back_button.grid(row=15, column=0, columnspan=2, pady=10)
 
     clinic_register_root.mainloop()
 
