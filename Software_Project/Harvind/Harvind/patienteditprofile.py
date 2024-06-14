@@ -3,6 +3,9 @@ from tkinter import messagebox
 from tkcalendar import DateEntry
 import mysql.connector
 from mysql.connector import Error
+from PIL import Image, ImageTk
+import patientprofile
+import os
 
 def fetch_patient_details(username):
     try:
@@ -52,15 +55,79 @@ def update_patient_details(username, address, email, phone_number):
             cursor.close()
             connection.close()
 
+def load_image(image_path, size):
+    try:
+        img = Image.open(image_path)
+        img = img.resize(size, Image.Resampling.LANCZOS)
+        return ImageTk.PhotoImage(img)
+    except Exception as e:
+        messagebox.showerror("Error", f"Error loading image {image_path}: {e}")
+        return None
+
+def create_buttons(menu_frame, image_path, username):
+    button_size = (40, 40)
+    buttons_info = [
+        ("home.png", "HOME", lambda: back_to_home(root, username)),
+        ("search.png", "SEARCH/VIEW CLINIC", search_view_clinic_action),
+        ("sendrequest.png", "SEND REQUEST TO DOCTOR", send_request_to_doctor_action),
+        ("profile.png", "PROFILE", lambda: profile_action(username)),
+        ("appointment.png", "APPOINTMENT SUMMARY", appointment_summary_action),
+        ("logout.png", "LOGOUT", logout_action)
+    ]
+    for image_name, text, command in buttons_info:
+        image = load_image(image_path + image_name, button_size)
+        if image:
+            create_button(menu_frame, image, text, command)
+
+def create_button(frame, image, text, command):
+    btn = tk.Button(frame, image=image, command=command, bg="white", compound=tk.TOP)
+    btn.pack(pady=5)
+    btn.image = image  # Keep a reference to avoid garbage collection
+    label = tk.Label(frame, text=text, bg="white", font=("Arial", 10))
+    label.pack()
+
+def search_view_clinic_action():
+    messagebox.showinfo("Search/View Clinic", "Search/View Clinic Button Clicked")
+
+def send_request_to_doctor_action():
+    messagebox.showinfo("Send Request to Doctor", "Send Request to Doctor Button Clicked")
+
+def profile_action(username):
+    root.destroy()
+    patientprofile.create_patient_profile_window(username)
+
+def appointment_summary_action():
+    messagebox.showinfo("Appointment Summary", "Appointment Summary Button Clicked")
+
+def logout_action():
+    response = messagebox.askyesno("Logout", "Are you sure you want to logout?")
+    if response:
+        root.destroy()
+        os.system('python "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/main_page.py"')
+
+def back_to_home(root, username):
+    root.destroy()
+    patientprofile.create_patient_profile_window(username)
+
 def create_patient_edit_profile_window(username):
+    global root
     root = tk.Tk()
     root.title("Edit Profile")
-    root.geometry("800x600")
+    root.geometry("1000x700")  # Increased window size
     root.configure(bg="white")
+
+    image_path = "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/Images/"
+
+    # Left side menu
+    menu_frame = tk.Frame(root, bg="white")
+    menu_frame.pack(side=tk.LEFT, fill=tk.Y, padx=10, pady=10)
+
+    # Load images and create buttons
+    create_buttons(menu_frame, image_path, username)
 
     # Main content area
     main_frame = tk.Frame(root, bg="white")
-    main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+    main_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
     # Profile section
     profile_frame = tk.Frame(main_frame, bg="#ff6b6b", padx=10, pady=10)
@@ -93,13 +160,17 @@ def create_patient_edit_profile_window(username):
             update_patient_details(username, address, email, phone_number)
             messagebox.showinfo("Success", "Profile updated successfully")
             root.destroy()
-            import patientprofile
             patientprofile.create_patient_profile_window(username)
+
+        def confirm_changes():
+            response = messagebox.askyesno("Confirm Changes", "Are you sure you want to make the changes?")
+            if response:
+                save_changes()
 
         back_button = tk.Button(profile_frame, text="Back", font=("Arial", 12), bg="white", command=lambda: back_action(root, username))
         back_button.grid(row=5, column=0, pady=10)
 
-        confirm_button = tk.Button(profile_frame, text="Confirm", font=("Arial", 12), bg="white", command=save_changes)
+        confirm_button = tk.Button(profile_frame, text="Confirm", font=("Arial", 12), bg="white", command=confirm_changes)
         confirm_button.grid(row=5, column=1, pady=10)
     else:
         messagebox.showerror("Error", "User details not found!")
@@ -108,8 +179,7 @@ def create_patient_edit_profile_window(username):
 
 def back_action(root, username):
     root.destroy()
-    import patientprofile
     patientprofile.create_patient_profile_window(username)
 
 if __name__ == "__main__":
-    create_patient_edit_profile_window("Linkesh")
+    create_patient_edit_profile_window("harvind")

@@ -5,6 +5,7 @@ import mysql.connector
 from mysql.connector import Error
 import subprocess
 
+# Create rounded image function
 def create_rounded_image(image_path, size, corner_radius):
     image = Image.open(image_path).resize(size, Image.Resampling.LANCZOS)
     mask = Image.new("L", image.size, 0)
@@ -14,14 +15,17 @@ def create_rounded_image(image_path, size, corner_radius):
     rounded_image.paste(image, (0, 0), mask)
     return rounded_image
 
+# Call doctor button clicked
 def call_doctor_button_clicked():
     print("Call a Doctor button clicked")
 
+# Open register page
 def open_register_page():
     login_root.destroy()
     import register_page
     register_page.create_register_window()
 
+# Entry click event
 def on_entry_click(event, entry, default_text):
     if entry.get() == default_text:
         entry.delete(0, "end")
@@ -30,6 +34,7 @@ def on_entry_click(event, entry, default_text):
         if entry == password_entry:
             entry.config(show='*')
 
+# Focus out event
 def on_focusout(event, entry, default_text):
     if entry.get() == '':
         entry.insert(0, default_text)
@@ -37,6 +42,7 @@ def on_focusout(event, entry, default_text):
         if entry == password_entry:
             entry.config(show='')
 
+# Authenticate user function
 def authenticate_user(username, password):
     try:
         connection = mysql.connector.connect(
@@ -72,10 +78,12 @@ def authenticate_user(username, password):
         print(f"The error '{e}' occurred")
         return None
 
+# Login function
 def login():
     username = username_entry.get()
     password = password_entry.get()
     result = authenticate_user(username, password)
+    print(f"Login result: {result}")  # Debug print statement
     if result:
         role, clinic_or_doctor_id, fullname = result
         login_root.destroy()
@@ -91,6 +99,7 @@ def login():
     else:
         messagebox.showerror("Login Failed", "Invalid username or password")
 
+# Create login window function
 def create_login_window():
     global login_root, password_entry, username_entry
     login_root = tk.Tk()

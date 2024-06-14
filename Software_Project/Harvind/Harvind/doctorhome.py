@@ -2,6 +2,31 @@ import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import os
+import mysql.connector
+import sys
+
+# Database connection function
+def get_doctor_fullname(doctor_id):
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="calladoctor1234",
+            database="calladoctor"
+        )
+        cursor = db.cursor()
+        cursor.execute("SELECT fullname FROM doctors WHERE doctor_id = %s", (doctor_id,))
+        result = cursor.fetchone()
+        db.close()
+        print(f"Doctor ID: {doctor_id}, Fullname: {result}")  # Debug print statement
+        if result:
+            return result[0]
+        else:
+            raise ValueError(f"No doctor found with ID {doctor_id}")
+    except mysql.connector.Error as err:
+        print(f"Database Error: {err}")
+        messagebox.showerror("Database Error", f"Error: {err}")
+        return "Doctor"
 
 # Function for button actions
 def home_action():
@@ -70,8 +95,20 @@ create_button(menu_frame, logout_img, "LOGOUT", logout_action)
 main_frame = tk.Frame(root, bg="white")
 main_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
+# Get doctor_id from command-line arguments
+doctor_id = sys.argv[1] if len(sys.argv) > 1 else None
+if doctor_id:
+    try:
+        doctor_id = int(doctor_id)
+        doctor_fullname = get_doctor_fullname(doctor_id)
+    except ValueError as ve:
+        print(f"ValueError: {ve}")
+        doctor_fullname = "Unknown Doctor"
+else:
+    doctor_fullname = "Unknown Doctor"
+
 # Welcome text
-welcome_label = tk.Label(main_frame, text="Welcome DR.LINKESH", font=("Arial", 24), bg="white")
+welcome_label = tk.Label(main_frame, text=f"Welcome DR. {doctor_fullname}", font=("Arial", 24), bg="white")
 welcome_label.pack(pady=20)
 
 # Appointment history section
