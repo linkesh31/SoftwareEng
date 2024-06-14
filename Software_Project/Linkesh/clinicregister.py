@@ -1,70 +1,189 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox
+import mysql.connector
+from tkinter import messagebox, filedialog, ttk
 
-class CallADoctorApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Call a Doctor")
-        self.root.geometry("500x400")
-        self.root.configure(bg='lightblue')
+def submit_clinic_data(clinic_name, clinic_address, clinic_license_path, admin_fullname, admin_username, admin_password, admin_email, admin_phone_number, admin_date_of_birth, admin_address):
+    try:
+        connection = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            passwd='calladoctor1234',
+            database='calladoctor'
+        )
+        cursor = connection.cursor()
 
-        title_label = tk.Label(root, text="Call a Doctor", font=("Helvetica", 24, "bold"), bg='lightblue')
-        title_label.pack(pady=10)
+        # Insert clinic data
+        with open(clinic_license_path, 'rb') as f:
+            clinic_license_data = f.read()
+        insert_clinic_query = """INSERT INTO clinics (clinic_name, address, clinic_license) VALUES (%s, %s, %s)"""
+        clinic_data = (clinic_name, clinic_address, clinic_license_data)
+        cursor.execute(insert_clinic_query, clinic_data)
+        clinic_id = cursor.lastrowid
 
-        subtitle_label = tk.Label(root, text="Welcome to Registration", font=("Helvetica", 18), bg='lightblue')
-        subtitle_label.pack(pady=10)
+        # Insert user data
+        insert_user_query = """INSERT INTO users (username, password, email, phone_number, date_of_birth, address, role, fullname) VALUES (%s, %s, %s, %s, %s, %s, 'clinic_admin', %s)"""
+        user_data = (admin_username, admin_password, admin_email, admin_phone_number, admin_date_of_birth, admin_address, admin_fullname)
+        cursor.execute(insert_user_query, user_data)
+        user_id = cursor.lastrowid
 
-        self.frame = tk.Frame(root, bg='lightblue')
-        self.frame.pack(pady=10, padx=20)
+        # Link admin to clinic
+        insert_admin_clinic_query = """INSERT INTO admin_clinics (admin_id, clinic_id, user_id) VALUES (%s, %s, %s)"""
+        admin_clinic_data = (user_id, clinic_id, user_id)
+        cursor.execute(insert_admin_clinic_query, admin_clinic_data)
 
-        self.create_form()
+        connection.commit()
+        messagebox.showinfo("Success", "Clinic registered successfully!")
+        clinic_register_root.destroy()
+        import main_page
+        main_page.create_login_window()
+    except mysql.connector.Error as error:
+        messagebox.showerror("Error", f"Failed to register clinic: {error}")
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
 
-        back_button = tk.Button(root, text="Back", command=self.back, bg='lightblue', font=("Helvetica", 12))
-        back_button.pack(side=tk.LEFT, padx=20, pady=10)
+def browse_file():
+    filename = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")])
+    return filename
 
-        register_button = tk.Button(root, text="Register", command=self.register, bg='lightblue', font=("Helvetica", 12))
-        register_button.pack(side=tk.RIGHT, padx=20, pady=10)
+def create_clinic_register_window():
+    global clinic_register_root
+    clinic_register_root = tk.Tk()
+    clinic_register_root.title("Clinic Registration")
+    width = 600
+    height = 700
+    clinic_register_root.geometry(f"{width}x{height}")
 
-    def create_form(self):
-        tk.Label(self.frame, text="Clinic Name:", font=("Helvetica", 14), bg='lightblue').grid(row=0, column=0, sticky="e", pady=5)
-        self.clinic_name_entry = tk.Entry(self.frame, font=("Helvetica", 14))
-        self.clinic_name_entry.grid(row=0, column=1, pady=5)
+    top_frame = tk.Frame(clinic_register_root, bg="#ADD8E6", width=width, height=height)
+    top_frame.pack(fill="both", expand=True)
 
-        tk.Label(self.frame, text="Address:", font=("Helvetica", 14), bg='lightblue').grid(row=1, column=0, sticky="e", pady=5)
-        self.address_entry = tk.Entry(self.frame, font=("Helvetica", 14))
-        self.address_entry.grid(row=1, column=1, pady=5)
+    title_label = tk.Label(top_frame, text="Call a Doctor", font=("Arial", 24), bg="#ADD8E6", fg="#13126C")
+    title_label.place(relx=0.5, rely=0.05, anchor="center")
 
-        tk.Label(self.frame, text="Clinic License:", font=("Helvetica", 14), bg='lightblue').grid(row=2, column=0, sticky="e", pady=5)
-        self.file_label = tk.Label(self.frame, text="No file chosen", font=("Helvetica", 12), bg='lightblue')
-        self.file_label.grid(row=2, column=1, pady=5, sticky="w")
-        self.choose_file_button = tk.Button(self.frame, text="Choose File", command=self.choose_file, bg='lightblue', font=("Helvetica", 12))
-        self.choose_file_button.grid(row=2, column=1, pady=5, sticky="e")
+    sub_title_label = tk.Label(top_frame, text="Welcome to Registration", font=("Arial", 18), bg="#ADD8E6", fg="#13126C")
+    sub_title_label.place(relx=0.5, rely=0.15, anchor="center")
 
-    def choose_file(self):
-        self.filepath = filedialog.askopenfilename()
-        self.file_label.config(text=self.filepath.split('/')[-1])
+    clinic_info_label = tk.Label(top_frame, text="Clinic info", font=("Arial", 16), bg="#ADD8E6", fg="black")
+    clinic_info_label.place(relx=0.1, rely=0.2, anchor="w")
 
-    def back(self):
-        self.root.destroy()
+    clinic_name_label = tk.Label(top_frame, text="Clinic Name:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    clinic_name_label.place(relx=0.1, rely=0.25, anchor="w")
+    clinic_name_entry = tk.Entry(top_frame, font=("Arial", 14))
+    clinic_name_entry.place(relx=0.4, rely=0.25, anchor="w")
+
+    clinic_address_label = tk.Label(top_frame, text="Clinic Address:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    clinic_address_label.place(relx=0.1, rely=0.3, anchor="w")
+    clinic_address_entry = tk.Entry(top_frame, font=("Arial", 14))
+    clinic_address_entry.place(relx=0.4, rely=0.3, anchor="w")
+
+    clinic_license_label = tk.Label(top_frame, text="Clinic License:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    clinic_license_label.place(relx=0.1, rely=0.35, anchor="w")
+    clinic_license_button = tk.Button(top_frame, text="Choose File", font=("Arial", 12), command=lambda: browse_file())
+    clinic_license_button.place(relx=0.4, rely=0.35, anchor="w")
+    clinic_license_path_label = tk.Label(top_frame, text="", font=("Arial", 12), bg="#ADD8E6", fg="black")
+    clinic_license_path_label.place(relx=0.6, rely=0.35, anchor="w")
+
+    def choose_file():
+        path = browse_file()
+        clinic_license_path_label.config(text=path)
+
+    clinic_license_button.config(command=choose_file)
+
+    clinic_admin_info_label = tk.Label(top_frame, text="Clinic Admin info", font=("Arial", 16), bg="#ADD8E6", fg="black")
+    clinic_admin_info_label.place(relx=0.1, rely=0.4, anchor="w")
+
+    fullname_label = tk.Label(top_frame, text="Fullname:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    fullname_label.place(relx=0.1, rely=0.45, anchor="w")
+    fullname_entry = tk.Entry(top_frame, font=("Arial", 14))
+    fullname_entry.place(relx=0.4, rely=0.45, anchor="w")
+
+    email_label = tk.Label(top_frame, text="Email:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    email_label.place(relx=0.1, rely=0.5, anchor="w")
+    email_entry = tk.Entry(top_frame, font=("Arial", 14))
+    email_entry.place(relx=0.4, rely=0.5, anchor="w")
+
+    username_label = tk.Label(top_frame, text="Username:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    username_label.place(relx=0.1, rely=0.55, anchor="w")
+    username_entry = tk.Entry(top_frame, font=("Arial", 14))
+    username_entry.place(relx=0.4, rely=0.55, anchor="w")
+
+    password_label = tk.Label(top_frame, text="Password:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    password_label.place(relx=0.1, rely=0.6, anchor="w")
+    password_entry = tk.Entry(top_frame, font=("Arial", 14), show="*")
+    password_entry.place(relx=0.4, rely=0.6, anchor="w")
+
+    confirm_password_label = tk.Label(top_frame, text="Confirm Password:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    confirm_password_label.place(relx=0.1, rely=0.65, anchor="w")
+    confirm_password_entry = tk.Entry(top_frame, font=("Arial", 14), show="*")
+    confirm_password_entry.place(relx=0.4, rely=0.65, anchor="w")
+
+    phone_number_label = tk.Label(top_frame, text="Phone Number:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    phone_number_label.place(relx=0.1, rely=0.7, anchor="w")
+    phone_number_entry = tk.Entry(top_frame, font=("Arial", 14))
+    phone_number_entry.place(relx=0.4, rely=0.7, anchor="w")
+
+    admin_address_label = tk.Label(top_frame, text="Admin Address:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    admin_address_label.place(relx=0.1, rely=0.75, anchor="w")
+    admin_address_entry = tk.Entry(top_frame, font=("Arial", 14))
+    admin_address_entry.place(relx=0.4, rely=0.75, anchor="w")
+
+    date_of_birth_label = tk.Label(top_frame, text="Date of Birth:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    date_of_birth_label.place(relx=0.1, rely=0.8, anchor="w")
+
+    years = [str(year) for year in range(1900, 2025)]
+    months = [str(month).zfill(2) for month in range(1, 13)]
+    days = [str(day).zfill(2) for day in range(1, 32)]
+
+    year_var = tk.StringVar(top_frame)
+    year_var.set(years[0])
+    month_var = tk.StringVar(top_frame)
+    month_var.set(months[0])
+    day_var = tk.StringVar(top_frame)
+    day_var.set(days[0])
+
+    year_menu = ttk.Combobox(top_frame, textvariable=year_var, values=years)
+    year_menu.place(relx=0.4, rely=0.8, anchor="w")
+    year_menu.config(state="readonly")
+
+    month_menu = ttk.Combobox(top_frame, textvariable=month_var, values=months)
+    month_menu.place(relx=0.55, rely=0.8, anchor="w")
+    month_menu.config(state="readonly")
+
+    day_menu = ttk.Combobox(top_frame, textvariable=day_var, values=days)
+    day_menu.place(relx=0.7, rely=0.8, anchor="w")
+    day_menu.config(state="readonly")
+
+    def on_register_click():
+        clinic_name = clinic_name_entry.get()
+        clinic_address = clinic_address_entry.get()
+        clinic_license_path = clinic_license_path_label.cget("text")
+        admin_fullname = fullname_entry.get()
+        admin_username = username_entry.get()
+        admin_password = password_entry.get()
+        admin_email = email_entry.get()
+        admin_phone_number = phone_number_entry.get()
+        admin_address = admin_address_entry.get()
+        admin_date_of_birth = f"{year_var.get()}-{month_var.get()}-{day_var.get()}"
+
+        if admin_password != confirm_password_entry.get():
+            messagebox.showerror("Error", "Passwords do not match!")
+            return
+
+        submit_clinic_data(clinic_name, clinic_address, clinic_license_path, admin_fullname, admin_username, admin_password, admin_email, admin_phone_number, admin_date_of_birth, admin_address)
+
+    register_button = tk.Button(top_frame, text="Register", font=("Arial", 14), command=on_register_click)
+    register_button.place(relx=0.5, rely=0.9, anchor="center")
+
+    def on_back_click():
+        clinic_register_root.destroy()
         import register_page
         register_page.create_register_window()
 
-    def register(self):
-        clinic_name = self.clinic_name_entry.get()
-        address = self.address_entry.get()
-        license_file = getattr(self, 'filepath', None)
+    back_button = tk.Button(top_frame, text="Back", font=("Arial", 14), command=on_back_click)
+    back_button.place(relx=0.1, rely=0.9, anchor="center")
 
-        if not clinic_name or not address or not license_file:
-            messagebox.showerror("Error", "Please fill all the fields and choose a file.")
-            return
-
-        # Here, you can add code to handle the registration logic, such as storing the data in the database.
-        messagebox.showinfo("Success", "Registration successful!")
-
-def create_clinic_register_window():
-    root = tk.Tk()
-    app = CallADoctorApp(root)
-    root.mainloop()
+    clinic_register_root.mainloop()
 
 if __name__ == "__main__":
     create_clinic_register_window()
