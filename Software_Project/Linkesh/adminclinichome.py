@@ -64,10 +64,12 @@ def notification_action():
     messagebox.showinfo("Notification", "You have new notifications")
 
 def add_doctor_action():
+    root.destroy()
     subprocess.run(['python', 'adddoctor.py', clinic_id, admin_fullname])
 
 def delete_doctor_action():
-    subprocess.run(['python', 'deletedoctor.py', clinic_id])
+    root.destroy()
+    subprocess.run(['python', 'deletedoctor.py', clinic_id, admin_fullname])
 
 # Function to show options on hover
 def show_doctor_management_menu(event):

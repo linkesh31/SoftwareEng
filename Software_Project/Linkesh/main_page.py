@@ -5,23 +5,23 @@ import mysql.connector
 from mysql.connector import Error
 import subprocess
 
+# Create rounded image function
 def create_rounded_image(image_path, size, corner_radius):
     image = Image.open(image_path).resize(size, Image.Resampling.LANCZOS)
     mask = Image.new("L", image.size, 0)
     draw = ImageDraw.Draw(mask)
-    draw.rounded_rectangle([0, 0, size[0], size[1]], corner_radius, fill=255)
+    draw.rounded_rectangle((0, 0, size[0], size[1]), corner_radius, fill=255)
     rounded_image = Image.new("RGBA", image.size)
     rounded_image.paste(image, (0, 0), mask)
     return rounded_image
 
-def call_doctor_button_clicked():
-    print("Call a Doctor button clicked")
-
+# Open register page
 def open_register_page():
     login_root.destroy()
     import register_page
     register_page.create_register_window()
 
+# Entry click event
 def on_entry_click(event, entry, default_text):
     if entry.get() == default_text:
         entry.delete(0, "end")
@@ -30,6 +30,7 @@ def on_entry_click(event, entry, default_text):
         if entry == password_entry:
             entry.config(show='*')
 
+# Focus out event
 def on_focusout(event, entry, default_text):
     if entry.get() == '':
         entry.insert(0, default_text)
@@ -37,6 +38,7 @@ def on_focusout(event, entry, default_text):
         if entry == password_entry:
             entry.config(show='')
 
+# Authenticate user function
 def authenticate_user(username, password):
     try:
         connection = mysql.connector.connect(
@@ -65,6 +67,12 @@ def authenticate_user(username, password):
                     return None
                 connection.close()
                 return role, clinic_id, fullname
+            elif role == 'patient':
+                cursor.execute("SELECT patient_id FROM patients WHERE user_id=%s", (user_id,))
+                patient_result = cursor.fetchone()
+                patient_id = patient_result[0] if patient_result else None
+                connection.close()
+                return role, patient_id, fullname
             else:
                 connection.close()
                 return role, None, fullname
@@ -75,28 +83,30 @@ def authenticate_user(username, password):
         print(f"The error '{e}' occurred")
         return None
 
+# Login function
 def login():
     username = username_entry.get()
     password = password_entry.get()
     result = authenticate_user(username, password)
     print(f"Login result: {result}")  # Debug print statement
     if result:
-        role, clinic_or_doctor_id, fullname = result
-        if role == 'doctor' and clinic_or_doctor_id is None:
+        role, id, fullname = result
+        if role == 'doctor' and id is None:
             messagebox.showerror("Login Failed", "Doctor ID not found")
             return
         login_root.destroy()
         if role == 'admin':
             subprocess.run(['python', 'adminhome.py', fullname])
         elif role == 'clinic_admin':
-            subprocess.run(['python', 'adminclinichome.py', str(clinic_or_doctor_id), fullname])
+            subprocess.run(['python', 'adminclinichome.py', str(id), fullname])
         elif role == 'doctor':
-            subprocess.run(['python', 'doctorhome.py', str(clinic_or_doctor_id)])
+            subprocess.run(['python', 'doctorhome.py', str(id)])
         elif role == 'patient':
-            subprocess.run(['python', 'patienthome.py', fullname])
+            subprocess.run(['python', 'patienthome.py', str(id), fullname])
     else:
         messagebox.showerror("Login Failed", "Invalid username or password")
 
+# Create login window function
 def create_login_window():
     global login_root, password_entry, username_entry
     login_root = tk.Tk()

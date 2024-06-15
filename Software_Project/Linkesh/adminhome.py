@@ -4,7 +4,6 @@ from PIL import Image, ImageTk
 import mysql.connector
 import os
 import sys
-import tempfile
 
 # Get admin's full name from command line argument
 if len(sys.argv) > 1:
@@ -42,7 +41,7 @@ def fetch_registered_clinics():
         )
         cursor = connection.cursor()
         query = """
-        SELECT clinics.clinic_name, clinics.address, clinics.clinic_license, users.fullname 
+        SELECT clinics.clinic_name, clinics.address, users.fullname 
         FROM clinics 
         JOIN admin_clinics ON clinics.clinic_id = admin_clinics.clinic_id 
         JOIN users ON admin_clinics.user_id = users.user_id 
@@ -56,31 +55,6 @@ def fetch_registered_clinics():
     except mysql.connector.Error as error:
         messagebox.showerror("Database Error", f"Failed to fetch data: {error}")
         return []
-
-def show_license_image(license_data):
-    # Save the binary data to a temporary file and display it
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-    temp_file.write(license_data)
-    temp_file.close()
-
-    # Function to show the license image
-    license_window = tk.Toplevel(root)
-    license_window.title("Clinic License")
-
-    img = Image.open(temp_file.name)
-    img = ImageTk.PhotoImage(img)
-    img_label = tk.Label(license_window, image=img)
-    img_label.image = img  # Keep a reference to avoid garbage collection
-    img_label.pack()
-
-def on_tree_item_double_click(event):
-    # Function to handle double click event on the tree item
-    item = tree.selection()[0]
-    license_data = tree.item(item, 'values')[2]
-    if license_data != 'None':
-        show_license_image(license_data)
-    else:
-        messagebox.showerror("Error", "License image not found.")
 
 # Create main window
 root = tk.Tk()
@@ -99,20 +73,22 @@ notification_img = load_image("bell.jpg", (30, 30))
 welcome_label = tk.Label(root, text=f"Welcome {admin_fullname}", font=("Arial", 24), bg="white")
 welcome_label.pack(pady=20)
 
+# Registered clinics title
+registered_clinics_label = tk.Label(root, text="Registered Clinics", font=("Arial", 18), bg="white")
+registered_clinics_label.pack(pady=10)
+
 # Registered clinics table
-columns = ("Clinic Name", "Clinic Address", "Clinic License", "Admin Fullname")
+columns = ("Clinic Name", "Clinic Address", "Admin Fullname")
 tree = ttk.Treeview(root, columns=columns, show="headings")
 tree.heading("Clinic Name", text="Clinic Name")
 tree.heading("Clinic Address", text="Clinic Address")
-tree.heading("Clinic License", text="Clinic License")
 tree.heading("Admin Fullname", text="Admin Fullname")
 
 clinics = fetch_registered_clinics()
 for clinic in clinics:
-    tree.insert("", "end", values=(clinic[0], clinic[1], clinic[2] if clinic[2] else 'None', clinic[3]))
+    tree.insert("", "end", values=(clinic[0], clinic[1], clinic[2]))
 
 tree.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
-tree.bind("<Double-1>", on_tree_item_double_click)
 
 # Logout button with image
 logout_btn = tk.Button(root, image=logout_img, command=logout_action, bg="white", bd=0)
