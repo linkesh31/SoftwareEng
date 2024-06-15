@@ -3,6 +3,8 @@ from tkinter import messagebox
 from tkinter import ttk
 from tkcalendar import DateEntry
 import re
+import mysql.connector
+from mysql.connector import Error
 
 class PatientRegisterApp:
     def __init__(self, root):
@@ -74,8 +76,8 @@ class PatientRegisterApp:
 
     def back(self):
         self.root.destroy()
-        import register_page
-        register_page.create_register_window()
+        import main_page
+        main_page.create_login_window()
 
     def register(self):
         data = {label: entry.get() for label, entry in self.entries.items()}
@@ -85,8 +87,39 @@ class PatientRegisterApp:
             messagebox.showerror("Error", f"Please fill all the fields: {', '.join(missing_data)}")
             return
 
-        # Here, you can add code to handle the registration logic, such as storing the data in the database.
-        messagebox.showinfo("Success", "Registration successful!")
+        if data["Password:"] != data["Confirm Password:"]:
+            messagebox.showerror("Error", "Passwords do not match!")
+            return
+
+        # Save user data to the database
+        try:
+            connection = mysql.connector.connect(
+                host='localhost',
+                user='root',
+                password='calladoctor1234',
+                database='calladoctor'
+            )
+            cursor = connection.cursor()
+            cursor.execute('''
+                INSERT INTO users (username, password, email, phone_number, date_of_birth, address, fullname, role)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (data["Username:"], data["Password:"], data["Email:"], data["Tel:"], data["Date of Birth:"], data["Address:"], data["Fullname:"], 'patient'))
+            user_id = cursor.lastrowid
+            cursor.execute('''
+                INSERT INTO patients (user_id, fullname, identification_number, gender, medical_report, reason)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            ''', (user_id, data["Fullname:"], data["IC:"], data["Gender:"], "", ""))
+            connection.commit()
+            messagebox.showinfo("Success", "Registration successful!")
+            self.root.destroy()
+            import main_page
+            main_page.create_login_window()
+        except Error as e:
+            messagebox.showerror("Error", f"Error occurred: {e}")
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
 
 def create_patient_register_window():
     root = tk.Tk()
