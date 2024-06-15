@@ -15,10 +15,6 @@ def create_rounded_image(image_path, size, corner_radius):
     rounded_image.paste(image, (0, 0), mask)
     return rounded_image
 
-# Call doctor button clicked
-def call_doctor_button_clicked():
-    print("Call a Doctor button clicked")
-
 # Open register page
 def open_register_page():
     login_root.destroy()
@@ -71,6 +67,12 @@ def authenticate_user(username, password):
                     return None
                 connection.close()
                 return role, clinic_id, fullname
+            elif role == 'patient':
+                cursor.execute("SELECT patient_id FROM patients WHERE user_id=%s", (user_id,))
+                patient_result = cursor.fetchone()
+                patient_id = patient_result[0] if patient_result else None
+                connection.close()
+                return role, patient_id, fullname
             else:
                 connection.close()
                 return role, None, fullname
@@ -88,19 +90,19 @@ def login():
     result = authenticate_user(username, password)
     print(f"Login result: {result}")  # Debug print statement
     if result:
-        role, clinic_or_doctor_id, fullname = result
-        if role == 'doctor' and clinic_or_doctor_id is None:
+        role, id, fullname = result
+        if role == 'doctor' and id is None:
             messagebox.showerror("Login Failed", "Doctor ID not found")
             return
         login_root.destroy()
         if role == 'admin':
             subprocess.run(['python', 'adminhome.py', fullname])
         elif role == 'clinic_admin':
-            subprocess.run(['python', 'adminclinichome.py', str(clinic_or_doctor_id), fullname])
+            subprocess.run(['python', 'adminclinichome.py', str(id), fullname])
         elif role == 'doctor':
-            subprocess.run(['python', 'doctorhome.py', str(clinic_or_doctor_id)])
+            subprocess.run(['python', 'doctorhome.py', str(id)])
         elif role == 'patient':
-            subprocess.run(['python', 'patienthome.py', fullname])
+            subprocess.run(['python', 'patienthome.py', str(id), fullname])
     else:
         messagebox.showerror("Login Failed", "Invalid username or password")
 

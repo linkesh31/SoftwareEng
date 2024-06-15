@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 import mysql.connector
 from mysql.connector import Error
 import os
+import subprocess
 
 def fetch_doctor_details(doctor_id):
     try:
@@ -39,46 +40,9 @@ def load_image(image_path, size):
         messagebox.showerror("Error", f"Error loading image {image_path}: {e}")
         return None
 
-def create_buttons(menu_frame, image_path, doctor_id):
-    button_size = (40, 40)
-    buttons_info = [
-        ("home.png", "HOME", lambda: back_to_home(root, doctor_id)),
-        ("listofpatients.png", "LIST OF PATIENTS", list_of_patients_action),
-        ("profile.png", "PROFILE", lambda: profile_action(doctor_id)),
-        ("availability.png", "AVAILABILITY STATUS", availability_status_action),
-        ("logout.png", "LOGOUT", logout_action)
-    ]
-    for image_name, text, command in buttons_info:
-        image = load_image(image_path + image_name, button_size)
-        if image:
-            create_button(menu_frame, image, text, command)
-
-def create_button(frame, image, text, command):
-    btn = tk.Button(frame, image=image, command=command, bg="white", compound=tk.TOP)
-    btn.pack(pady=5)
-    btn.image = image  # Keep a reference to avoid garbage collection
-    label = tk.Label(frame, text=text, bg="white", font=("Arial", 10))
-    label.pack()
-
-def list_of_patients_action():
-    messagebox.showinfo("List of Patients", "List of Patients Button Clicked")
-
-def profile_action(doctor_id):
-    messagebox.showinfo("Profile", "Already on the profile page")
-
-def availability_status_action():
-    messagebox.showinfo("Availability Status", "Availability Status Button Clicked")
-
-def logout_action():
-    response = messagebox.askyesno("Logout", "Are you sure you want to logout?")
-    if response:
-        root.destroy()
-        os.system('python "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/main_page.py"')
-
-def back_to_home(root, doctor_id):
+def back_to_home(doctor_id):
     root.destroy()
-    import doctorhome
-    doctorhome.create_doctor_home_window(doctor_id)
+    subprocess.run(['python', 'doctorhome.py', str(doctor_id)])
 
 def create_doctor_profile_window(doctor_id):
     global root
@@ -86,15 +50,6 @@ def create_doctor_profile_window(doctor_id):
     root.title("Doctor Profile")
     root.geometry("1000x700")  # Increased window size
     root.configure(bg="white")
-
-    image_path = "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/Images/"
-
-    # Left side menu
-    menu_frame = tk.Frame(root, bg="white")
-    menu_frame.pack(side=tk.LEFT, fill=tk.Y, padx=10, pady=10)
-
-    # Load images and create buttons
-    create_buttons(menu_frame, image_path, doctor_id)
 
     # Main content area
     main_frame = tk.Frame(root, bg="white")
@@ -107,12 +62,6 @@ def create_doctor_profile_window(doctor_id):
         messagebox.showerror("Error", "Doctor details not found!")
         root.destroy()
         return
-
-    fullname = doctor_details[0]  # Full name is the first item in doctor_details
-
-    # Welcome text
-    welcome_label = tk.Label(main_frame, text=f"Welcome Dr. {fullname}", font=("Arial", 24), bg="white")
-    welcome_label.pack(pady=20)
 
     # Profile section
     profile_frame = tk.Frame(main_frame, bg="#ff6b6b", padx=10, pady=10)
@@ -135,6 +84,9 @@ def create_doctor_profile_window(doctor_id):
 
     edit_button = tk.Button(profile_frame, text="Edit Profile", font=("Arial", 12), bg="white", command=lambda: edit_profile_action(root, doctor_id))
     edit_button.grid(row=5, columnspan=4, pady=10)
+
+    back_button = tk.Button(profile_frame, text="Back", font=("Arial", 12), bg="white", command=lambda: back_to_home(doctor_id))
+    back_button.grid(row=6, columnspan=4, pady=10)
 
     root.mainloop()
 

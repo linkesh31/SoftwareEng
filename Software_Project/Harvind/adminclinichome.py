@@ -48,11 +48,13 @@ clinic_name, clinic_address, total_doctors = get_clinic_details(clinic_id)
 def home_action():
     messagebox.showinfo("Home", "Home Button Clicked")
 
-def patients_management_action():
-    messagebox.showinfo("Patients Management", "Patients Management Button Clicked")
+def appointment_request_action():
+    root.destroy()
+    subprocess.run(['python', 'adminappointmentrequest.py', clinic_id, admin_fullname])
 
 def appointment_management_action():
-    messagebox.showinfo("Appointment Management", "Appointment Management Button Clicked")
+    root.destroy()
+    subprocess.run(['python', 'adminappointmentschedule.py'])
 
 def logout_action():
     response = messagebox.askyesno("Logout", "Are you sure you want to logout?")
@@ -72,12 +74,10 @@ def delete_doctor_action():
 # Function to show options on hover
 def show_doctor_management_menu(event):
     doctor_management_menu.post(event.x_root, event.y_root)
-    root.after_cancel(hide_menu_job)
 
 # Function to hide options when not hovering
 def hide_doctor_management_menu(event):
-    global hide_menu_job
-    hide_menu_job = root.after(500, doctor_management_menu.unpost)
+    doctor_management_menu.unpost()
 
 # Create main window
 root = tk.Tk()
@@ -97,7 +97,7 @@ def load_image(image_name, size):
 # Load images with specified size
 button_size = (40, 40)
 home_img = load_image("home.png", button_size)
-patients_management_img = load_image("patients_management.png", button_size)
+appointment_request_img = load_image("patients_management.png", button_size)
 doctors_management_img = load_image("doctors_management.png", button_size)
 appointment_management_img = load_image("appointments_management.png", button_size)
 logout_img = load_image("logout.png", button_size)
@@ -118,7 +118,7 @@ def create_button(frame, image, text, command):
     return button_frame
 
 create_button(menu_frame, home_img, "HOME", home_action)
-create_button(menu_frame, patients_management_img, "PATIENTS MANAGEMENT", patients_management_action)
+create_button(menu_frame, appointment_request_img, "APPOINTMENT REQUESTS", appointment_request_action)
 
 # Doctor Management button
 doctor_management_button_frame = create_button(menu_frame, doctors_management_img, "DOCTORS MANAGEMENT", None)
@@ -153,30 +153,28 @@ logout_label.pack(pady=5)
 
 # Main content area
 main_frame = tk.Frame(root, bg="white")
-main_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
+main_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-# Welcome text
-welcome_label = tk.Label(main_frame, text=f"Welcome {admin_fullname}", font=("Arial", 24), bg="white")
-welcome_label.pack(pady=20)
+# Welcome label
+welcome_label = tk.Label(main_frame, text=f"Welcome, {admin_fullname}!", font=("Arial", 16, "bold"), bg="white")
+welcome_label.pack(pady=10)
 
 # Clinic details
-clinic_details_frame = tk.Frame(main_frame, bg="white", padx=10, pady=10)
-clinic_details_frame.pack(fill=tk.BOTH, expand=True)
+clinic_name_label = tk.Label(main_frame, text=f"Clinic Name: {clinic_name}", font=("Arial", 14), bg="white")
+clinic_name_label.pack(pady=5)
 
-clinic_name_label = tk.Label(clinic_details_frame, text=f"Clinic Name: {clinic_name}", font=("Arial", 18), bg="white")
-clinic_name_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+clinic_address_label = tk.Label(main_frame, text=f"Clinic Address: {clinic_address}", font=("Arial", 14), bg="white")
+clinic_address_label.pack(pady=5)
 
-address_label = tk.Label(clinic_details_frame, text=f"Address: {clinic_address}", font=("Arial", 18), bg="white")
-address_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
+total_doctors_label = tk.Label(main_frame, text=f"Total Doctors: {total_doctors}", font=("Arial", 14), bg="white")
+total_doctors_label.pack(pady=5)
 
-total_doctors_label = tk.Label(clinic_details_frame, text=f"Total registered doctors: {total_doctors}", font=("Arial", 18), bg="white")
-total_doctors_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
+# Notification bell icon
+notification_icon_label = tk.Label(root, image=notification_img, bg="white")
+notification_icon_label.place(x=750, y=10)  # Adjust position as needed
+notification_icon_label.bind("<Button-1>", lambda event: notification_action())
 
-# Notification button with image
-notification_btn = tk.Button(root, image=notification_img, command=notification_action, bg="white", bd=0)
-notification_btn.place(x=760, y=20)
-
-# Initialize hide menu job
 hide_menu_job = None
 
+# Start the Tkinter main loop
 root.mainloop()
