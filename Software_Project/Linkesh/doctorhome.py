@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 import os
 import mysql.connector
 import sys
+import subprocess
 
 # Database connection function
 def get_doctor_fullname(doctor_id):
@@ -36,7 +37,8 @@ def list_of_patients_action():
     messagebox.showinfo("List of Patients", "List of Patients Button Clicked")
 
 def profile_action():
-    messagebox.showinfo("Profile", "Profile Button Clicked")
+    root.destroy()
+    subprocess.run(['python', 'doctorprofile.py', str(doctor_id)])
 
 def availability_status_action():
     messagebox.showinfo("Availability Status", "Availability Status Button Clicked")

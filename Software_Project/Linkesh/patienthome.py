@@ -118,7 +118,8 @@ def appointment_book_action():
     os.system(f'python "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/request_appointment_patient.py" {patient_id} {patient_fullname}')
 
 def profile_action():
-    messagebox.showinfo("Profile", "Profile Button Clicked")
+    root.destroy()
+    os.system(f'python "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/patientprofile.py" {patient_id} {patient_fullname}')
 
 def appointment_summary_action():
     root.destroy()
