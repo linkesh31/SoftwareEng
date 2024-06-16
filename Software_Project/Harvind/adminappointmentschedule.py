@@ -1,71 +1,10 @@
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import ttk, messagebox
 from tkcalendar import DateEntry
 import mysql.connector
-import subprocess
 import sys
 
-def get_available_doctors(clinic_id, selected_date, selected_time):
-    try:
-        connection = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            passwd='calladoctor1234',
-            database='calladoctor'
-        )
-        cursor = connection.cursor()
-
-        query = """
-        SELECT d.fullname
-        FROM doctors d
-        LEFT JOIN appointments a
-        ON d.doctor_id = a.doctor_id
-        AND a.appointment_date = %s
-        AND a.appointment_time = %s
-        WHERE d.clinic_id = %s
-        AND (a.appointment_id IS NULL OR a.appointment_request_status != 'accepted')
-        """
-
-        cursor.execute(query, (selected_date, selected_time, clinic_id))
-        available_doctors = cursor.fetchall()
-
-        connection.close()
-        return available_doctors
-    except mysql.connector.Error as err:
-        print(f"Database Error: {err}")
-        messagebox.showerror("Database Error", f"Error: {err}")
-        return []
-
-def search_doctors():
-    selected_date = date_entry.get_date().strftime('%Y-%m-%d')
-    selected_time = time_entry.get()
-
-    if not selected_time:
-        messagebox.showwarning("Input Error", "Please select a time.")
-        return
-
-    available_doctors = get_available_doctors(clinic_id, selected_date, selected_time)
-
-    for row in tree.get_children():
-        tree.delete(row)
-
-    if not available_doctors:
-        messagebox.showinfo("No Doctors Available", "No doctors are available for the selected date and time.")
-    else:
-        for doctor in available_doctors:
-            tree.insert("", "end", values=doctor)
-
-def back_action():
-    root.destroy()
-    subprocess.run(['python', 'adminclinichome.py', clinic_id, admin_fullname])
-
-# Main window
-root = tk.Tk()
-root.title("Appointment Schedule")
-root.geometry("600x600")
-root.configure(bg="white")
-
-# Retrieve clinic ID and admin full name from command line arguments
+# Ensure command line arguments are properly passed
 if len(sys.argv) > 2:
     clinic_id = sys.argv[1]
     admin_fullname = sys.argv[2]
@@ -73,30 +12,133 @@ else:
     clinic_id = "Unknown Clinic"
     admin_fullname = "ADMIN"
 
+print(f"Clinic ID: {clinic_id}, Admin Fullname: {admin_fullname}")
+
+# Function to fetch and display doctors based on selected date and time
+def fetch_doctors():
+    selected_date = date_entry.get_date()
+    selected_hour = hour_combobox.get()
+    selected_minute = minute_combobox.get()
+
+    selected_time = f"{selected_hour}:{selected_minute}:00"
+    # Convert the selected date to YYYY-MM-DD format
+    formatted_date = selected_date.strftime("%Y-%m-%d")
+
+    print(f"Selected Date: {formatted_date}, Selected Time: {selected_time}, Clinic ID: {clinic_id}")
+
+    try:
+        connection = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='calladoctor1234',
+            database='calladoctor'
+        )
+        cursor = connection.cursor()
+
+        # Clear the treeview before fetching data
+        for item in tree.get_children():
+            tree.delete(item)
+
+        # Query to get available doctors
+        query = """
+        SELECT d.fullname
+        FROM doctors d
+        LEFT JOIN appointments a ON d.doctor_id = a.doctor_id 
+            AND a.appointment_date = %s 
+            AND a.appointment_time = %s 
+            AND a.appointment_request_status = 'accepted'
+        WHERE d.clinic_id = %s 
+          AND d.is_available = 1 
+          AND (a.doctor_id IS NULL OR a.appointment_request_status != 'accepted')
+        """
+        print(f"Executing query with params: {formatted_date}, {selected_time}, {clinic_id}")
+        cursor.execute(query, (formatted_date, selected_time, clinic_id))
+        doctors = cursor.fetchall()
+
+        # Insert fetched doctors into the treeview
+        for index, doctor in enumerate(doctors, start=1):
+            tree.insert("", "end", values=(index, doctor[0]))
+
+        if not doctors:
+            # When no doctors are available, list all available doctors regardless of appointment time
+            query = """
+            SELECT fullname 
+            FROM doctors 
+            WHERE clinic_id = %s 
+              AND is_available = 1
+            """
+            cursor.execute(query, (clinic_id,))
+            doctors = cursor.fetchall()
+
+            for index, doctor in enumerate(doctors, start=1):
+                tree.insert("", "end", values=(index, doctor[0]))
+
+            if not doctors:
+                messagebox.showinfo("No Doctors Available", "No available doctors found for the selected date and time.")
+
+        connection.close()
+
+    except mysql.connector.Error as error:
+        print(f"Database Error: {error}")
+        messagebox.showerror("Database Error", str(error))
+
+# Function to clear the table
+def clear_table():
+    for item in tree.get_children():
+        tree.delete(item)
+
+# Create main application window
+root = tk.Tk()
+root.title("Appointment Schedule Page")
+root.geometry("400x400")
+
 # Date selection
-date_label = tk.Label(root, text="Select Date:", font=("Arial", 12), bg="white")
-date_label.pack(pady=10)
-date_entry = DateEntry(root, width=12, background='darkblue', foreground='white', borderwidth=2, year=2024, month=6, day=15, date_pattern='yyyy-mm-dd')
-date_entry.pack(pady=10)
+date_label = tk.Label(root, text="Select Date:")
+date_label.pack(pady=5)
+
+date_entry = DateEntry(root, width=12, background='darkblue', foreground='white', borderwidth=2)
+date_entry.pack(pady=5)
 
 # Time selection
-time_label = tk.Label(root, text="Select Time:", font=("Arial", 12), bg="white")
-time_label.pack(pady=10)
-time_options = ["08:00:00", "09:00:00", "10:00:00", "11:00:00", "12:00:00", "13:00:00", "14:00:00", "15:00:00", "16:00:00", "17:00:00"]
-time_entry = ttk.Combobox(root, values=time_options, font=("Arial", 12))
-time_entry.pack(pady=10)
+time_label = tk.Label(root, text="Select Time:")
+time_label.pack(pady=5)
+
+time_frame = tk.Frame(root)
+time_frame.pack(pady=5)
+
+hour_combobox = ttk.Combobox(time_frame, values=[f"{i:02d}" for i in range(24)], width=3)
+hour_combobox.set("09")
+hour_combobox.pack(side=tk.LEFT, padx=5)
+hour_combobox.bind("<<ComboboxSelected>>", lambda event: clear_table())
+
+minute_combobox = ttk.Combobox(time_frame, values=[f"{i:02d}" for i in range(0, 60, 15)], width=3)
+minute_combobox.set("00")
+minute_combobox.pack(side=tk.LEFT, padx=5)
+minute_combobox.bind("<<ComboboxSelected>>", lambda event: clear_table())
 
 # Search button
-search_button = tk.Button(root, text="Search", command=search_doctors, font=("Arial", 12), bg="lightblue")
-search_button.pack(pady=20)
+search_button = tk.Button(root, text="Search", command=fetch_doctors)
+search_button.pack(pady=10)
 
-# Treeview for displaying available doctors
-tree = ttk.Treeview(root, columns=("Doctor",), show='headings', height=8)
-tree.heading("Doctor", text="Doctor")
-tree.pack(pady=20)
+# Table title
+table_title = tk.Label(root, text="Available Doctors", font=("Arial", 14, "bold"), bg="lightgrey", fg="blue")
+table_title.pack(pady=5, fill=tk.X)
 
-# Back button
-back_button = tk.Button(root, text="Back", command=back_action, font=("Arial", 12), bg="lightgrey")
-back_button.pack(pady=20)
+# Treeview to display doctors
+tree = ttk.Treeview(root, columns=("no", "doctor_name"), show='headings', height=5)
+tree.heading("no", text="No.")
+tree.heading("doctor_name", text="Doctor")
+tree.column("no", anchor=tk.CENTER, width=50, minwidth=50)
+tree.column("doctor_name", anchor=tk.CENTER, width=200, minwidth=200)
 
+# Add color to the columns
+style = ttk.Style()
+style.configure("Treeview.Heading", font=("Arial", 12, "bold"))
+style.configure("Treeview", rowheight=25)
+style.configure("Treeview", background="white", fieldbackground="white")
+style.map("Treeview", background=[('selected', 'lightgreen')])
+
+tree.pack(pady=10, fill=tk.X, expand=False)
+
+# Run the application
 root.mainloop()

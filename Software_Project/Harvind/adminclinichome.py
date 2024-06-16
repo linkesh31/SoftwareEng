@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
-import os
 import subprocess
 import mysql.connector
 import sys
+from tkcalendar import DateEntry
+from tkinter import ttk
 
 # Get clinic admin's clinic ID and full name from command line arguments
 if len(sys.argv) > 2:
@@ -53,14 +54,13 @@ def appointment_request_action():
     subprocess.run(['python', 'adminappointmentrequest.py', clinic_id, admin_fullname])
 
 def appointment_management_action():
-    root.destroy()
-    subprocess.run(['python', 'adminappointmentschedule.py'])
+    subprocess.run(['python', 'adminappointmentschedule.py', clinic_id, admin_fullname])
 
 def logout_action():
     response = messagebox.askyesno("Logout", "Are you sure you want to logout?")
     if response:
         root.destroy()
-        os.system('python "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/main_page.py"')
+        subprocess.run(['python', 'main_page.py'])
 
 def notification_action():
     messagebox.showinfo("Notification", "You have new notifications")
@@ -73,15 +73,17 @@ def delete_doctor_action():
 
 # Function to show options on hover
 def show_doctor_management_menu(event):
-    doctor_management_menu.post(event.x_root, event.y_root)
+    doctor_management_menu.place(x=event.widget.winfo_rootx() + 50, y=event.widget.winfo_rooty() + 50)
+    doctor_management_menu.lift()
 
 # Function to hide options when not hovering
 def hide_doctor_management_menu(event):
-    doctor_management_menu.unpost()
+    if event.widget != doctor_management_menu:
+        doctor_management_menu.place_forget()
 
 # Create main window
 root = tk.Tk()
-root.title(f"Clinic Admin Home Page - {clinic_name}")
+root.title(f"Clinic Admin Home Page - {admin_fullname}")
 root.geometry("800x600")
 root.configure(bg="white")
 
@@ -137,11 +139,11 @@ doctor_management_label.bind("<Enter>", show_doctor_management_menu)
 doctor_management_label.bind("<Leave>", hide_doctor_management_menu)
 
 # Bind hover event to menu to prevent it from hiding
-doctor_management_menu.bind("<Enter>", lambda event: root.after_cancel(hide_menu_job))
+doctor_management_menu.bind("<Enter>", show_doctor_management_menu)
 doctor_management_menu.bind("<Leave>", hide_doctor_management_menu)
 
 # Create remaining buttons
-create_button(menu_frame, appointment_management_img, "APPOINTMENT MANAGEMENT", appointment_management_action)
+create_button(menu_frame, appointment_management_img, "APPOINTMENT SCHEDULE", appointment_management_action)
 
 # Logout button at the bottom
 logout_frame = tk.Frame(menu_frame, bg="#E6E6FA")
@@ -168,11 +170,6 @@ clinic_address_label.pack(pady=5)
 
 total_doctors_label = tk.Label(main_frame, text=f"Total Doctors: {total_doctors}", font=("Arial", 14), bg="white")
 total_doctors_label.pack(pady=5)
-
-# Notification bell icon
-notification_icon_label = tk.Label(root, image=notification_img, bg="white")
-notification_icon_label.place(x=750, y=10)  # Adjust position as needed
-notification_icon_label.bind("<Button-1>", lambda event: notification_action())
 
 hide_menu_job = None
 

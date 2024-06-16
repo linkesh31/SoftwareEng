@@ -69,27 +69,10 @@ def refresh_appointment_requests():
     for request in appointment_requests:
         appointment_table.insert('', 'end', values=request)
 
-# Function for button actions
-def home_action():
+# Function to go back to the clinic admin home page
+def back_to_home():
     root.destroy()
     subprocess.run(['python', 'adminclinichome.py', clinic_id, admin_fullname])
-
-def patients_management_action():
-    root.destroy()
-    subprocess.run(['python', 'patientsmanagement.py', clinic_id, admin_fullname])
-
-def doctors_management_action():
-    root.destroy()
-    subprocess.run(['python', 'doctorsmanagement.py', clinic_id, admin_fullname])
-
-def logout_action():
-    response = messagebox.askyesno("Logout", "Are you sure you want to logout?")
-    if response:
-        root.destroy()
-        os.system('python "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/main_page.py"')
-
-def notification_action():
-    messagebox.showinfo("Notification", "You have new notifications")
 
 # Create main window
 root = tk.Tk()
@@ -97,54 +80,9 @@ root.title(f"Admin Appointment Requests - {clinic_id}")
 root.geometry("1300x800")
 root.configure(bg="white")
 
-# Image file path
-image_path = "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/Images/"
-
-# Function to load and resize images
-def load_image(image_name, size):
-    img = Image.open(image_path + image_name)
-    img = img.resize(size, Image.Resampling.LANCZOS)
-    return ImageTk.PhotoImage(img)
-
-# Load images with specified size
-button_size = (40, 40)
-home_img = load_image("home.png", button_size)
-patients_management_img = load_image("patients_management.png", button_size)
-doctors_management_img = load_image("doctors_management.png", button_size)
-appointment_management_img = load_image("appointments_management.png", button_size)
-logout_img = load_image("logout.png", button_size)
-notification_img = load_image("bell.png", (30, 30))
-
-# Left side menu
-menu_frame = tk.Frame(root, bg="#E6E6FA")
-menu_frame.pack(side=tk.LEFT, fill=tk.Y, padx=10, pady=10)
-
-# Menu buttons with images and labels
-def create_button(frame, image, text, command):
-    button_frame = tk.Frame(frame, bg="#E6E6FA")
-    button_frame.pack(fill=tk.X, pady=5, padx=5)
-    btn = tk.Button(button_frame, image=image, command=command, bg="white", compound=tk.TOP)
-    btn.pack(pady=0)
-    label = tk.Label(button_frame, text=text, bg="#E6E6FA", font=("Arial", 12, "bold"))
-    label.pack(pady=5)
-    return button_frame
-
-create_button(menu_frame, home_img, "HOME", home_action)
-create_button(menu_frame, appointment_management_img, "APPOINTMENT REQUESTS", None)
-create_button(menu_frame, patients_management_img, "PATIENTS MANAGEMENT", patients_management_action)
-create_button(menu_frame, doctors_management_img, "DOCTORS MANAGEMENT", doctors_management_action)
-
-# Logout button at the bottom
-logout_frame = tk.Frame(menu_frame, bg="#E6E6FA")
-logout_frame.pack(fill=tk.X, pady=5, padx=5)
-logout_btn = tk.Button(logout_frame, image=logout_img, command=logout_action, bg="white", bd=0)
-logout_btn.pack(pady=0)
-logout_label = tk.Label(logout_frame, text="LOGOUT", bg="#E6E6FA", font=("Arial", 12, "bold"))
-logout_label.pack(pady=5)
-
 # Main content area
 main_frame = tk.Frame(root, bg="white")
-main_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
+main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
 # Welcome text
 welcome_label = tk.Label(main_frame, text=f"Welcome {admin_fullname}", font=("Arial", 24), bg="white")
@@ -202,9 +140,9 @@ accept_btn.pack(side=tk.LEFT, padx=10)
 reject_btn = tk.Button(button_frame, text="Reject", command=reject_appointment, bg="red", fg="white", font=("Arial", 12, "bold"))
 reject_btn.pack(side=tk.LEFT, padx=10)
 
-# Notification button with image
-notification_btn = tk.Button(root, image=notification_img, command=notification_action, bg="white", bd=0)
-notification_btn.place(x=1160, y=20)
+# Back button
+back_btn = tk.Button(main_frame, text="Back", command=back_to_home, bg="blue", fg="white", font=("Arial", 12, "bold"))
+back_btn.pack(pady=20)
 
 # Initialize appointment requests in the table
 refresh_appointment_requests()
