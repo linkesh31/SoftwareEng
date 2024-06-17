@@ -66,7 +66,9 @@ def send_appointment_request():
     doctor_id = doctor_dict.get(doctor_name)
     reason = reason_entry.get("1.0", tk.END).strip()
     date = cal.get_date()
-    time = time_var.get()
+    hour = hour_var.get()
+    minute = minute_var.get()
+    time = f"{hour}:{minute}"
 
     if not clinic_id or not doctor_id or not reason or not date or not time:
         messagebox.showerror("Error", "All fields are required")
@@ -107,7 +109,7 @@ doctor_dict = {}
 clinic_label = tk.Label(root, text="Clinics Available:")
 clinic_label.pack()
 clinic_var = tk.StringVar()
-clinic_menu = ttk.Combobox(root, textvariable=clinic_var)
+clinic_menu = ttk.Combobox(root, textvariable=clinic_var, width=50)
 clinic_menu['values'] = list(clinics.keys())
 clinic_menu.bind("<<ComboboxSelected>>", on_clinic_select)
 clinic_menu.pack()
@@ -116,13 +118,13 @@ clinic_menu.pack()
 doctor_label = tk.Label(root, text="Doctors:")
 doctor_label.pack()
 doctor_var = tk.StringVar()
-doctor_menu = ttk.Combobox(root, textvariable=doctor_var)
+doctor_menu = ttk.Combobox(root, textvariable=doctor_var, width=50)
 doctor_menu.pack()
 
 # Reason text box
 reason_label = tk.Label(root, text="Reason:")
 reason_label.pack()
-reason_entry = tk.Text(root, height=4, width=40)
+reason_entry = tk.Text(root, height=4, width=50)
 reason_entry.pack()
 
 # Date picker
@@ -132,19 +134,28 @@ cal = Calendar(root, selectmode='day', year=datetime.now().year, month=datetime.
 cal.pack()
 
 # Time picker
-time_label = tk.Label(root, text="Time:")
+time_label = tk.Label(root, text="Select Time:")
 time_label.pack()
-time_var = tk.StringVar()
-time_menu = ttk.Combobox(root, textvariable=time_var)
-time_menu['values'] = [f"{hour:02d}:00" for hour in range(9, 18)]
-time_menu.pack()
+
+time_frame = tk.Frame(root)
+time_frame.pack()
+
+hour_var = tk.StringVar()
+hour_menu = ttk.Combobox(time_frame, textvariable=hour_var, width=3)
+hour_menu['values'] = [f"{hour:02d}" for hour in range(9, 18)]
+hour_menu.pack(side=tk.LEFT, padx=5)
+
+minute_var = tk.StringVar()
+minute_menu = ttk.Combobox(time_frame, textvariable=minute_var, width=3)
+minute_menu['values'] = ["00", "15", "30", "45"]
+minute_menu.pack(side=tk.LEFT, padx=5)
 
 # Send appointment request button
 send_request_button = tk.Button(root, text="Send appointment request", command=send_appointment_request)
-send_request_button.pack()
+send_request_button.pack(pady=10)
 
 # Back button
 back_button = tk.Button(root, text="Back", command=go_back_to_patient_home)
-back_button.pack()
+back_button.pack(pady=5)
 
 root.mainloop()
