@@ -61,7 +61,7 @@ def on_clinic_select(event):
 
 def send_appointment_request():
     clinic_name = clinic_var.get()
-    clinic_id = clinics[clinic_name]
+    clinic_id = clinics.get(clinic_name)
     doctor_name = doctor_var.get()
     doctor_id = doctor_dict.get(doctor_name)
     reason = reason_entry.get("1.0", tk.END).strip()
@@ -70,8 +70,24 @@ def send_appointment_request():
     minute = minute_var.get()
     time = f"{hour}:{minute}"
 
-    if not clinic_id or not doctor_id or not reason or not date or not time:
-        messagebox.showerror("Error", "All fields are required")
+    if not clinic_id:
+        messagebox.showerror("Error", "Please select a clinic.")
+        return
+
+    if not doctor_id:
+        messagebox.showerror("Error", "Please select a doctor.")
+        return
+
+    if not reason:
+        messagebox.showerror("Error", "Please provide a reason for the appointment.")
+        return
+
+    if not date:
+        messagebox.showerror("Error", "Please select a date for the appointment.")
+        return
+
+    if not hour or not minute:
+        messagebox.showerror("Error", "Please select a time for the appointment.")
         return
 
     # Convert date format from 'mm/dd/yy' to 'yyyy-mm-dd'
