@@ -87,6 +87,10 @@ def clear_table():
     for item in tree.get_children():
         tree.delete(item)
 
+# Function to close the current window
+def close_window():
+    root.destroy()
+
 # Create main application window
 root = tk.Tk()
 root.title("Appointment Schedule Page")
@@ -116,9 +120,17 @@ minute_combobox.set("00")
 minute_combobox.pack(side=tk.LEFT, padx=5)
 minute_combobox.bind("<<ComboboxSelected>>", lambda event: clear_table())
 
+# Buttons frame
+buttons_frame = tk.Frame(root)
+buttons_frame.pack(pady=10)
+
 # Search button
-search_button = tk.Button(root, text="Search", command=fetch_doctors)
-search_button.pack(pady=10)
+search_button = tk.Button(buttons_frame, text="Search", command=fetch_doctors)
+search_button.pack(side=tk.LEFT, padx=10)
+
+# Back button
+back_button = tk.Button(buttons_frame, text="Back", command=close_window)
+back_button.pack(side=tk.LEFT, padx=10)
 
 # Table title
 table_title = tk.Label(root, text="Available Doctors", font=("Arial", 14, "bold"), bg="lightgrey", fg="blue")

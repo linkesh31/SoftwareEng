@@ -106,9 +106,9 @@ class PatientRegisterApp:
             ''', (data["Username:"], data["Password:"], data["Email:"], data["Tel:"], data["Date of Birth:"], data["Address:"], data["Fullname:"], 'patient'))
             user_id = cursor.lastrowid
             cursor.execute('''
-                INSERT INTO patients (user_id, fullname, identification_number, gender, medical_report, reason)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            ''', (user_id, data["Fullname:"], data["IC:"], data["Gender:"], "", ""))
+                INSERT INTO patients (user_id, fullname, identification_number, gender)
+                VALUES (%s, %s, %s, %s)
+            ''', (user_id, data["Fullname:"], data["IC:"], data["Gender:"]))
             connection.commit()
             messagebox.showinfo("Success", "Registration successful!")
             self.root.destroy()

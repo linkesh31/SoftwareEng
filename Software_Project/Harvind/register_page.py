@@ -1,5 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageDraw
+import mysql.connector
 
 def create_rounded_image(image_path, size, corner_radius):
     image = Image.open(image_path).resize(size, Image.Resampling.LANCZOS)

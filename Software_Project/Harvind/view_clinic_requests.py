@@ -3,6 +3,13 @@ from tkinter import messagebox, ttk
 from PIL import Image, ImageTk
 import mysql.connector
 import os
+import sys
+
+# Get admin's full name from command line argument
+if len(sys.argv) > 1:
+    admin_fullname = sys.argv[1]
+else:
+    admin_fullname = "ADMIN"
 
 # Function to fetch pending clinics
 def fetch_pending_clinics():
@@ -87,7 +94,7 @@ def refresh_table():
 # Function for back button
 def back_to_home():
     root.destroy()
-    os.system('python "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/adminhome.py"')
+    os.system(f'python "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/adminhome.py" "{admin_fullname}"')
 
 # Create main window
 root = tk.Tk()

@@ -1,6 +1,7 @@
 import tkinter as tk
-import mysql.connector
 from tkinter import messagebox, filedialog, ttk
+import mysql.connector
+from mysql.connector import Error
 
 def submit_clinic_data(clinic_name, clinic_address, clinic_license_path, admin_fullname, admin_username, admin_password, admin_email, admin_phone_number, admin_date_of_birth, admin_address):
     try:
@@ -48,7 +49,8 @@ def browse_file():
     return filename
 
 def create_clinic_register_window():
-    global clinic_register_root
+    global clinic_register_root, clinic_license_path
+    clinic_license_path = None  # Initialize the variable to store the file path
     clinic_register_root = tk.Tk()
     clinic_register_root.title("Clinic Registration")
     width = 600
@@ -89,8 +91,11 @@ def create_clinic_register_window():
     clinic_license_path_label.grid(row=4, column=0, columnspan=2, pady=5)
 
     def choose_file():
+        global clinic_license_path
         path = browse_file()
-        clinic_license_path_label.config(text=path)
+        if path:
+            clinic_license_path = path  # Store the selected file path
+            clinic_license_path_label.config(text="File uploaded successfully")
 
     clinic_license_button.config(command=choose_file)
 
@@ -162,7 +167,6 @@ def create_clinic_register_window():
     def on_register_click():
         clinic_name = clinic_name_entry.get()
         clinic_address = clinic_address_entry.get()
-        clinic_license_path = clinic_license_path_label.cget("text")
         admin_fullname = fullname_entry.get()
         admin_username = username_entry.get()
         admin_password = password_entry.get()
@@ -171,8 +175,24 @@ def create_clinic_register_window():
         admin_address = admin_address_entry.get()
         admin_date_of_birth = f"{year_var.get()}-{month_var.get()}-{day_var.get()}"
 
+        # Validate that all fields are filled
+        if not clinic_name or not clinic_address or not admin_fullname or not admin_username or not admin_password or not admin_email or not admin_phone_number or not admin_address:
+            messagebox.showerror("Error", "All fields must be filled out.")
+            return
+
+        # Validate phone number
+        if not admin_phone_number.isdigit():
+            messagebox.showerror("Error", "Phone number must contain only digits.")
+            return
+
+        # Validate password match
         if admin_password != confirm_password_entry.get():
             messagebox.showerror("Error", "Passwords do not match!")
+            return
+
+        # Validate that a file was chosen
+        if not clinic_license_path:
+            messagebox.showerror("Error", "Please upload a clinic license file.")
             return
 
         submit_clinic_data(clinic_name, clinic_address, clinic_license_path, admin_fullname, admin_username, admin_password, admin_email, admin_phone_number, admin_date_of_birth, admin_address)

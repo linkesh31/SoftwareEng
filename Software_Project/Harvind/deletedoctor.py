@@ -4,11 +4,13 @@ import mysql.connector
 import os
 import sys
 
-# Get clinic ID from command line arguments
-if len(sys.argv) > 1:
+# Get clinic ID and admin full name from command line arguments
+if len(sys.argv) > 2:
     clinic_id = sys.argv[1]
+    admin_fullname = sys.argv[2]
 else:
     clinic_id = "Unknown Clinic"
+    admin_fullname = "ADMIN"
 
 # Function to delete a doctor
 def delete_doctor(doctor_id, user_id):
@@ -68,7 +70,7 @@ def confirm_delete(doctor_id, user_id):
 
 def back_action():
     root.destroy()
-    os.system(f'python clinicadminhome.py {clinic_id}')
+    os.system(f'python adminclinichome.py {clinic_id} {admin_fullname}')
 
 def create_table_header():
     headers = ["Doctor Name", "Email", "Tel", "IC", "Gender", "Delete Option"]

@@ -1,3 +1,4 @@
+import sys
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
@@ -96,4 +97,9 @@ def edit_profile_action(root, doctor_id):
     doctoreditprofile.create_doctor_edit_profile_window(doctor_id)
 
 if __name__ == "__main__":
-    create_doctor_profile_window(15)  # Example doctor_id for testing
+    if len(sys.argv) > 1:
+        doctor_id = int(sys.argv[1])
+    else:
+        doctor_id = 15  # Example doctor_id for testing
+
+    create_doctor_profile_window(doctor_id)

@@ -8,7 +8,7 @@ import sys
 # Get clinic ID and admin full name from command line arguments
 if len(sys.argv) > 2:
     clinic_id = sys.argv[1]
-    admin_fullname = sys.argv[2]
+    admin_fullname = ' '.join(sys.argv[2:])
 else:
     clinic_id = None
     admin_fullname = "ADMIN"
@@ -31,10 +31,22 @@ def save_doctor():
     month = month_combobox.get()
     day = day_combobox.get()
 
+    # Validate that all fields are filled
     if not (fullname and username and password and confirm_password and gender and ic and email and phone and address and year and month and day):
         messagebox.showerror("Error", "Please fill all the fields.")
         return
 
+    # Validate IC length and content
+    if not ic.isdigit() or len(ic) != 12:
+        messagebox.showerror("Error", "IC must contain exactly 12 digits.")
+        return
+
+    # Validate phone number
+    if not phone.isdigit():
+        messagebox.showerror("Error", "Phone number must contain only digits.")
+        return
+
+    # Validate date of birth
     if year == "Year":
         messagebox.showerror("Error", "Please fill in the year column.")
         return
@@ -49,6 +61,7 @@ def save_doctor():
 
     dob = f"{year}-{month}-{day}"
 
+    # Validate passwords match
     if password != confirm_password:
         messagebox.showerror("Error", "Passwords do not match.")
         return
@@ -93,7 +106,7 @@ def save_doctor():
         connection.commit()
         messagebox.showinfo("Success", "Doctor added successfully!")
         root.destroy()
-        os.system(f'python clinicadminhome.py {clinic_id} {admin_fullname}')
+        os.system(f'python adminclinichome.py {clinic_id} "{admin_fullname}"')
     except mysql.connector.Error as err:
         messagebox.showerror("Database Error", f"Error: {err}")
     finally:
@@ -103,7 +116,7 @@ def save_doctor():
 
 def back_action():
     root.destroy()
-    os.system(f'python clinicadminhome.py {clinic_id} {admin_fullname}')
+    os.system(f'python adminclinichome.py {clinic_id} "{admin_fullname}"')
 
 # Validation function for IC entry
 def limit_ic_length(*args):
@@ -133,7 +146,7 @@ for i, label_text in enumerate(labels):
     label = tk.Label(form_frame, text=label_text, font=("Helvetica", 14), bg="lightblue")
     label.grid(row=i, column=0, sticky="e", pady=5, padx=5)
     if label_text == "Gender:":
-        entry = ttk.Combobox(form_frame, font=("Helvetica", 14), values=["Male", "Female", "Rather not to say"])
+        entry = ttk.Combobox(form_frame, font=("Helvetica", 14), values=["Male", "Female"])
         entry.current(0)  # Set default value
     else:
         entry = tk.Entry(form_frame, font=("Helvetica", 14), show="*" if "Password" in label_text else "")

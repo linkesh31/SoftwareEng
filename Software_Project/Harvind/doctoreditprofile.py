@@ -63,10 +63,16 @@ def load_image(image_path, size):
         messagebox.showerror("Error", f"Error loading image {image_path}: {e}")
         return None
 
+def validate_phone_number(phone_number):
+    if not phone_number.isdigit():
+        messagebox.showerror("Invalid Input", "Phone number must contain only digits.")
+        return False
+    return True
+
 def create_doctor_edit_profile_window(doctor_id):
     global root
     root = tk.Tk()
-    root.title("Edit Profile")
+    root.title("Edit Profile (You can only edit the blue field)")
     root.geometry("1000x700")  # Increased window size
     root.configure(bg="white")
 
@@ -78,7 +84,7 @@ def create_doctor_edit_profile_window(doctor_id):
     profile_frame = tk.Frame(main_frame, bg="#ff6b6b", padx=10, pady=10)
     profile_frame.pack(fill=tk.BOTH, expand=True, pady=10)
 
-    profile_label = tk.Label(profile_frame, text="EDIT PROFILE", bg="#ff6b6b", font=("Arial", 16, "bold"))
+    profile_label = tk.Label(profile_frame, text="EDIT PROFILE (You can only edit the blue field)", bg="#ff6b6b", font=("Arial", 16, "bold"))
     profile_label.grid(row=0, columnspan=2, pady=10)
 
     labels = ["Fullname:", "Username:", "Identification Number:", "Gender:", "Address:", "Date of Birth:", "Email:", "Tel:"]
@@ -102,6 +108,8 @@ def create_doctor_edit_profile_window(doctor_id):
             address = entries[4].get()
             email = entries[6].get()
             phone_number = entries[7].get()
+            if not validate_phone_number(phone_number):
+                return
             update_doctor_details(doctor_id, address, email, phone_number)
             messagebox.showinfo("Success", "Profile updated successfully")
             root.destroy()
