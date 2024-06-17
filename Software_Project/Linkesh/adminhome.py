@@ -20,7 +20,7 @@ def load_image(image_name, size):
 # Function for button actions
 def view_clinic_requests():
     root.destroy()
-    os.system('python "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/view_clinic_requests.py"')
+    os.system(f'python "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/view_clinic_requests.py" "{admin_fullname}"')
 
 def logout_action():
     response = messagebox.askyesno("Logout", "Are you sure you want to logout?")
