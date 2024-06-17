@@ -10,7 +10,7 @@ import sys
 # Get clinic admin's clinic ID and full name from command line arguments
 if len(sys.argv) > 2:
     clinic_id = sys.argv[1]
-    admin_fullname = sys.argv[2]
+    admin_fullname = ' '.join(sys.argv[2:])  # Join the rest as admin_fullname
 else:
     clinic_id = "Unknown Clinic"
     admin_fullname = "ADMIN"
@@ -93,8 +93,9 @@ def refresh_appointment_requests():
     for item in appointment_table.get_children():
         appointment_table.delete(item)
     appointment_requests = get_appointment_requests(clinic_id)
-    for idx, request in enumerate(appointment_requests, start=1):
-        appointment_table.insert('', 'end', values=(idx,) + request[1:])
+    for request in appointment_requests:
+        row_id = appointment_table.insert('', 'end', values=(request[1], request[2], request[3], request[4]))
+        appointment_ids[row_id] = request[0]  # Store appointment_id in dictionary with row_id as key
 
 # Function for button actions
 def home_action():
@@ -231,19 +232,20 @@ table_title_label = tk.Label(table_title_frame, text="Appointment Request From P
 table_title_label.pack(pady=10)
 
 # Appointment requests table
-columns = ("bill", "patient_name", "appointment_date", "appointment_time", "doctor_name")
+columns = ("patient_name", "appointment_date", "appointment_time", "doctor_name")
 appointment_table = ttk.Treeview(clinic_details_frame, columns=columns, show='headings')
-appointment_table.heading("bill", text="Bill")
 appointment_table.heading("patient_name", text="Patient Name")
 appointment_table.heading("appointment_date", text="Date")
 appointment_table.heading("appointment_time", text="Time")
 appointment_table.heading("doctor_name", text="Doctor Name")
-appointment_table.column("bill", anchor='center')
 appointment_table.column("patient_name", anchor='center')
 appointment_table.column("appointment_date", anchor='center')
 appointment_table.column("appointment_time", anchor='center')
 appointment_table.column("doctor_name", anchor='center')
 appointment_table.grid(row=4, column=0, padx=10, pady=10, sticky="nsew", columnspan=2)
+
+# Dictionary to store appointment_ids
+appointment_ids = {}
 
 # Add scrollbars to the table
 scrollbar_y = tk.Scrollbar(clinic_details_frame, orient=tk.VERTICAL, command=appointment_table.yview)
@@ -265,7 +267,8 @@ button_frame.grid(row=6, column=0, padx=10, pady=10, sticky="w")
 def accept_appointment():
     selected_item = appointment_table.selection()
     if selected_item:
-        appointment_id = appointment_table.item(selected_item)["values"][1]
+        row_id = selected_item[0]
+        appointment_id = appointment_ids[row_id]
         update_appointment_status(appointment_id, 'accepted')
     else:
         messagebox.showerror("Error", "Please select an appointment to accept.")
@@ -273,7 +276,8 @@ def accept_appointment():
 def reject_appointment():
     selected_item = appointment_table.selection()
     if selected_item:
-        appointment_id = appointment_table.item(selected_item)["values"][1]
+        row_id = selected_item[0]
+        appointment_id = appointment_ids[row_id]
         update_appointment_status(appointment_id, 'rejected')
     else:
         messagebox.showerror("Error", "Please select an appointment to reject.")
