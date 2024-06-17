@@ -73,34 +73,43 @@ def create_prescription_form(appointment_id, doctor_id, patient_name):
     def save_prescription():
         prescription = text.get("1.0", tk.END).strip()
         if prescription:
-            try:
-                connection = mysql.connector.connect(
-                    host="localhost",
-                    user="root",
-                    password="calladoctor1234",
-                    database="calladoctor"
-                )
-                cursor = connection.cursor()
-                cursor.execute("""
-                    INSERT INTO prescriptions (appointment_id, doctor_id, patient_id, medical_report)
-                    VALUES (%s, %s, (SELECT patient_id FROM appointments WHERE appointment_id = %s), %s)
-                """, (appointment_id, doctor_id, appointment_id, prescription))
-                cursor.execute("""
-                    UPDATE appointments
-                    SET treatment_status = 'done'
-                    WHERE appointment_id = %s
-                """, (appointment_id,))
-                connection.commit()
-                cursor.close()
-                connection.close()
-                refresh_appointments()
-                messagebox.showinfo("Success", "Prescription saved successfully.")
-                prescription_window.destroy()
-            except mysql.connector.Error as err:
-                print(f"Database Error: {err}")
-                messagebox.showerror("Database Error", f"Error: {err}")
+            response = messagebox.askyesno("Confirmation", "This will result in completing the patient's appointment. Do you want to proceed?")
+            if response:
+                try:
+                    connection = mysql.connector.connect(
+                        host="localhost",
+                        user="root",
+                        password="calladoctor1234",
+                        database="calladoctor"
+                    )
+                    cursor = connection.cursor()
+                    cursor.execute("""
+                        INSERT INTO prescriptions (appointment_id, doctor_id, patient_id, medical_report)
+                        VALUES (%s, %s, (SELECT patient_id FROM appointments WHERE appointment_id = %s), %s)
+                    """, (appointment_id, doctor_id, appointment_id, prescription))
+                    cursor.execute("""
+                        UPDATE appointments
+                        SET treatment_status = 'done'
+                        WHERE appointment_id = %s
+                    """, (appointment_id,))
+                    connection.commit()
+                    cursor.close()
+                    connection.close()
+                    refresh_appointments()
+                    messagebox.showinfo("Success", "Prescription saved successfully.")
+                    prescription_window.destroy()
+                    root.deiconify()  # Re-enable the main window
+                except mysql.connector.Error as err:
+                    print(f"Database Error: {err}")
+                    messagebox.showerror("Database Error", f"Error: {err}")
         else:
             messagebox.showwarning("Warning", "Prescription cannot be empty.")
+
+    def go_back():
+        prescription_window.destroy()
+        root.deiconify()  # Re-enable the main window
+
+    root.withdraw()  # Disable the main window
 
     prescription_window = tk.Toplevel(root)
     prescription_window.title("Prescription")
@@ -111,8 +120,14 @@ def create_prescription_form(appointment_id, doctor_id, patient_name):
     text = tk.Text(prescription_window, height=10, width=40)
     text.pack(pady=10)
     
-    save_button = tk.Button(prescription_window, text="Save", command=save_prescription)
-    save_button.pack(pady=10)
+    button_frame = tk.Frame(prescription_window)
+    button_frame.pack(pady=10)
+    
+    save_button = tk.Button(button_frame, text="Save", command=save_prescription)
+    save_button.pack(side=tk.LEFT, padx=5)
+    
+    back_button = tk.Button(button_frame, text="Back", command=go_back)
+    back_button.pack(side=tk.LEFT, padx=5)
 
 # Function for button actions
 def profile_action():
@@ -136,26 +151,32 @@ def refresh_appointments():
 
     past_columns = ["Date", "Time", "Patient Name", "Reason", "Prescription"]
     for col in past_columns:
-        header = tk.Label(past_appointments_frame, text=col, font=("Arial", 10, "bold"), bg="lightblue")
+        header = tk.Label(past_appointments_frame, text=col, font=("Arial", 10, "bold"), bg="lightblue", padx=5, pady=5)
         header.grid(row=0, column=past_columns.index(col), sticky="nsew")
 
     for i, appointment in enumerate(past_appointments):
         for j, value in enumerate(appointment):
-            label = tk.Label(past_appointments_frame, text=value, font=("Arial", 10), bg="white")
+            label = tk.Label(past_appointments_frame, text=value, font=("Arial", 10), bg="white", padx=5, pady=5)
             label.grid(row=i+1, column=j, sticky="nsew")
 
-    upcoming_columns = ["Date", "Time", "Patient Name", "Reason", "Action"]
+    for col in range(len(past_columns)):
+        past_appointments_frame.grid_columnconfigure(col, weight=1)
+
+    upcoming_columns = ["Date", "Time", "Patient Name", "Reason", "Action (Click to generate prescription)"]
     for col in upcoming_columns:
-        header = tk.Label(upcoming_appointments_frame, text=col, font=("Arial", 10, "bold"), bg="lightblue")
+        header = tk.Label(upcoming_appointments_frame, text=col, font=("Arial", 10, "bold"), bg="lightblue", padx=5, pady=5)
         header.grid(row=0, column=upcoming_columns.index(col), sticky="nsew")
 
     for i, appointment in enumerate(upcoming_appointments):
         appointment_id, date, time, patient_name, reason = appointment
         for j, value in enumerate(appointment[1:]):
-            label = tk.Label(upcoming_appointments_frame, text=value, font=("Arial", 10), bg="white")
+            label = tk.Label(upcoming_appointments_frame, text=value, font=("Arial", 10), bg="white", padx=5, pady=5)
             label.grid(row=i+1, column=j, sticky="nsew")
         prescribe_button = tk.Button(upcoming_appointments_frame, text="Not prescribed", command=lambda appt_id=appointment_id, pt_name=patient_name: create_prescription_form(appt_id, doctor_id, pt_name), bg="blue", fg="white", font=("Arial", 10))
         prescribe_button.grid(row=i+1, column=len(appointment[1:]), sticky="nsew")
+
+    for col in range(len(upcoming_columns)):
+        upcoming_appointments_frame.grid_columnconfigure(col, weight=1)
 
 # Get doctor_id from command-line arguments
 doctor_id = sys.argv[1] if len(sys.argv) > 1 else None
