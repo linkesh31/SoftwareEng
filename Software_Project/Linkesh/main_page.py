@@ -165,7 +165,7 @@ def create_login_window():
     login_frame = tk.Frame(top_frame, bg="#ADD8E6")
     login_frame.place(relx=0.99, rely=0.99, anchor="se")
 
-    login_label_text = tk.Label(login_frame, text="Don't have an account? ", font=("Arial", 12), bg="#ADD8E6", fg="white")
+    login_label_text = tk.Label(login_frame, text="Don't have an account? ", font=("Arial", 12), bg="#ADD8E6", fg="black")
     login_label_text.pack(side="left")
 
     click_here_register_label = tk.Label(login_frame, text="Click here", font=("Arial", 12), bg="#ADD8E6", fg="#0000EE", cursor="hand2")
