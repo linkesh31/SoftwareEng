@@ -1,4 +1,4 @@
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import messagebox
 from tkinter import ttk
 import mysql.connector
@@ -125,61 +125,70 @@ def limit_ic_length(*args):
         ic_var.set(value[:12])
 
 # Create main window
-root = tk.Tk()
+ctk.set_appearance_mode("light")  # Modes: system (default), light, dark
+ctk.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
+
+root = ctk.CTk()
 root.title("Add Doctor")
-root.geometry("800x600")
-root.configure(bg="lightblue")
+root.geometry('500x700')  # Set initial window size
+root.configure(fg_color="#AED6F1")
 
 # Title label
-title_label = tk.Label(root, text="Add Doctor", font=("Helvetica", 24, "bold"), bg="lightblue")
+title_label = ctk.CTkLabel(root, text="Add Doctor", font=("Helvetica", 24, "bold"), fg_color="#AED6F1")
 title_label.pack(pady=10)
 
 # Frame for form
-form_frame = tk.Frame(root, bg="lightblue")
-form_frame.pack(pady=10, padx=20, fill=tk.BOTH, expand=True)
+form_frame = ctk.CTkFrame(root, fg_color="#AED6F1")
+form_frame.pack(pady=20, padx=20, fill=ctk.BOTH, expand=True)
+
+# Configure grid layout
+form_frame.grid_columnconfigure(0, weight=1)
+form_frame.grid_columnconfigure(1, weight=1)
+form_frame.grid_rowconfigure(list(range(10)), pad=10)  # Add padding between rows
 
 # Form fields
-labels = ["Fullname:", "Username:", "Password:", "Confirm Password:", "Gender:", "IC(without dash):", "Email:", "Phone:", "Address:"]
+labels = ["Fullname:", "Username:", "Password:", "Confirm Password:", "Gender:", "IC(without dash):", "Email:", "Phone:", "Address:", "Date of Birth:"]
 entries = {}
 
 for i, label_text in enumerate(labels):
-    label = tk.Label(form_frame, text=label_text, font=("Helvetica", 14), bg="lightblue")
+    label = ctk.CTkLabel(form_frame, text=label_text, font=("Helvetica", 14), anchor="center")
     label.grid(row=i, column=0, sticky="e", pady=5, padx=5)
     if label_text == "Gender:":
-        entry = ttk.Combobox(form_frame, font=("Helvetica", 14), values=["Male", "Female"])
-        entry.current(0)  # Set default value
+        entry = ctk.CTkComboBox(form_frame, font=("Helvetica", 14), values=["Male", "Female"], justify="center")
+        entry.set("Male")  # Set default value
+        entry.grid(row=i, column=1, pady=5, padx=5, sticky="ew")
+        entries[label_text] = entry
+    elif label_text == "Date of Birth:":
+        dob_frame = ctk.CTkFrame(form_frame, fg_color="#AED6F1")
+        dob_frame.grid(row=i, column=1, pady=5, padx=5, sticky="w")
+        year_combobox = ttk.Combobox(dob_frame, font=("Helvetica", 14), values=[str(year) for year in range(1900, 2025)], width=4)
+        year_combobox.pack(side=ctk.LEFT)
+        year_combobox.set("Year")
+        month_combobox = ttk.Combobox(dob_frame, font=("Helvetica", 14), values=[f"{month:02d}" for month in range(1, 13)], width=2)
+        month_combobox.pack(side=ctk.LEFT, padx=(5, 0))
+        month_combobox.set("Month")
+        day_combobox = ttk.Combobox(dob_frame, font=("Helvetica", 14), values=[f"{day:02d}" for day in range(1, 32)], width=2)
+        day_combobox.pack(side=ctk.LEFT, padx=(5, 0))
+        day_combobox.set("Day")
+        entries["Year"] = year_combobox
+        entries["Month"] = month_combobox
+        entries["Day"] = day_combobox
     else:
-        entry = tk.Entry(form_frame, font=("Helvetica", 14), show="*" if "Password" in label_text else "")
-    entry.grid(row=i, column=1, pady=5, padx=5, sticky="ew")
-    entries[label_text] = entry
+        entry = ctk.CTkEntry(form_frame, font=("Helvetica", 14), show="*" if "Password" in label_text else "", justify="center")
+        entry.grid(row=i, column=1, pady=5, padx=5, sticky="ew")
+        entries[label_text] = entry
 
-# Add date of birth fields
-dob_label = tk.Label(form_frame, text="Date of Birth:", font=("Helvetica", 14), bg="lightblue")
-dob_label.grid(row=len(labels), column=0, sticky="e", pady=5, padx=5)
-
-# Adjust the width of Combobox for Year, Month, and Day
-dob_frame = tk.Frame(form_frame, bg="lightblue")
-dob_frame.grid(row=len(labels), column=1, pady=5, padx=5, sticky="w")
-
-year_combobox = ttk.Combobox(dob_frame, font=("Helvetica", 14), values=[str(year) for year in range(1900, 2025)], width=5)
-year_combobox.pack(side=tk.LEFT)
-year_combobox.set("Year")
-
-month_combobox = ttk.Combobox(dob_frame, font=("Helvetica", 14), values=[f"{month:02d}" for month in range(1, 13)], width=3)
-month_combobox.pack(side=tk.LEFT, padx=(5, 0))
-month_combobox.set("Month")
-
-day_combobox = ttk.Combobox(dob_frame, font=("Helvetica", 14), values=[f"{day:02d}" for day in range(1, 32)], width=3)
-day_combobox.pack(side=tk.LEFT, padx=(5, 0))
-day_combobox.set("Day")
-
-# Save button
-save_button = tk.Button(root, text="Save", command=save_doctor, bg="lightblue", font=("Helvetica", 12))
-save_button.pack(pady=20)
+# Frame for buttons
+button_frame = ctk.CTkFrame(root, fg_color="#AED6F1")
+button_frame.pack(pady=10, fill=ctk.X)
 
 # Back button
-back_button = tk.Button(root, text="Back", command=back_action, bg="lightblue", font=("Helvetica", 12))
-back_button.pack(side=tk.BOTTOM, pady=20)
+back_button = ctk.CTkButton(button_frame, text="Back", command=back_action, font=("Helvetica", 12))
+back_button.pack(side=ctk.LEFT, padx=15, pady=10)
+
+# Save button
+save_button = ctk.CTkButton(button_frame, text="Save", command=save_doctor, font=("Helvetica", 12))
+save_button.pack(side=ctk.RIGHT, padx=15, pady=10)
 
 # Unpack entries for easier access
 fullname_entry = entries["Fullname:"]
@@ -193,8 +202,15 @@ phone_entry = entries["Phone:"]
 address_entry = entries["Address:"]
 
 # Set up IC entry variable and trace for validation
-ic_var = tk.StringVar()
+ic_var = ctk.StringVar()
 ic_var.trace_add("write", limit_ic_length)
-ic_entry.config(textvariable=ic_var)
+ic_entry.configure(textvariable=ic_var)
 
+# Add padding to form_frame to balance left and right spaces
+form_frame.pack(pady=20, padx=(15, 85), fill=ctk.BOTH, expand=True)
+
+# Force the window to render before entering the main loop
+root.update_idletasks()
+
+# Run the main loop after everything is packed
 root.mainloop()
