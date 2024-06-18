@@ -132,7 +132,7 @@ def create_login_window():
     logo_label.image = logo_photo
     logo_label.place(relx=1.0, rely=0.0, anchor="ne")
 
-    welcome_label = tk.Label(top_frame, text="Welcome to Login", font=("Arial", 24, "bold"), bg="#ADD8E6", fg="#000080")
+    welcome_label = tk.Label(top_frame, text="Welcome to Login", font=("Comic Sans MS", 28, "bold"), bg="#ADD8E6", fg="#000080")
     welcome_label.place(relx=0.5, rely=0.2, anchor="center")
 
     user_icon_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Linkesh\\Images\\Patientnobg.png"
