@@ -1,6 +1,5 @@
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import messagebox
-from tkinter import ttk
 from tkcalendar import DateEntry
 import re
 import mysql.connector
@@ -11,24 +10,26 @@ class PatientRegisterApp:
         self.root = root
         self.root.title("Call a Doctor")
         self.root.geometry("800x600")
-        self.root.configure(bg='lightblue')
 
-        title_label = tk.Label(root, text="Call a Doctor", font=("Helvetica", 24, "bold"), bg='lightblue')
+        ctk.set_appearance_mode("light")  # Modes: system (default), light, dark
+        ctk.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
+
+        title_label = ctk.CTkLabel(root, text="Call a Doctor", font=("Helvetica", 24, "bold"), text_color="black")
         title_label.pack(pady=10)
 
-        subtitle_label = tk.Label(root, text="Welcome to Registration", font=("Helvetica", 18), bg='lightblue')
+        subtitle_label = ctk.CTkLabel(root, text="Welcome to Registration", font=("Helvetica", 18), text_color="black")
         subtitle_label.pack(pady=10)
 
-        self.frame = tk.Frame(root, bg='lightblue')
-        self.frame.pack(pady=10, padx=20, expand=True, fill=tk.BOTH)
+        self.frame = ctk.CTkFrame(root, fg_color='#D3D3D3')
+        self.frame.pack(pady=10, padx=20, expand=True, fill=ctk.BOTH)
 
         self.create_form()
 
-        self.back_button = tk.Button(root, text="Back", bg='#FF6347', font=("Helvetica", 12), command=self.back)
-        self.back_button.pack(side=tk.LEFT, padx=20, pady=10)
+        self.back_button = ctk.CTkButton(root, text="Back", fg_color='#FF6347', font=("Helvetica", 12), text_color="black", command=self.back)
+        self.back_button.pack(side=ctk.LEFT, padx=20, pady=10)
 
-        self.register_button = tk.Button(root, text="Register", bg='#32CD32', font=("Helvetica", 12), command=self.register)
-        self.register_button.pack(side=tk.RIGHT, padx=20, pady=10)
+        self.register_button = ctk.CTkButton(root, text="Register", fg_color='#32CD32', font=("Helvetica", 12), text_color="black", command=self.register)
+        self.register_button.pack(side=ctk.RIGHT, padx=20, pady=10)
 
         self.back_button.bind("<Enter>", self.on_enter_back)
         self.back_button.bind("<Leave>", self.on_leave_back)
@@ -42,19 +43,19 @@ class PatientRegisterApp:
         for i, label_text in enumerate(labels):
             row = i // 2
             col = i % 2 * 2
-            label = tk.Label(self.frame, text=label_text, font=("Helvetica", 14), bg='lightblue')
+            label = ctk.CTkLabel(self.frame, text=label_text, font=("Helvetica", 14), text_color="black")
             label.grid(row=row, column=col, sticky="e", pady=5, padx=5)
             if label_text == "Date of Birth:":
                 entry = DateEntry(self.frame, font=("Helvetica", 14), date_pattern='y-mm-dd')
             elif label_text == "Gender:":
-                entry = ttk.Combobox(self.frame, font=("Helvetica", 14), values=["Male", "Female", "Rather not to say"])
-                entry.current(0)  # Set default value
+                entry = ctk.CTkComboBox(self.frame, values=["Male", "Female"], font=("Helvetica", 14), fg_color="white", text_color="black")
+                entry.set("Male")  # Set default value
             else:
-                entry = tk.Entry(self.frame, font=("Helvetica", 14), show="*" if "Password" in label_text else "")
+                entry = ctk.CTkEntry(self.frame, font=("Helvetica", 14), fg_color="white", text_color="black", show="*" if "Password" in label_text else "")
                 if label_text == "Tel:":
-                    entry.config(validate="key", validatecommand=(self.frame.register(self.validate_tel), '%P'))
+                    entry.configure(validate="key", validatecommand=(self.frame.register(self.validate_tel), '%P'))
                 if label_text == "IC:":
-                    entry.config(validate="key", validatecommand=(self.frame.register(self.validate_ic), '%P'))
+                    entry.configure(validate="key", validatecommand=(self.frame.register(self.validate_ic), '%P'))
             entry.grid(row=row, column=col + 1, pady=5, padx=5, sticky="ew")
             self.entries[label_text] = entry
 
@@ -127,19 +128,20 @@ class PatientRegisterApp:
                 connection.close()
 
     def on_enter_back(self, event):
-        self.back_button['bg'] = '#FF4500'
+        self.back_button.configure(fg_color='#FF4500')
 
     def on_leave_back(self, event):
-        self.back_button['bg'] = '#FF6347'
+        self.back_button.configure(fg_color='#FF6347')
 
     def on_enter_register(self, event):
-        self.register_button['bg'] = '#228B22'
+        self.register_button.configure(fg_color='#228B22')
 
     def on_leave_register(self, event):
-        self.register_button['bg'] = '#32CD32'
+        self.register_button.configure(fg_color='#32CD32')
 
 def create_patient_register_window():
-    root = tk.Tk()
+    root = ctk.CTk()
+    root.configure(bg='lightblue')  # Set the background color for the CTk window
     app = PatientRegisterApp(root)
     root.mainloop()
 
