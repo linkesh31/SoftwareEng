@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 from PIL import Image, ImageTk
+import customtkinter as ctk
 import mysql.connector
 import os
 import sys
@@ -28,9 +29,6 @@ def logout_action():
         root.destroy()
         os.system('python "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/main_page.py"')
 
-def notification_action():
-    messagebox.showinfo("Notification", "You have new notifications")
-
 def fetch_registered_clinics():
     try:
         connection = mysql.connector.connect(
@@ -57,29 +55,30 @@ def fetch_registered_clinics():
         return []
 
 # Create main window
-root = tk.Tk()
+ctk.set_appearance_mode("light")  # Modes: "light", "dark", "system"
+ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
+
+root = ctk.CTk()
 root.title("Admin Home Page")
 root.geometry("800x600")
-root.configure(bg="white")
 
 # Image file path
 image_path = "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/Images/"
 
 # Load images with specified size
 logout_img = load_image("logout.png", (40, 40))
-notification_img = load_image("bell.png", (30, 30))
 
 # Welcome text
-welcome_label = tk.Label(root, text=f"Welcome {admin_fullname}", font=("Arial", 24), bg="white")
+welcome_label = ctk.CTkLabel(root, text=f"Welcome {admin_fullname}", font=ctk.CTkFont(family="Arial", size=24, weight="bold"))
 welcome_label.pack(pady=20)
 
 # Registered clinics title
-registered_clinics_label = tk.Label(root, text="Registered Clinics", font=("Arial", 18), bg="white")
+registered_clinics_label = ctk.CTkLabel(root, text="Registered Clinics", font=ctk.CTkFont(family="Arial", size=18, weight="bold"))
 registered_clinics_label.pack(pady=10)
 
 # Registered clinics table
 columns = ("Clinic Name", "Clinic Address", "Admin Fullname")
-tree = ttk.Treeview(root, columns=columns, show="headings")
+tree = ttk.Treeview(root, columns=columns, show="headings", style="mystyle.Treeview")
 tree.heading("Clinic Name", text="Clinic Name")
 tree.heading("Clinic Address", text="Clinic Address")
 tree.heading("Admin Fullname", text="Admin Fullname")
@@ -91,17 +90,11 @@ for clinic in clinics:
 tree.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
 # Logout button with image
-logout_btn = tk.Button(root, image=logout_img, command=logout_action, bg="white", bd=0)
-logout_btn.place(x=20, y=520)
-logout_label = tk.Label(root, text="LOGOUT", font=("Arial", 12), bg="white")
-logout_label.place(x=20, y=560)
-
-# Notification button with image
-notification_btn = tk.Button(root, image=notification_img, command=notification_action, bg="white", bd=0)
-notification_btn.place(x=760, y=20)
+logout_btn = ctk.CTkButton(root, image=logout_img, text="", command=logout_action)
+logout_btn.pack(side="left", anchor="s", padx=10, pady=10)
 
 # View clinic requests button
-view_requests_btn = tk.Button(root, text="View clinic registration request", command=view_clinic_requests, font=("Arial", 12), bg="lightgray", bd=0)
+view_requests_btn = ctk.CTkButton(root, text="View clinic registration request", command=view_clinic_requests, font=ctk.CTkFont(family="Arial", size=12))
 view_requests_btn.pack(pady=10, padx=10, anchor="se", side=tk.RIGHT)
 
 root.mainloop()
