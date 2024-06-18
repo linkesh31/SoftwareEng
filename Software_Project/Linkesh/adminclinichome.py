@@ -188,9 +188,9 @@ doctor_management_button_frame = create_button(menu_frame, doctors_management_im
 
 # Create custom hover menu for Doctor Management
 doctor_management_menu = ctk.CTkFrame(root, fg_color="#E6E6FA", corner_radius=10)
-doctor_management_menu.add_button = ctk.CTkButton(doctor_management_menu, text="Add Doctor", command=add_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8")
+doctor_management_menu.add_button = ctk.CTkButton(doctor_management_menu, text="Add Doctor", command=add_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8", text_color="black")
 doctor_management_menu.add_button.pack(fill=tk.X, padx=5, pady=2)
-doctor_management_menu.delete_button = ctk.CTkButton(doctor_management_menu, text="Delete Doctor", command=delete_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8")
+doctor_management_menu.delete_button = ctk.CTkButton(doctor_management_menu, text="Delete Doctor", command=delete_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8", text_color="black")
 doctor_management_menu.delete_button.pack(fill=tk.X, padx=5, pady=2)
 
 # Bind hover event to Doctor Management button and label
