@@ -26,17 +26,17 @@ def on_entry_click(event, entry, default_text):
     if entry.get() == default_text:
         entry.delete(0, "end")
         entry.insert(0, '')
-        entry.config(fg='black')
+        entry.configure(text_color='black')
         if entry == password_entry:
-            entry.config(show='*')
+            entry.configure(show='*')
 
 # Focus out event
 def on_focusout(event, entry, default_text):
     if entry.get() == '':
         entry.insert(0, default_text)
-        entry.config(fg='grey')
+        entry.configure(text_color='grey')
         if entry == password_entry:
-            entry.config(show='')
+            entry.configure(show='')
 
 # Authenticate user function
 def authenticate_user(username, password):
@@ -145,7 +145,7 @@ def create_login_window():
     username_entry.bind('<FocusOut>', lambda event: on_focusout(event, username_entry, default_username))
     username_entry.place(relx=0.5, rely=0.5, anchor="center")
 
-    password_entry = ctk.CTkEntry(top_frame, font=("Arial", 16), fg_color="white", text_color='grey', show='', width=300, height=30)
+    password_entry = ctk.CTkEntry(top_frame, font=("Arial", 16), fg_color="white", text_color='grey', show='*', width=300, height=30)
     password_entry.insert(0, default_password)
     password_entry.bind('<FocusIn>', lambda event: on_entry_click(event, password_entry, default_password))
     password_entry.bind('<FocusOut>', lambda event: on_focusout(event, password_entry, default_password))
