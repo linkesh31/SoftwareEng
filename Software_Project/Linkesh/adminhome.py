@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-from PIL import Image, ImageTk
+from PIL import Image
 import customtkinter as ctk
 import mysql.connector
 import os
@@ -16,7 +16,7 @@ else:
 def load_image(image_name, size):
     img = Image.open(image_path + image_name)
     img = img.resize(size, Image.LANCZOS)
-    return ImageTk.PhotoImage(img)
+    return img
 
 # Function for button actions
 def view_clinic_requests():
@@ -66,7 +66,7 @@ root.geometry("800x600")
 image_path = "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/Images/"
 
 # Load images with specified size
-logout_img = load_image("logout.png", (40, 40))
+logout_img = ctk.CTkImage(load_image("logout.png", (40, 40)))
 
 # Welcome text
 welcome_label = ctk.CTkLabel(root, text=f"Welcome {admin_fullname}", font=ctk.CTkFont(family="Arial", size=24, weight="bold"))
