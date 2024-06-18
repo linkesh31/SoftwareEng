@@ -1,11 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
-from PIL import Image, ImageTk
+from PIL import Image
 from tkinter import ttk
 import os
 import subprocess
 import mysql.connector
 import sys
+import customtkinter as ctk
 
 # Get clinic admin's clinic ID and full name from command line arguments
 if len(sys.argv) > 2:
@@ -98,9 +99,6 @@ def refresh_appointment_requests():
         appointment_ids[row_id] = request[0]  # Store appointment_id in dictionary with row_id as key
 
 # Function for button actions
-def home_action():
-    messagebox.showinfo("Home", "Home Button Clicked")
-
 def appointment_management_action():
     subprocess.run(['python', 'adminappointmentschedule.py', clinic_id, admin_fullname])
 
@@ -109,9 +107,6 @@ def logout_action():
     if response:
         root.destroy()
         os.system('python "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/main_page.py"')
-
-def notification_action():
-    messagebox.showinfo("Notification", "You have new notifications")
 
 def add_doctor_action():
     root.destroy()
@@ -123,22 +118,40 @@ def delete_doctor_action():
 
 # Function to show options on hover
 def show_doctor_management_menu(event):
-    doctor_management_menu.post(event.x_root, event.y_root)
-    root.after_cancel(hide_menu_job)
+    global hide_menu_job
+    if hide_menu_job:
+        root.after_cancel(hide_menu_job)
+        hide_menu_job = None
+    doctor_management_menu.place(x=doctor_management_button.winfo_x() + doctor_management_button.winfo_width(), 
+                                 y=doctor_management_button.winfo_y())
+    doctor_management_menu.lift()
 
 # Function to hide options when not hovering
 def hide_doctor_management_menu(event):
     global hide_menu_job
-    hide_menu_job = root.after(500, doctor_management_menu.unpost)
+    widget_under_cursor = root.winfo_containing(event.x_root, event.y_root)
+    if widget_under_cursor not in [doctor_management_button, doctor_management_label, doctor_management_menu,
+                                   doctor_management_menu.add_button, doctor_management_menu.delete_button]:
+        hide_menu_job = root.after(500, doctor_management_menu.place_forget)
+
+# Function to hide the menu when clicking outside
+def click_outside(event):
+    widget_under_cursor = root.winfo_containing(event.x_root, event.y_root)
+    if widget_under_cursor not in [doctor_management_button, doctor_management_label, doctor_management_menu,
+                                   doctor_management_menu.add_button, doctor_management_menu.delete_button]:
+        doctor_management_menu.place_forget()
 
 # Retrieve clinic details
 clinic_name, clinic_address, total_doctors = get_clinic_details(clinic_id)
 
 # Create main window
-root = tk.Tk()
+ctk.set_appearance_mode("light")  # Modes: "light", "dark", "system"
+ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
+
+root = ctk.CTk()
 root.title(f"Clinic Admin Home Page - {clinic_name}")
-root.geometry("1400x800")
-root.configure(bg="white")
+root.geometry("1000x700")
+root.configure(bg="#AED6F1")  # Set the main window background color
 
 # Image file path
 image_path = "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/Images/"
@@ -147,39 +160,38 @@ image_path = "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Proj
 def load_image(image_name, size):
     img = Image.open(image_path + image_name)
     img = img.resize(size, Image.Resampling.LANCZOS)
-    return ImageTk.PhotoImage(img)
+    return ctk.CTkImage(light_image=img, size=size)
 
 # Load images with specified size
 button_size = (40, 40)
-home_img = load_image("home.jpg", button_size)
 patients_management_img = load_image("patients_management.png", button_size)
 doctors_management_img = load_image("doctors_management.png", button_size)
 appointment_management_img = load_image("appointments_management.png", button_size)
-logout_img = load_image("logout.jpg", button_size)
+logout_img = load_image("logout.png", button_size)
 
 # Left side menu
-menu_frame = tk.Frame(root, bg="#E6E6FA")
+menu_frame = ctk.CTkFrame(root, fg_color="#E6E6FA")
 menu_frame.pack(side=tk.LEFT, fill=tk.Y, padx=10, pady=10)
 
 # Menu buttons with images and labels
 def create_button(frame, image, text, command):
-    button_frame = tk.Frame(frame, bg="#E6E6FA")
+    button_frame = ctk.CTkFrame(frame, fg_color="#E6E6FA")
     button_frame.pack(fill=tk.X, pady=5, padx=5)
-    btn = tk.Button(button_frame, image=image, command=command, bg="white", compound=tk.TOP)
+    btn = ctk.CTkButton(button_frame, image=image, command=command, fg_color="white", hover_color="#AED6F1", text="")
     btn.pack(pady=0)
-    label = tk.Label(button_frame, text=text, bg="#E6E6FA", font=("Arial", 12, "bold"))
+    label = ctk.CTkLabel(button_frame, text=text, fg_color="#E6E6FA", font=("Arial", 12, "bold"))
     label.pack(pady=5)
     return button_frame
-
-create_button(menu_frame, home_img, "HOME", home_action)
 
 # Doctor Management button
 doctor_management_button_frame = create_button(menu_frame, doctors_management_img, "DOCTORS MANAGEMENT", None)
 
-# Create hover menu for Doctor Management
-doctor_management_menu = tk.Menu(root, tearoff=0, bg="lightgrey", font=("Arial", 10))
-doctor_management_menu.add_command(label="Add Doctor", command=add_doctor_action)
-doctor_management_menu.add_command(label="Delete Doctor", command=delete_doctor_action)
+# Create custom hover menu for Doctor Management
+doctor_management_menu = ctk.CTkFrame(root, fg_color="#E6E6FA", corner_radius=10)
+doctor_management_menu.add_button = ctk.CTkButton(doctor_management_menu, text="Add Doctor", command=add_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8")
+doctor_management_menu.add_button.pack(fill=tk.X, padx=5, pady=2)
+doctor_management_menu.delete_button = ctk.CTkButton(doctor_management_menu, text="Delete Doctor", command=delete_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8")
+doctor_management_menu.delete_button.pack(fill=tk.X, padx=5, pady=2)
 
 # Bind hover event to Doctor Management button and label
 doctor_management_button = doctor_management_button_frame.winfo_children()[0]
@@ -189,47 +201,52 @@ doctor_management_button.bind("<Leave>", hide_doctor_management_menu)
 doctor_management_label.bind("<Enter>", show_doctor_management_menu)
 doctor_management_label.bind("<Leave>", hide_doctor_management_menu)
 
-# Bind hover event to menu to prevent it from hiding
-doctor_management_menu.bind("<Enter>", lambda event: root.after_cancel(hide_menu_job))
-doctor_management_menu.bind("<Leave>", hide_doctor_management_menu)
+# Bind hover event to the menu and its buttons to prevent it from hiding
+doctor_management_menu.add_button.bind("<Enter>", show_doctor_management_menu)
+doctor_management_menu.add_button.bind("<Leave>", hide_doctor_management_menu)
+doctor_management_menu.delete_button.bind("<Enter>", show_doctor_management_menu)
+doctor_management_menu.delete_button.bind("<Leave>", hide_doctor_management_menu)
+
+# Bind mouse click event to hide the menu when clicking outside
+root.bind("<Button-1>", click_outside)
 
 # Create remaining buttons
 create_button(menu_frame, appointment_management_img, "APPOINTMENT SCHEDULE", appointment_management_action)
 
 # Logout button at the bottom
-logout_frame = tk.Frame(menu_frame, bg="#E6E6FA")
+logout_frame = ctk.CTkFrame(menu_frame, fg_color="#E6E6FA")
 logout_frame.pack(fill=tk.X, pady=5, padx=5)
-logout_btn = tk.Button(logout_frame, image=logout_img, command=logout_action, bg="white", bd=0)
+logout_btn = ctk.CTkButton(logout_frame, image=logout_img, command=logout_action, fg_color="white", hover_color="#AED6F1", text="")
 logout_btn.pack(pady=0)
-logout_label = tk.Label(logout_frame, text="LOGOUT", bg="#E6E6FA", font=("Arial", 12, "bold"))
+logout_label = ctk.CTkLabel(logout_frame, text="LOGOUT", fg_color="#E6E6FA", font=("Arial", 12, "bold"))
 logout_label.pack(pady=5)
 
 # Main content area
-main_frame = tk.Frame(root, bg="white")
+main_frame = ctk.CTkFrame(root, fg_color="#AED6F1")
 main_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
 
 # Welcome text
-welcome_label = tk.Label(main_frame, text=f"Welcome {admin_fullname}", font=("Arial", 24), bg="white")
+welcome_label = ctk.CTkLabel(main_frame, text=f"Welcome {admin_fullname}", font=("Arial", 24), fg_color="#AED6F1")
 welcome_label.pack(pady=20)
 
 # Clinic details
-clinic_details_frame = tk.Frame(main_frame, bg="white", padx=10, pady=10)
-clinic_details_frame.pack(fill=tk.BOTH, expand=True)
+clinic_details_frame = ctk.CTkFrame(main_frame, fg_color="#AED6F1")
+clinic_details_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-clinic_name_label = tk.Label(clinic_details_frame, text=f"Clinic Name: {clinic_name}", font=("Arial", 18), bg="white")
+clinic_name_label = ctk.CTkLabel(clinic_details_frame, text=f"Clinic Name: {clinic_name}", font=("Arial", 18), fg_color="#AED6F1")
 clinic_name_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
 
-address_label = tk.Label(clinic_details_frame, text=f"Address: {clinic_address}", font=("Arial", 18), bg="white")
+address_label = ctk.CTkLabel(clinic_details_frame, text=f"Address: {clinic_address}", font=("Arial", 18), fg_color="#AED6F1")
 address_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
 
-total_doctors_label = tk.Label(clinic_details_frame, text=f"Total registered doctors: {total_doctors}", font=("Arial", 18), bg="white")
+total_doctors_label = ctk.CTkLabel(clinic_details_frame, text=f"Total registered doctors: {total_doctors}", font=("Arial", 18), fg_color="#AED6F1")
 total_doctors_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
 
 # Table title
-table_title_frame = tk.Frame(clinic_details_frame, bg="white")
-table_title_frame.grid(row=3, column=0, columnspan=2)
-table_title_label = tk.Label(table_title_frame, text="Appointment Request From Patients", font=("Arial", 18), bg="white")
-table_title_label.pack(pady=10)
+table_title_frame = ctk.CTkFrame(clinic_details_frame, fg_color="#AED6F1")
+table_title_frame.grid(row=3, column=0, columnspan=2, pady=10)
+table_title_label = ctk.CTkLabel(table_title_frame, text="Appointment Request From Patients", font=("Arial", 18), fg_color="#AED6F1")
+table_title_label.pack()
 
 # Appointment requests table
 columns = ("patient_name", "appointment_date", "appointment_time", "doctor_name")
@@ -260,7 +277,7 @@ clinic_details_frame.grid_rowconfigure(4, weight=1)
 clinic_details_frame.grid_columnconfigure(0, weight=1)
 
 # Button frame
-button_frame = tk.Frame(clinic_details_frame, bg="white")
+button_frame = ctk.CTkFrame(clinic_details_frame, fg_color="#AED6F1")
 button_frame.grid(row=6, column=0, padx=10, pady=10, sticky="w")
 
 # Accept and Reject buttons
@@ -282,10 +299,10 @@ def reject_appointment():
     else:
         messagebox.showerror("Error", "Please select an appointment to reject.")
 
-accept_btn = tk.Button(button_frame, text="Accept", command=accept_appointment, bg="green", fg="white", font=("Arial", 12, "bold"))
+accept_btn = ctk.CTkButton(button_frame, text="Accept", command=accept_appointment, fg_color="green", text_color="white", font=("Arial", 12, "bold"))
 accept_btn.pack(side=tk.LEFT, padx=10)
 
-reject_btn = tk.Button(button_frame, text="Reject", command=reject_appointment, bg="red", fg="white", font=("Arial", 12, "bold"))
+reject_btn = ctk.CTkButton(button_frame, text="Reject", command=reject_appointment, fg_color="red", text_color="white", font=("Arial", 12, "bold"))
 reject_btn.pack(side=tk.LEFT, padx=10)
 
 # Initialize appointment requests in the table
