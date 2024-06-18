@@ -111,8 +111,8 @@ def create_login_window():
     global login_root, password_entry, username_entry
     login_root = tk.Tk()
     login_root.title("Login")
-    width = 1480
-    height = 750
+    width = 780
+    height = 650
     login_root.geometry(f"{width}x{height}")
 
     top_frame = tk.Frame(login_root, bg="#ADD8E6", width=width, height=height)
