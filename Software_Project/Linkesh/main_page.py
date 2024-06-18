@@ -106,9 +106,16 @@ def login():
     else:
         messagebox.showerror("Login Failed", "Invalid username or password")
 
+# Hover effect for login button
+def on_enter(event):
+    login_button.config(bg='#0052cc', fg='white')
+
+def on_leave(event):
+    login_button.config(bg='blue', fg='white')
+
 # Create login window function
 def create_login_window():
-    global login_root, password_entry, username_entry
+    global login_root, password_entry, username_entry, login_button
     login_root = tk.Tk()
     login_root.title("Login")
     width = 780
@@ -150,8 +157,10 @@ def create_login_window():
     password_entry.bind('<FocusOut>', lambda event: on_focusout(event, password_entry, default_password))
     password_entry.place(relx=0.5, rely=0.55, anchor="center", width=300, height=30)
 
-    login_button = tk.Button(top_frame, text="Login", font=("Arial", 16), command=login)
-    login_button.place(relx=0.5, rely=0.6, anchor="center")
+    login_button = tk.Button(top_frame, text="Login", font=("Arial", 16), bg='blue', fg='white', command=login)
+    login_button.place(relx=0.5, rely=0.65, anchor="center")
+    login_button.bind("<Enter>", on_enter)
+    login_button.bind("<Leave>", on_leave)
 
     login_frame = tk.Frame(top_frame, bg="#ADD8E6")
     login_frame.place(relx=0.99, rely=0.99, anchor="se")
