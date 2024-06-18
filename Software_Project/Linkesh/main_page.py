@@ -1,14 +1,13 @@
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import messagebox
-from PIL import Image, ImageTk, ImageDraw
+from PIL import Image, ImageDraw
 import mysql.connector
 from mysql.connector import Error
 import subprocess
-import customtkinter as ctk
 
 # Create rounded image function
 def create_rounded_image(image_path, size, corner_radius):
-    image = Image.open(image_path).resize(size, Image.Resampling.LANCZOS)
+    image = Image.open(image_path).resize(size, Image.Resampling.LANCZOS).convert("RGBA")
     mask = Image.new("L", image.size, 0)
     draw = ImageDraw.Draw(mask)
     draw.rounded_rectangle((0, 0, size[0], size[1]), corner_radius, fill=255)
@@ -107,69 +106,61 @@ def login():
     else:
         messagebox.showerror("Login Failed", "Invalid username or password")
 
-# Hover effect for login button
-def on_enter(event):
-    login_button.config(bg='#0052cc', fg='white')
-
-def on_leave(event):
-    login_button.config(bg='blue', fg='white')
-
 # Create login window function
 def create_login_window():
-    global login_root, password_entry, username_entry, login_button
-    login_root = tk.Tk()
+    global login_root, password_entry, username_entry
+    ctk.set_appearance_mode("light")  # Modes: "light", "dark", "system"
+    ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
+
+    login_root = ctk.CTk()
     login_root.title("Login")
-    width = 780
+    width = 880
     height = 650
     login_root.geometry(f"{width}x{height}")
 
-    top_frame = tk.Frame(login_root, bg="#ADD8E6", width=width, height=height)
+    top_frame = ctk.CTkFrame(login_root, fg_color="#ADD8E6", width=width, height=height)
     top_frame.pack(fill="both", expand=True)
 
-    logo_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Linkesh\\Images\\SoftwareLogo.png"
+    logo_path = "C://Users//linke//OneDrive//Documents//GitHub//SoftwareEng//Software_Project//Linkesh//Images//SoftwareLogo.png"
     logo_image = create_rounded_image(logo_path, (150, 150), 30)
-    logo_photo = ImageTk.PhotoImage(logo_image)
-    logo_label = tk.Label(top_frame, image=logo_photo, bg="#ADD8E6")
-    logo_label.image = logo_photo
-    logo_label.place(relx=1.0, rely=0.0, anchor="ne")
+    logo_photo = ctk.CTkImage(light_image=logo_image, size=(150, 150))
+    logo_label = ctk.CTkLabel(top_frame, image=logo_photo, fg_color="#ADD8E6", text="")
+    logo_label.place(x=width-10, y=10, anchor="ne")
 
-    welcome_label = tk.Label(top_frame, text="Welcome to Login", font=("Comic Sans MS", 28, "bold"), bg="#ADD8E6", fg="#000080")
+    welcome_label = ctk.CTkLabel(top_frame, text="Welcome to Login", font=("Arial", 24, "bold"), fg_color="#ADD8E6", text_color="#000080")
     welcome_label.place(relx=0.5, rely=0.2, anchor="center")
 
-    user_icon_path = "C:\\Users\\linke\\OneDrive\\Documents\\GitHub\\SoftwareEng\\Software_Project\\Linkesh\\Images\\Patientnobg.png"
+    user_icon_path = "C://Users//linke//OneDrive//Documents//GitHub//SoftwareEng//Software_Project//Linkesh//Images//Patientnobg.png"
     user_icon = create_rounded_image(user_icon_path, (150, 150), 20)
-    user_photo = ImageTk.PhotoImage(user_icon)
-    user_icon_label = tk.Label(top_frame, image=user_photo, bg="#ADD8E6")
-    user_icon_label.image = user_photo
+    user_photo = ctk.CTkImage(light_image=user_icon, size=(150, 150))
+    user_icon_label = ctk.CTkLabel(top_frame, image=user_photo, fg_color="#ADD8E6", text="")
     user_icon_label.place(relx=0.5, rely=0.35, anchor="center")
 
     default_username = "Username"
     default_password = "Password"
 
-    username_entry = tk.Entry(top_frame, font=("Arial", 16), fg='grey')
+    username_entry = ctk.CTkEntry(top_frame, font=("Arial", 16), fg_color="white", text_color='grey', width=300, height=30)
     username_entry.insert(0, default_username)
     username_entry.bind('<FocusIn>', lambda event: on_entry_click(event, username_entry, default_username))
     username_entry.bind('<FocusOut>', lambda event: on_focusout(event, username_entry, default_username))
-    username_entry.place(relx=0.5, rely=0.5, anchor="center", width=300, height=30)
+    username_entry.place(relx=0.5, rely=0.5, anchor="center")
 
-    password_entry = tk.Entry(top_frame, font=("Arial", 16), fg='grey', show='')
+    password_entry = ctk.CTkEntry(top_frame, font=("Arial", 16), fg_color="white", text_color='grey', show='', width=300, height=30)
     password_entry.insert(0, default_password)
     password_entry.bind('<FocusIn>', lambda event: on_entry_click(event, password_entry, default_password))
     password_entry.bind('<FocusOut>', lambda event: on_focusout(event, password_entry, default_password))
-    password_entry.place(relx=0.5, rely=0.55, anchor="center", width=300, height=30)
+    password_entry.place(relx=0.5, rely=0.55, anchor="center")
 
-    login_button = tk.Button(top_frame, text="Login", font=("Arial", 16), bg='blue', fg='white', command=login)
-    login_button.place(relx=0.5, rely=0.65, anchor="center")
-    login_button.bind("<Enter>", on_enter)
-    login_button.bind("<Leave>", on_leave)
+    login_button = ctk.CTkButton(top_frame, text="Login", font=("Arial", 16), command=login, fg_color="#4682B4", hover_color="#5A9BD4", text_color="white")
+    login_button.place(relx=0.5, rely=0.6, anchor="center")
 
-    login_frame = tk.Frame(top_frame, bg="#ADD8E6")
+    login_frame = ctk.CTkFrame(top_frame, fg_color="#ADD8E6")
     login_frame.place(relx=0.99, rely=0.99, anchor="se")
 
-    login_label_text = tk.Label(login_frame, text="Don't have an account? ", font=("Arial", 12), bg="#ADD8E6", fg="black")
+    login_label_text = ctk.CTkLabel(login_frame, text="Don't have an account? ", font=("Arial", 16), fg_color="#ADD8E6", text_color="black")
     login_label_text.pack(side="left")
 
-    click_here_register_label = tk.Label(login_frame, text="Click here", font=("Arial", 12), bg="#ADD8E6", fg="#0000EE", cursor="hand2")
+    click_here_register_label = ctk.CTkLabel(login_frame, text="Click here", font=("Arial", 16), fg_color="#ADD8E6", text_color="#0000EE", cursor="hand2")
     click_here_register_label.pack(side="left")
     click_here_register_label.bind("<Button-1>", lambda event: open_register_page())
 
