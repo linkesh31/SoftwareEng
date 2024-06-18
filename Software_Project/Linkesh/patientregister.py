@@ -24,11 +24,16 @@ class PatientRegisterApp:
 
         self.create_form()
 
-        back_button = tk.Button(root, text="Back", command=self.back, bg='lightblue', font=("Helvetica", 12))
-        back_button.pack(side=tk.LEFT, padx=20, pady=10)
+        self.back_button = tk.Button(root, text="Back", bg='#FF6347', font=("Helvetica", 12), command=self.back)
+        self.back_button.pack(side=tk.LEFT, padx=20, pady=10)
 
-        register_button = tk.Button(root, text="Register", command=self.register, bg='lightblue', font=("Helvetica", 12))
-        register_button.pack(side=tk.RIGHT, padx=20, pady=10)
+        self.register_button = tk.Button(root, text="Register", bg='#32CD32', font=("Helvetica", 12), command=self.register)
+        self.register_button.pack(side=tk.RIGHT, padx=20, pady=10)
+
+        self.back_button.bind("<Enter>", self.on_enter_back)
+        self.back_button.bind("<Leave>", self.on_leave_back)
+        self.register_button.bind("<Enter>", self.on_enter_register)
+        self.register_button.bind("<Leave>", self.on_leave_register)
 
     def create_form(self):
         labels = ["Fullname:", "Username:", "Password:", "Confirm Password:", "Gender:", "Address:", "IC:", "Date of Birth:", "Email:", "Tel:"]
@@ -120,6 +125,18 @@ class PatientRegisterApp:
             if connection.is_connected():
                 cursor.close()
                 connection.close()
+
+    def on_enter_back(self, event):
+        self.back_button['bg'] = '#FF4500'
+
+    def on_leave_back(self, event):
+        self.back_button['bg'] = '#FF6347'
+
+    def on_enter_register(self, event):
+        self.register_button['bg'] = '#228B22'
+
+    def on_leave_register(self, event):
+        self.register_button['bg'] = '#32CD32'
 
 def create_patient_register_window():
     root = tk.Tk()
