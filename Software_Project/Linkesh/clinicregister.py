@@ -1,5 +1,6 @@
-import tkinter as tk
-from tkinter import messagebox, filedialog, ttk
+import customtkinter as ctk
+from tkinter import messagebox, filedialog
+from tkcalendar import DateEntry
 import mysql.connector
 from mysql.connector import Error
 
@@ -51,118 +52,98 @@ def browse_file():
 def create_clinic_register_window():
     global clinic_register_root, clinic_license_path
     clinic_license_path = None  # Initialize the variable to store the file path
-    clinic_register_root = tk.Tk()
+    clinic_register_root = ctk.CTk()
     clinic_register_root.title("Clinic Registration")
     width = 600
-    height = 800
+    height = 750
     clinic_register_root.geometry(f"{width}x{height}")
 
-    top_frame = tk.Frame(clinic_register_root, bg="#ADD8E6", width=width, height=height)
+    ctk.set_appearance_mode("light")
+    ctk.set_default_color_theme("blue")
+
+    top_frame = ctk.CTkFrame(clinic_register_root)
     top_frame.pack(fill="both", expand=True)
 
-    title_label = tk.Label(top_frame, text="Call a Doctor", font=("Arial", 24), bg="#ADD8E6", fg="#13126C")
+    title_label = ctk.CTkLabel(top_frame, text="Call a Doctor", font=("Helvetica", 24, "bold"), text_color="black")
     title_label.pack(pady=10)
 
-    sub_title_label = tk.Label(top_frame, text="Welcome to Registration", font=("Arial", 18), bg="#ADD8E6", fg="#13126C")
+    sub_title_label = ctk.CTkLabel(top_frame, text="Welcome to Registration", font=("Helvetica", 18), text_color="black")
     sub_title_label.pack(pady=10)
 
-    form_frame = tk.Frame(top_frame, bg="#ADD8E6")
+    form_frame = ctk.CTkFrame(top_frame)
     form_frame.pack(pady=10)
 
     # Clinic info section
-    clinic_info_label = tk.Label(form_frame, text="Clinic info", font=("Arial", 16), bg="#ADD8E6", fg="black")
+    clinic_info_label = ctk.CTkLabel(form_frame, text="Clinic info", font=("Helvetica", 16), text_color="black")
     clinic_info_label.grid(row=0, column=0, columnspan=2, pady=1)
 
-    clinic_name_label = tk.Label(form_frame, text="Clinic Name:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    clinic_name_label = ctk.CTkLabel(form_frame, text="Clinic Name:", font=("Helvetica", 14), text_color="black")
     clinic_name_label.grid(row=1, column=0, sticky="e", pady=5)
-    clinic_name_entry = tk.Entry(form_frame, font=("Arial", 14))
+    clinic_name_entry = ctk.CTkEntry(form_frame, font=("Helvetica", 14), fg_color="white", text_color="black")
     clinic_name_entry.grid(row=1, column=1, pady=5)
 
-    clinic_address_label = tk.Label(form_frame, text="Clinic Address:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    clinic_address_label = ctk.CTkLabel(form_frame, text="Clinic Address:", font=("Helvetica", 14), text_color="black")
     clinic_address_label.grid(row=2, column=0, sticky="e", pady=5)
-    clinic_address_entry = tk.Entry(form_frame, font=("Arial", 14))
+    clinic_address_entry = ctk.CTkEntry(form_frame, font=("Helvetica", 14), fg_color="white", text_color="black")
     clinic_address_entry.grid(row=2, column=1, pady=5)
 
-    clinic_license_label = tk.Label(form_frame, text="Clinic License:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    clinic_license_label = ctk.CTkLabel(form_frame, text="Clinic License:", font=("Helvetica", 14), text_color="black")
     clinic_license_label.grid(row=3, column=0, sticky="e", pady=5)
-    clinic_license_button = tk.Button(form_frame, text="Choose File", font=("Arial", 12))
+    clinic_license_button = ctk.CTkButton(form_frame, text="Choose File", font=("Helvetica", 12), command=lambda: choose_file(clinic_license_path_label))
     clinic_license_button.grid(row=3, column=1, pady=5)
-    clinic_license_path_label = tk.Label(form_frame, text="", font=("Arial", 12), bg="#ADD8E6", fg="black")
+    clinic_license_path_label = ctk.CTkLabel(form_frame, text="", font=("Helvetica", 12), text_color="black")
     clinic_license_path_label.grid(row=4, column=0, columnspan=2, pady=5)
 
-    def choose_file():
+    def choose_file(label):
         global clinic_license_path
         path = browse_file()
         if path:
             clinic_license_path = path  # Store the selected file path
-            clinic_license_path_label.config(text="File uploaded successfully")
-
-    clinic_license_button.config(command=choose_file)
+            label.config(text="File uploaded successfully")
 
     # Clinic admin info section
-    clinic_admin_info_label = tk.Label(form_frame, text="Clinic Admin info", font=("Arial", 16), bg="#ADD8E6", fg="black")
+    clinic_admin_info_label = ctk.CTkLabel(form_frame, text="Clinic Admin info", font=("Helvetica", 16), text_color="black")
     clinic_admin_info_label.grid(row=5, column=0, columnspan=2, pady=5)
 
-    fullname_label = tk.Label(form_frame, text="Fullname:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    fullname_label = ctk.CTkLabel(form_frame, text="Fullname:", font=("Helvetica", 14), text_color="black")
     fullname_label.grid(row=6, column=0, sticky="e", pady=5)
-    fullname_entry = tk.Entry(form_frame, font=("Arial", 14))
+    fullname_entry = ctk.CTkEntry(form_frame, font=("Helvetica", 14), fg_color="white", text_color="black")
     fullname_entry.grid(row=6, column=1, pady=5)
 
-    email_label = tk.Label(form_frame, text="Email:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    email_label = ctk.CTkLabel(form_frame, text="Email:", font=("Helvetica", 14), text_color="black")
     email_label.grid(row=7, column=0, sticky="e", pady=5)
-    email_entry = tk.Entry(form_frame, font=("Arial", 14))
+    email_entry = ctk.CTkEntry(form_frame, font=("Helvetica", 14), fg_color="white", text_color="black")
     email_entry.grid(row=7, column=1, pady=5)
 
-    username_label = tk.Label(form_frame, text="Username:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    username_label = ctk.CTkLabel(form_frame, text="Username:", font=("Helvetica", 14), text_color="black")
     username_label.grid(row=8, column=0, sticky="e", pady=5)
-    username_entry = tk.Entry(form_frame, font=("Arial", 14))
+    username_entry = ctk.CTkEntry(form_frame, font=("Helvetica", 14), fg_color="white", text_color="black")
     username_entry.grid(row=8, column=1, pady=5)
 
-    password_label = tk.Label(form_frame, text="Password:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    password_label = ctk.CTkLabel(form_frame, text="Password:", font=("Helvetica", 14), text_color="black")
     password_label.grid(row=9, column=0, sticky="e", pady=5)
-    password_entry = tk.Entry(form_frame, font=("Arial", 14), show="*")
+    password_entry = ctk.CTkEntry(form_frame, font=("Helvetica", 14), fg_color="white", text_color="black", show="*")
     password_entry.grid(row=9, column=1, pady=5)
 
-    confirm_password_label = tk.Label(form_frame, text="Confirm Password:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    confirm_password_label = ctk.CTkLabel(form_frame, text="Confirm Password:", font=("Helvetica", 14), text_color="black")
     confirm_password_label.grid(row=10, column=0, sticky="e", pady=5)
-    confirm_password_entry = tk.Entry(form_frame, font=("Arial", 14), show="*")
+    confirm_password_entry = ctk.CTkEntry(form_frame, font=("Helvetica", 14), fg_color="white", text_color="black", show="*")
     confirm_password_entry.grid(row=10, column=1, pady=5)
 
-    phone_number_label = tk.Label(form_frame, text="Phone Number:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    phone_number_label = ctk.CTkLabel(form_frame, text="Phone Number:", font=("Helvetica", 14), text_color="black")
     phone_number_label.grid(row=11, column=0, sticky="e", pady=5)
-    phone_number_entry = tk.Entry(form_frame, font=("Arial", 14))
+    phone_number_entry = ctk.CTkEntry(form_frame, font=("Helvetica", 14), fg_color="white", text_color="black")
     phone_number_entry.grid(row=11, column=1, pady=5)
 
-    admin_address_label = tk.Label(form_frame, text="Admin Address:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    admin_address_label = ctk.CTkLabel(form_frame, text="Admin Address:", font=("Helvetica", 14), text_color="black")
     admin_address_label.grid(row=12, column=0, sticky="e", pady=5)
-    admin_address_entry = tk.Entry(form_frame, font=("Arial", 14))
+    admin_address_entry = ctk.CTkEntry(form_frame, font=("Helvetica", 14), fg_color="white", text_color="black")
     admin_address_entry.grid(row=12, column=1, pady=5)
 
-    date_of_birth_label = tk.Label(form_frame, text="Date of Birth:", font=("Arial", 14), bg="#ADD8E6", fg="black")
+    date_of_birth_label = ctk.CTkLabel(form_frame, text="Date of Birth:", font=("Helvetica", 14), text_color="black")
     date_of_birth_label.grid(row=13, column=0, sticky="e", pady=5)
-
-    years = [str(year) for year in range(1900, 2025)]
-    months = [str(month).zfill(2) for month in range(1, 13)]
-    days = [str(day).zfill(2) for day in range(1, 32)]
-
-    year_var = tk.StringVar(form_frame)
-    year_var.set(years[0])
-    month_var = tk.StringVar(form_frame)
-    month_var.set(months[0])
-    day_var = tk.StringVar(form_frame)
-    day_var.set(days[0])
-
-    year_menu = ttk.Combobox(form_frame, textvariable=year_var, values=years)
-    year_menu.grid(row=13, column=1, sticky="w", pady=5)
-    year_menu.config(state="readonly")
-
-    month_menu = ttk.Combobox(form_frame, textvariable=month_var, values=months)
-    month_menu.grid(row=13, column=1, pady=5)
-    month_menu.config(state="readonly")
-
-    day_menu = ttk.Combobox(form_frame, textvariable=day_var, values=days)
-    day_menu.grid(row=13, column=1, sticky="e", pady=5)
-    day_menu.config(state="readonly")
+    date_of_birth_entry = DateEntry(form_frame, font=("Helvetica", 14), date_pattern='y-mm-dd')
+    date_of_birth_entry.grid(row=13, column=1, pady=5)
 
     def on_register_click():
         clinic_name = clinic_name_entry.get()
@@ -173,7 +154,7 @@ def create_clinic_register_window():
         admin_email = email_entry.get()
         admin_phone_number = phone_number_entry.get()
         admin_address = admin_address_entry.get()
-        admin_date_of_birth = f"{year_var.get()}-{month_var.get()}-{day_var.get()}"
+        admin_date_of_birth = date_of_birth_entry.get()
 
         # Validate that all fields are filled
         if not clinic_name or not clinic_address or not admin_fullname or not admin_username or not admin_password or not admin_email or not admin_phone_number or not admin_address:
@@ -197,7 +178,7 @@ def create_clinic_register_window():
 
         submit_clinic_data(clinic_name, clinic_address, clinic_license_path, admin_fullname, admin_username, admin_password, admin_email, admin_phone_number, admin_date_of_birth, admin_address)
 
-    register_button = tk.Button(form_frame, text="Register", font=("Arial", 14), command=on_register_click)
+    register_button = ctk.CTkButton(form_frame, text="Register", font=("Helvetica", 14), command=on_register_click)
     register_button.grid(row=14, column=0, columnspan=2, pady=10)
 
     def on_back_click():
@@ -205,7 +186,7 @@ def create_clinic_register_window():
         import register_page
         register_page.create_register_window()
 
-    back_button = tk.Button(form_frame, text="Back", font=("Arial", 14), command=on_back_click)
+    back_button = ctk.CTkButton(form_frame, text="Back", font=("Helvetica", 14), command=on_back_click)
     back_button.grid(row=15, column=0, columnspan=2, pady=10)
 
     clinic_register_root.mainloop()
