@@ -1,4 +1,4 @@
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import messagebox, ttk
 from PIL import Image, ImageTk
 import mysql.connector
@@ -71,9 +71,10 @@ def fetch_appointments(doctor_id):
 # Function to create prescription form and save the prescription
 def create_prescription_form(appointment_id, doctor_id, patient_name):
     def save_prescription():
-        prescription = text.get("1.0", tk.END).strip()
+        prescription = text.get("1.0", ctk.END).strip()
         if prescription:
-            response = messagebox.askyesno("Confirmation", "This will result in completing the patient's appointment. Do you want to proceed?")
+            response = messagebox.askyesno("Confirmation",
+                                           "This will result in completing the patient's appointment. Do you want to proceed?")
             if response:
                 try:
                     connection = mysql.connector.connect(
@@ -111,23 +112,23 @@ def create_prescription_form(appointment_id, doctor_id, patient_name):
 
     root.withdraw()  # Disable the main window
 
-    prescription_window = tk.Toplevel(root)
+    prescription_window = ctk.CTkToplevel(root)
     prescription_window.title("Prescription")
     prescription_window.geometry("400x300")
-    
-    label = tk.Label(prescription_window, text=f"Enter Prescription for {patient_name}:")
+
+    label = ctk.CTkLabel(prescription_window, text=f"Enter Prescription for {patient_name}:")
     label.pack(pady=10)
-    text = tk.Text(prescription_window, height=10, width=40)
+    text = ctk.CTkTextbox(prescription_window, height=10, width=40)
     text.pack(pady=10)
-    
-    button_frame = tk.Frame(prescription_window)
+
+    button_frame = ctk.CTkFrame(prescription_window)
     button_frame.pack(pady=10)
-    
-    save_button = tk.Button(button_frame, text="Save", command=save_prescription)
-    save_button.pack(side=tk.LEFT, padx=5)
-    
-    back_button = tk.Button(button_frame, text="Back", command=go_back)
-    back_button.pack(side=tk.LEFT, padx=5)
+
+    save_button = ctk.CTkButton(button_frame, text="Save", command=save_prescription)
+    save_button.pack(side=ctk.LEFT, padx=5)
+
+    back_button = ctk.CTkButton(button_frame, text="Back", command=go_back)
+    back_button.pack(side=ctk.LEFT, padx=5)
 
 # Function for button actions
 def profile_action():
@@ -151,29 +152,38 @@ def refresh_appointments():
 
     past_columns = ["Date", "Time", "Patient Name", "Reason", "Prescription"]
     for col in past_columns:
-        header = tk.Label(past_appointments_frame, text=col, font=("Arial", 10, "bold"), bg="lightblue", padx=5, pady=5)
+        header = ctk.CTkLabel(past_appointments_frame, text=col, font=("Arial", 10, "bold"), fg_color="#E0F7FA", padx=5,
+                              pady=5)
         header.grid(row=0, column=past_columns.index(col), sticky="nsew")
 
     for i, appointment in enumerate(past_appointments):
         for j, value in enumerate(appointment):
-            label = tk.Label(past_appointments_frame, text=value, font=("Arial", 10), bg="white", padx=5, pady=5)
-            label.grid(row=i+1, column=j, sticky="nsew")
+            label = ctk.CTkLabel(past_appointments_frame, text=value, font=("Arial", 10), fg_color="white", padx=5,
+                                 pady=5)
+            label.grid(row=i + 1, column=j, sticky="nsew")
 
     for col in range(len(past_columns)):
         past_appointments_frame.grid_columnconfigure(col, weight=1)
 
     upcoming_columns = ["Date", "Time", "Patient Name", "Reason", "Action (Click to generate prescription)"]
     for col in upcoming_columns:
-        header = tk.Label(upcoming_appointments_frame, text=col, font=("Arial", 10, "bold"), bg="lightblue", padx=5, pady=5)
+        header = ctk.CTkLabel(upcoming_appointments_frame, text=col, font=("Arial", 10, "bold"), fg_color="#E0F7FA",
+                              padx=5, pady=5)
         header.grid(row=0, column=upcoming_columns.index(col), sticky="nsew")
 
     for i, appointment in enumerate(upcoming_appointments):
         appointment_id, date, time, patient_name, reason = appointment
         for j, value in enumerate(appointment[1:]):
-            label = tk.Label(upcoming_appointments_frame, text=value, font=("Arial", 10), bg="white", padx=5, pady=5)
-            label.grid(row=i+1, column=j, sticky="nsew")
-        prescribe_button = tk.Button(upcoming_appointments_frame, text="Not prescribed", command=lambda appt_id=appointment_id, pt_name=patient_name: create_prescription_form(appt_id, doctor_id, pt_name), bg="blue", fg="white", font=("Arial", 10))
-        prescribe_button.grid(row=i+1, column=len(appointment[1:]), sticky="nsew")
+            label = ctk.CTkLabel(upcoming_appointments_frame, text=value, font=("Arial", 10), fg_color="white", padx=5,
+                                 pady=5)
+            label.grid(row=i + 1, column=j, sticky="nsew")
+        prescribe_button = ctk.CTkButton(upcoming_appointments_frame, text="Not prescribed",
+                                         command=lambda appt_id=appointment_id,
+                                                        pt_name=patient_name: create_prescription_form(appt_id,
+                                                                                                       doctor_id,
+                                                                                                       pt_name),
+                                         fg_color="blue", text_color="white", font=("Arial", 10))
+        prescribe_button.grid(row=i + 1, column=len(appointment[1:]), sticky="nsew")
 
     for col in range(len(upcoming_columns)):
         upcoming_appointments_frame.grid_columnconfigure(col, weight=1)
@@ -191,10 +201,13 @@ else:
     doctor_fullname = "Unknown Doctor"
 
 # Create main window
-root = tk.Tk()
+ctk.set_appearance_mode("light")  # Modes: "light", "dark", "system"
+ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
+
+root = ctk.CTk()
 root.title("Doctor Home Page")
-root.geometry("1200x800")
-root.configure(bg="white")
+root.geometry("1000x700")  # Adjusted window size
+root.configure(fg_color="#AED6F1")  # Set the main window background color
 
 # Image file path
 image_path = "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/Images/"
@@ -203,7 +216,7 @@ image_path = "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvin
 def load_image(image_name, size):
     img = Image.open(image_path + image_name)
     img = img.resize(size, Image.Resampling.LANCZOS)
-    return ImageTk.PhotoImage(img)
+    return ctk.CTkImage(light_image=img, size=size)
 
 # Load images with specified size
 button_size = (40, 40)
@@ -211,40 +224,44 @@ profile_img = load_image("profile.png", button_size)
 logout_img = load_image("logout.png", button_size)
 
 # Left side menu
-menu_frame = tk.Frame(root, bg="white")
-menu_frame.pack(side=tk.LEFT, fill=tk.Y, padx=10, pady=10)
+menu_frame = ctk.CTkFrame(root, fg_color="#E6E6FA")
+menu_frame.pack(side=ctk.LEFT, fill=ctk.Y, padx=10, pady=10)
 
 # Menu buttons with images and labels
 def create_button(frame, image, text, command):
-    btn = tk.Button(frame, image=image, command=command, bg="white", compound=tk.TOP)
-    btn.pack(pady=5)
-    label = tk.Label(frame, text=text, bg="white", font=("Arial", 10))
-    label.pack()
+    button_frame = ctk.CTkFrame(frame, fg_color="#E6E6FA")
+    button_frame.pack(fill=ctk.X, pady=5, padx=5)
+    btn = ctk.CTkButton(button_frame, image=image, command=command, fg_color="white", hover_color="#AED6F1", text="")
+    btn.pack(pady=0)
+    label = ctk.CTkLabel(button_frame, text=text, fg_color="#E6E6FA", font=("Arial", 12, "bold"))
+    label.pack(pady=5)
+    return button_frame
 
 create_button(menu_frame, profile_img, "PROFILE", profile_action)
 create_button(menu_frame, logout_img, "LOGOUT", logout_action)
 
 # Main content area
-main_frame = tk.Frame(root, bg="white")
-main_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=20, pady=20)
+main_frame = ctk.CTkFrame(root, fg_color="#AED6F1")
+main_frame.pack(side=ctk.RIGHT, fill=ctk.BOTH, expand=True, padx=20, pady=20)
 
 # Welcome text
-welcome_label = tk.Label(main_frame, text=f"Welcome DR. {doctor_fullname}", font=("Arial", 24), bg="white")
+welcome_label = ctk.CTkLabel(main_frame, text=f"Welcome DR. {doctor_fullname}", font=("Arial", 24), fg_color="#AED6F1")
 welcome_label.pack(pady=20)
 
 # Past appointments section
-past_appointments_label = tk.Label(main_frame, text="PAST APPOINTMENTS", bg="lightblue", font=("Arial", 14))
-past_appointments_label.pack(fill=tk.X, pady=(0, 10))
+past_appointments_label = ctk.CTkLabel(main_frame, text="PAST APPOINTMENTS", fg_color="#AED6F1", font=("Arial", 14))
+past_appointments_label.pack(fill=ctk.X, pady=(0, 10))
 
-past_appointments_frame = tk.Frame(main_frame, bg="white")
-past_appointments_frame.pack(fill=tk.BOTH, expand=True)
+past_appointments_frame = ctk.CTkFrame(main_frame, fg_color="white")
+past_appointments_frame.pack(fill=ctk.BOTH, expand=True)
 
 # Upcoming appointments section
-upcoming_appointments_label = tk.Label(main_frame, text="UPCOMING APPOINTMENTS", bg="lightblue", font=("Arial", 14))
-upcoming_appointments_label.pack(fill=tk.X, pady=(10, 0))
+upcoming_appointments_label = ctk.CTkLabel(main_frame, text="UPCOMING APPOINTMENTS", fg_color="#AED6F1",
+                                           font=("Arial", 14))
+upcoming_appointments_label.pack(fill=ctk.X, pady=(10, 0))
 
-upcoming_appointments_frame = tk.Frame(main_frame, bg="white")
-upcoming_appointments_frame.pack(fill=tk.BOTH, expand=True)
+upcoming_appointments_frame = ctk.CTkFrame(main_frame, fg_color="white")
+upcoming_appointments_frame.pack(fill=ctk.BOTH, expand=True)
 
 # Fetch appointment data for the specific doctor
 refresh_appointments()
