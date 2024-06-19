@@ -1,8 +1,8 @@
-import tkinter as tk
-from tkinter import ttk, messagebox
+import customtkinter as ctk
 from tkcalendar import DateEntry
 import mysql.connector
 import sys
+from tkinter import messagebox, ttk
 
 # Ensure command line arguments are properly passed
 if len(sys.argv) > 2:
@@ -92,56 +92,59 @@ def close_window():
     root.destroy()
 
 # Create main application window
-root = tk.Tk()
+ctk.set_appearance_mode("light")  # Modes: "light", "dark", "system"
+ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
+
+root = ctk.CTk()
 root.title("Appointment Schedule Page")
-root.geometry("400x400")
+root.geometry("500x600")
+root.configure(fg_color="#E0F7FA")
 
 # Date selection
-date_label = tk.Label(root, text="Select Date:")
+date_label = ctk.CTkLabel(root, text="Select Date:", fg_color="#E0F7FA")
 date_label.pack(pady=5)
 
 date_entry = DateEntry(root, width=12, background='darkblue', foreground='white', borderwidth=2)
 date_entry.pack(pady=5)
 
 # Time selection
-time_label = tk.Label(root, text="Select Time:")
+time_label = ctk.CTkLabel(root, text="Select Time:", fg_color="#E0F7FA")
 time_label.pack(pady=5)
 
-time_frame = tk.Frame(root)
+time_frame = ctk.CTkFrame(root, fg_color="#E0F7FA")
 time_frame.pack(pady=5)
 
+# Using Combobox for better time selection
 hour_combobox = ttk.Combobox(time_frame, values=[f"{i:02d}" for i in range(24)], width=3)
-hour_combobox.set("09")
-hour_combobox.pack(side=tk.LEFT, padx=5)
-hour_combobox.bind("<<ComboboxSelected>>", lambda event: clear_table())
+hour_combobox.set("09")  # Default selection
+hour_combobox.pack(side=ctk.LEFT, padx=5)
 
 minute_combobox = ttk.Combobox(time_frame, values=[f"{i:02d}" for i in range(0, 60, 15)], width=3)
-minute_combobox.set("00")
-minute_combobox.pack(side=tk.LEFT, padx=5)
-minute_combobox.bind("<<ComboboxSelected>>", lambda event: clear_table())
+minute_combobox.set("00")  # Default selection
+minute_combobox.pack(side=ctk.LEFT, padx=5)
 
 # Buttons frame
-buttons_frame = tk.Frame(root)
+buttons_frame = ctk.CTkFrame(root, fg_color="#E0F7FA")
 buttons_frame.pack(pady=10)
 
 # Search button
-search_button = tk.Button(buttons_frame, text="Search", command=fetch_doctors)
-search_button.pack(side=tk.LEFT, padx=10)
+search_button = ctk.CTkButton(buttons_frame, text="Search", command=fetch_doctors)
+search_button.pack(side=ctk.LEFT, padx=10)
 
 # Back button
-back_button = tk.Button(buttons_frame, text="Back", command=close_window)
-back_button.pack(side=tk.LEFT, padx=10)
+back_button = ctk.CTkButton(buttons_frame, text="Back", command=close_window)
+back_button.pack(side=ctk.LEFT, padx=10)
 
 # Table title
-table_title = tk.Label(root, text="Available Doctors", font=("Arial", 14, "bold"), bg="lightgrey", fg="blue")
-table_title.pack(pady=5, fill=tk.X)
+table_title = ctk.CTkLabel(root, text="Available Doctors", font=("Arial", 14, "bold"), fg_color="#E0F7FA")
+table_title.pack(pady=5)
 
 # Treeview to display doctors
-tree = ttk.Treeview(root, columns=("no", "doctor_name"), show='headings', height=5)
+tree = ttk.Treeview(root, columns=("no", "doctor_name"), show='headings', height=10)
 tree.heading("no", text="No.")
 tree.heading("doctor_name", text="Doctor")
-tree.column("no", anchor=tk.CENTER, width=50, minwidth=50)
-tree.column("doctor_name", anchor=tk.CENTER, width=200, minwidth=200)
+tree.column("no", anchor=ctk.CENTER, width=50, minwidth=50)
+tree.column("doctor_name", anchor=ctk.CENTER, width=200, minwidth=200)
 
 # Add color to the columns
 style = ttk.Style()
@@ -150,7 +153,7 @@ style.configure("Treeview", rowheight=25)
 style.configure("Treeview", background="white", fieldbackground="white")
 style.map("Treeview", background=[('selected', 'lightgreen')])
 
-tree.pack(pady=10, fill=tk.X, expand=False)
+tree.pack(pady=10, fill=ctk.X, expand=False)
 
 # Run the application
 root.mainloop()
