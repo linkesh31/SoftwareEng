@@ -151,7 +151,7 @@ ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
 root = ctk.CTk()
 root.title(f"Clinic Admin Home Page - {clinic_name}")
 root.geometry("1000x700")
-root.configure(bg="#AED6F1")  # Set the main window background color
+root.configure(fg_color="#AED6F1")  # Set the main window background color
 
 # Image file path
 image_path = "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/Images/"
