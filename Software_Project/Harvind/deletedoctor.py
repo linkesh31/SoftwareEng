@@ -1,5 +1,4 @@
-import tkinter as tk
-from tkinter import messagebox
+import customtkinter as ctk
 import mysql.connector
 import os
 import sys
@@ -25,10 +24,10 @@ def delete_doctor(doctor_id, user_id):
         cursor.execute('DELETE FROM doctors WHERE doctor_id = %s', (doctor_id,))
         cursor.execute('DELETE FROM users WHERE user_id = %s', (user_id,))
         connection.commit()
-        messagebox.showinfo("Success", "Doctor deleted successfully!")
+        ctk.CTkMessageBox.show_info("Success", "Doctor deleted successfully!")
         load_doctors()  # Refresh the table after deletion
     except mysql.connector.Error as err:
-        messagebox.showerror("Database Error", f"Error: {err}")
+        ctk.CTkMessageBox.show_error("Database Error", f"Error: {err}")
     finally:
         if connection.is_connected():
             cursor.close()
@@ -57,15 +56,15 @@ def load_doctors():
         for index, doctor in enumerate(doctors):
             create_table_row(index, doctor)
     except mysql.connector.Error as err:
-        messagebox.showerror("Database Error", f"Error: {err}")
+        ctk.CTkMessageBox.show_error("Database Error", f"Error: {err}")
     finally:
         if connection.is_connected():
             cursor.close()
             connection.close()
 
 def confirm_delete(doctor_id, user_id):
-    response = messagebox.askyesno("Confirm Delete", "Are you sure you want to delete this doctor?")
-    if response:
+    response = ctk.CTkMessageBox.ask_yes_no("Confirm Delete", "Are you sure you want to delete this doctor?")
+    if response == "yes":
         delete_doctor(doctor_id, user_id)
 
 def back_action():
@@ -75,29 +74,30 @@ def back_action():
 def create_table_header():
     headers = ["Doctor Name", "Email", "Tel", "IC", "Gender", "Delete Option"]
     for col, header in enumerate(headers):
-        label = tk.Label(table_frame, text=header, font=("Helvetica", 12, "bold"), bg="white", borderwidth=1, relief="solid", padx=10, pady=5)
+        label = ctk.CTkLabel(table_frame, text=header, font=("Helvetica", 12, "bold"), pady=5, fg_color="#E0F7FA")
         label.grid(row=0, column=col, sticky="nsew", padx=1, pady=1)
+        table_frame.grid_columnconfigure(col, weight=1)  # Make columns expandable
 
 def create_table_row(index, doctor):
     for col, value in enumerate(doctor[2:]):
-        label = tk.Label(table_frame, text=value, font=("Helvetica", 12), bg="white", borderwidth=1, relief="solid", padx=10, pady=5)
+        label = ctk.CTkLabel(table_frame, text=value, font=("Helvetica", 12), pady=5, fg_color="#E0F7FA")
         label.grid(row=index + 1, column=col, sticky="nsew", padx=1, pady=1)
-    delete_button = tk.Button(table_frame, text="Delete", command=lambda d=doctor[0], u=doctor[1]: confirm_delete(d, u), bg="red", fg="white", font=("Helvetica", 12))
+    delete_button = ctk.CTkButton(table_frame, text="Delete", command=lambda d=doctor[0], u=doctor[1]: confirm_delete(d, u), fg_color="red", text_color="white", font=("Helvetica", 12))
     delete_button.grid(row=index + 1, column=len(doctor[2:]), sticky="nsew", padx=1, pady=1)
 
 # Create main window
-root = tk.Tk()
+root = ctk.CTk()
 root.title("Delete Doctor")
 root.geometry("1000x600")  # Adjusted window size for better visibility
-root.configure(bg="white")
+root.configure(fg_color="#E0F7FA")  # Change the background color of the main window
 
 # Title label
-title_label = tk.Label(root, text="Delete Doctor", font=("Helvetica", 24, "bold"), bg="white")
+title_label = ctk.CTkLabel(root, text="Delete Doctor", font=("Helvetica", 24, "bold"), fg_color="#E0F7FA")
 title_label.pack(pady=10)
 
 # Table frame
-table_frame = tk.Frame(root, bg="white")
-table_frame.pack(pady=10, padx=100, fill=tk.BOTH, expand=True)  # Centering the table with padx
+table_frame = ctk.CTkFrame(root, fg_color="#E0F7FA")
+table_frame.pack(pady=10, padx=100, fill=ctk.BOTH, expand=True)  # Centering the table with padx
 
 # Create the initial header for the table
 create_table_header()
@@ -106,7 +106,7 @@ create_table_header()
 load_doctors()
 
 # Back button
-back_button = tk.Button(root, text="Back", command=back_action, bg="white", font=("Helvetica", 12))
-back_button.pack(side=tk.BOTTOM, pady=20)
+back_button = ctk.CTkButton(root, text="Back", command=back_action, font=("Helvetica", 12), text_color="Black", fg_color="#81D4FA")
+back_button.pack(side=ctk.BOTTOM, pady=20)
 
 root.mainloop()
