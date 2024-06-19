@@ -87,6 +87,9 @@ def authenticate_user(username, password):
 def login():
     username = username_entry.get()
     password = password_entry.get()
+    if username == "Username" or password == "Password":
+        messagebox.showerror("Login Failed", "Please fill out all fields")
+        return
     result = authenticate_user(username, password)
     print(f"Login result: {result}")  # Debug print statement
     if result:
@@ -105,6 +108,11 @@ def login():
             subprocess.run(['python', 'patienthome.py', str(id), fullname])
     else:
         messagebox.showerror("Login Failed", "Invalid username or password")
+
+# Open forgot password page
+def open_forgot_password_page():
+    login_root.destroy()
+    subprocess.run(['python', 'forgot_password.py'])
 
 # Create login window function
 def create_login_window():
@@ -153,6 +161,10 @@ def create_login_window():
 
     login_button = ctk.CTkButton(top_frame, text="Login", font=("Arial", 16), command=login, fg_color="#4682B4", hover_color="#5A9BD4", text_color="white")
     login_button.place(relx=0.5, rely=0.6, anchor="center")
+
+    forgot_password_label = ctk.CTkLabel(top_frame, text="Forgot Password?", font=("Arial", 12), fg_color="#ADD8E6", text_color="#0000EE", cursor="hand2")
+    forgot_password_label.place(relx=0.5, rely=0.65, anchor="center")
+    forgot_password_label.bind("<Button-1>", lambda event: open_forgot_password_page())
 
     login_frame = ctk.CTkFrame(top_frame, fg_color="#ADD8E6")
     login_frame.place(relx=0.99, rely=0.99, anchor="se")
