@@ -1,14 +1,14 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 from tkcalendar import Calendar
 from datetime import datetime
 import mysql.connector
 from mysql.connector import Error
 import subprocess
 import sys
-from tkinter import ttk
+import customtkinter as ctk
 
-# Get patient_id and patient's full name from command line arguments
+# Ensure command line arguments are properly passed
 if len(sys.argv) > 2:
     patient_id = int(sys.argv[1])
     patient_fullname = sys.argv[2]
@@ -116,45 +116,45 @@ def go_back_to_patient_home():
 # Create main window
 root = tk.Tk()
 root.title("Request Appointment")
-root.geometry("600x500")
+root.geometry("600x630")
 
 clinics = fetch_clinics()
 doctor_dict = {}
 
 # Clinic dropdown
 clinic_label = tk.Label(root, text="Clinics Available:")
-clinic_label.pack()
+clinic_label.pack(pady=5)
 clinic_var = tk.StringVar()
 clinic_menu = ttk.Combobox(root, textvariable=clinic_var, width=50)
 clinic_menu['values'] = list(clinics.keys())
 clinic_menu.bind("<<ComboboxSelected>>", on_clinic_select)
-clinic_menu.pack()
+clinic_menu.pack(pady=5)
 
 # Doctor dropdown
 doctor_label = tk.Label(root, text="Doctors:")
-doctor_label.pack()
+doctor_label.pack(pady=5)
 doctor_var = tk.StringVar()
 doctor_menu = ttk.Combobox(root, textvariable=doctor_var, width=50)
-doctor_menu.pack()
+doctor_menu.pack(pady=5)
 
 # Reason text box
 reason_label = tk.Label(root, text="Reason:")
-reason_label.pack()
+reason_label.pack(pady=5)
 reason_entry = tk.Text(root, height=4, width=50)
-reason_entry.pack()
+reason_entry.pack(pady=5)
 
 # Date picker
 date_label = tk.Label(root, text="Date:")
-date_label.pack()
+date_label.pack(pady=5)
 cal = Calendar(root, selectmode='day', year=datetime.now().year, month=datetime.now().month, day=datetime.now().day)
-cal.pack()
+cal.pack(pady=5)
 
 # Time picker
 time_label = tk.Label(root, text="Select Time:")
-time_label.pack()
+time_label.pack(pady=5)
 
 time_frame = tk.Frame(root)
-time_frame.pack()
+time_frame.pack(pady=5)
 
 hour_var = tk.StringVar()
 hour_menu = ttk.Combobox(time_frame, textvariable=hour_var, width=3)
@@ -167,11 +167,11 @@ minute_menu['values'] = ["00", "15", "30", "45"]
 minute_menu.pack(side=tk.LEFT, padx=5)
 
 # Send appointment request button
-send_request_button = tk.Button(root, text="Send appointment request", command=send_appointment_request)
+send_request_button = ctk.CTkButton(root, text="Send appointment request", command=send_appointment_request)
 send_request_button.pack(pady=10)
 
 # Back button
-back_button = tk.Button(root, text="Back", command=go_back_to_patient_home)
+back_button = ctk.CTkButton(root, text="Back", command=go_back_to_patient_home)
 back_button.pack(pady=5)
 
 root.mainloop()
