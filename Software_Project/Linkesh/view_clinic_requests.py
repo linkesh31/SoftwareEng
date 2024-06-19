@@ -1,6 +1,5 @@
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import messagebox, ttk
-from PIL import Image, ImageTk
 import mysql.connector
 import os
 import sys
@@ -94,10 +93,13 @@ def refresh_table():
 # Function for back button
 def back_to_home():
     root.destroy()
-    os.system(f'python "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/adminhome.py" "{admin_fullname}"')
+    os.system(f'python "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/adminhome.py" "{admin_fullname}"')
 
 # Create main window
-root = tk.Tk()
+ctk.set_appearance_mode("light")  # Modes: system (default), light, dark
+ctk.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
+
+root = ctk.CTk()
 root.title("Pending Clinic Registrations")
 root.geometry("800x600")
 root.configure(bg="white")
@@ -112,18 +114,18 @@ tree.heading("Clinic License", text="Clinic License")
 
 refresh_table()
 
-tree.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+tree.pack(fill=ctk.BOTH, expand=True, padx=20, pady=20)
 
 # Approve button
-approve_btn = tk.Button(root, text="Approve", command=approve_clinic, font=("Arial", 12), bg="lightgray", bd=0)
-approve_btn.pack(side=tk.LEFT, padx=20, pady=20)
+approve_btn = ctk.CTkButton(root, text="Approve", command=approve_clinic, font=("Arial", 12))
+approve_btn.pack(side=ctk.LEFT, padx=20, pady=20)
 
 # Reject button
-reject_btn = tk.Button(root, text="Reject", command=reject_clinic, font=("Arial", 12), bg="lightgray", bd=0)
-reject_btn.pack(side=tk.LEFT, padx=20, pady=20)
+reject_btn = ctk.CTkButton(root, text="Reject", command=reject_clinic, font=("Arial", 12))
+reject_btn.pack(side=ctk.LEFT, padx=20, pady=20)
 
 # Back button
-back_btn = tk.Button(root, text="Back", command=back_to_home, font=("Arial", 12), bg="lightgray", bd=0)
-back_btn.pack(side=tk.RIGHT, padx=20, pady=20)
+back_btn = ctk.CTkButton(root, text="Back", command=back_to_home, font=("Arial", 12))
+back_btn.pack(side=ctk.RIGHT, padx=20, pady=20)
 
 root.mainloop()
