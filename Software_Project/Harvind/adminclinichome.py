@@ -122,7 +122,7 @@ def show_doctor_management_menu(event):
     if hide_menu_job:
         root.after_cancel(hide_menu_job)
         hide_menu_job = None
-    doctor_management_menu.place(x=doctor_management_button.winfo_x() + doctor_management_button.winfo_width(), 
+    doctor_management_menu.place(x=doctor_management_button.winfo_x() + doctor_management_button.winfo_width(),
                                  y=doctor_management_button.winfo_y())
     doctor_management_menu.lift()
 
@@ -151,7 +151,7 @@ ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
 root = ctk.CTk()
 root.title(f"Clinic Admin Home Page - {clinic_name}")
 root.geometry("1000x700")
-root.configure(bg="#AED6F1")  # Set the main window background color
+root.configure(fg_color="#AED6F1")  # Set the main window background color
 
 # Image file path
 image_path = "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/Images/"
@@ -188,9 +188,9 @@ doctor_management_button_frame = create_button(menu_frame, doctors_management_im
 
 # Create custom hover menu for Doctor Management
 doctor_management_menu = ctk.CTkFrame(root, fg_color="#E6E6FA", corner_radius=10)
-doctor_management_menu.add_button = ctk.CTkButton(doctor_management_menu, text="Add Doctor", command=add_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8")
+doctor_management_menu.add_button = ctk.CTkButton(doctor_management_menu, text="Add Doctor", command=add_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8", text_color="black")
 doctor_management_menu.add_button.pack(fill=tk.X, padx=5, pady=2)
-doctor_management_menu.delete_button = ctk.CTkButton(doctor_management_menu, text="Delete Doctor", command=delete_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8")
+doctor_management_menu.delete_button = ctk.CTkButton(doctor_management_menu, text="Delete Doctor", command=delete_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8", text_color="black")
 doctor_management_menu.delete_button.pack(fill=tk.X, padx=5, pady=2)
 
 # Bind hover event to Doctor Management button and label

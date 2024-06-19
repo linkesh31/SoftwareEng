@@ -74,13 +74,13 @@ def back_action():
 def create_table_header():
     headers = ["Doctor Name", "Email", "Tel", "IC", "Gender", "Delete Option"]
     for col, header in enumerate(headers):
-        label = ctk.CTkLabel(table_frame, text=header, font=("Helvetica", 12, "bold"), pady=5, fg_color="#E0F7FA")
+        label = ctk.CTkLabel(table_frame, text=header, font=("Helvetica", 12, "bold"), pady=5, fg_color="#E0F7FA", text_color="black")
         label.grid(row=0, column=col, sticky="nsew", padx=1, pady=1)
         table_frame.grid_columnconfigure(col, weight=1)  # Make columns expandable
 
 def create_table_row(index, doctor):
     for col, value in enumerate(doctor[2:]):
-        label = ctk.CTkLabel(table_frame, text=value, font=("Helvetica", 12), pady=5, fg_color="#E0F7FA")
+        label = ctk.CTkLabel(table_frame, text=value, font=("Helvetica", 12), pady=5, fg_color="#E0F7FA", text_color="black")
         label.grid(row=index + 1, column=col, sticky="nsew", padx=1, pady=1)
     delete_button = ctk.CTkButton(table_frame, text="Delete", command=lambda d=doctor[0], u=doctor[1]: confirm_delete(d, u), fg_color="red", text_color="white", font=("Helvetica", 12))
     delete_button.grid(row=index + 1, column=len(doctor[2:]), sticky="nsew", padx=1, pady=1)
@@ -89,14 +89,14 @@ def create_table_row(index, doctor):
 root = ctk.CTk()
 root.title("Delete Doctor")
 root.geometry("1000x600")  # Adjusted window size for better visibility
-root.configure(fg_color="#E0F7FA")  # Change the background color of the main window
+root.configure(fg_color="lightblue")  # Change the background color of the main window
 
 # Title label
-title_label = ctk.CTkLabel(root, text="Delete Doctor", font=("Helvetica", 24, "bold"), fg_color="#E0F7FA")
+title_label = ctk.CTkLabel(root, text="Delete Doctor", font=("Helvetica", 24, "bold"), fg_color="lightblue", text_color="black")
 title_label.pack(pady=10)
 
 # Table frame
-table_frame = ctk.CTkFrame(root, fg_color="#E0F7FA")
+table_frame = ctk.CTkFrame(root, fg_color="lightblue")
 table_frame.pack(pady=10, padx=100, fill=ctk.BOTH, expand=True)  # Centering the table with padx
 
 # Create the initial header for the table

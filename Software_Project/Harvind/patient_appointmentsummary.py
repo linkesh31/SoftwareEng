@@ -1,5 +1,5 @@
-import tkinter as tk
-from tkinter import ttk, messagebox
+import customtkinter as ctk
+from tkinter import ttk
 import mysql.connector
 import os
 import sys
@@ -60,19 +60,23 @@ def back_action():
     root.destroy()
     os.system(f'python "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/patienthome.py" {patient_id} {patient_fullname}')
 
-root = tk.Tk()
+# Create main window
+ctk.set_appearance_mode("light")  # Modes: "light", "dark", "system"
+ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
+
+root = ctk.CTk()
 root.title("Appointment System")
-root.geometry("800x800")
-root.configure(bg="white")
+root.geometry("800x700")
+root.configure(fg_color="white")
 
-main_frame = tk.Frame(root, bg="white")
-main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+main_frame = ctk.CTkFrame(root, fg_color="white")
+main_frame.pack(fill=ctk.BOTH, expand=True, padx=20, pady=20)
 
-history_frame = tk.Frame(main_frame, bg="lightblue", padx=10, pady=10)
-history_frame.pack(fill=tk.BOTH, expand=True)
+history_frame = ctk.CTkFrame(main_frame, fg_color="lightblue", corner_radius=10)
+history_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
-past_appointments_label = tk.Label(history_frame, text="PAST APPOINTMENTS", bg="lightblue", font=("Arial", 14))
-past_appointments_label.pack(fill=tk.X, pady=(0, 10))
+past_appointments_label = ctk.CTkLabel(history_frame, text="PAST APPOINTMENTS", fg_color="lightblue", font=("Arial", 14))
+past_appointments_label.pack(fill=ctk.X, pady=(0, 10))
 
 past_appointments_tree = ttk.Treeview(history_frame, columns=("date", "time", "reason", "doctor", "clinic", "prescriptions"), show='headings')
 past_appointments_tree.heading("date", text="Date")
@@ -81,13 +85,13 @@ past_appointments_tree.heading("reason", text="Reason")
 past_appointments_tree.heading("doctor", text="Doctor")
 past_appointments_tree.heading("clinic", text="Clinic")
 past_appointments_tree.heading("prescriptions", text="Prescriptions")
-past_appointments_tree.pack(fill=tk.BOTH, expand=True)
+past_appointments_tree.pack(fill=ctk.BOTH, expand=True)
 
 for col in ("date", "time", "reason", "doctor", "clinic", "prescriptions"):
-    past_appointments_tree.column(col, anchor="center", width=100, stretch=tk.YES)
+    past_appointments_tree.column(col, anchor="center", width=100, stretch=ctk.YES)
 
-upcoming_appointments_label = tk.Label(history_frame, text="UPCOMING APPOINTMENTS", bg="lightblue", font=("Arial", 14))
-upcoming_appointments_label.pack(fill=tk.X, pady=(10, 0))
+upcoming_appointments_label = ctk.CTkLabel(history_frame, text="UPCOMING APPOINTMENTS", fg_color="lightblue", font=("Arial", 14))
+upcoming_appointments_label.pack(fill=ctk.X, pady=(10, 0))
 
 upcoming_appointments_tree = ttk.Treeview(history_frame, columns=("date", "time", "reason", "doctor", "clinic"), show='headings')
 upcoming_appointments_tree.heading("date", text="Date")
@@ -95,10 +99,10 @@ upcoming_appointments_tree.heading("time", text="Time")
 upcoming_appointments_tree.heading("reason", text="Reason")
 upcoming_appointments_tree.heading("doctor", text="Doctor")
 upcoming_appointments_tree.heading("clinic", text="Clinic")
-upcoming_appointments_tree.pack(fill=tk.BOTH, expand=True)
+upcoming_appointments_tree.pack(fill=ctk.BOTH, expand=True)
 
 for col in ("date", "time", "reason", "doctor", "clinic"):
-    upcoming_appointments_tree.column(col, anchor="center", width=100, stretch=tk.YES)
+    upcoming_appointments_tree.column(col, anchor="center", width=100, stretch=ctk.YES)
 
 # Fetch appointment data for the specific patient
 past_appointments, upcoming_appointments = fetch_appointments(patient_id)
@@ -110,7 +114,7 @@ for appointment in past_appointments:
 for appointment in upcoming_appointments:
     upcoming_appointments_tree.insert("", "end", values=appointment)
 
-back_button = tk.Button(main_frame, text="Back", command=back_action, bg="white", font=("Arial", 12))
+back_button = ctk.CTkButton(main_frame, text="Back", command=back_action, fg_color="#4BAAC8", text_color="white", font=("Arial", 12))
 back_button.pack(pady=10)
 
 root.mainloop()
