@@ -188,9 +188,9 @@ doctor_management_button_frame = create_button(menu_frame, doctors_management_im
 
 # Create custom hover menu for Doctor Management
 doctor_management_menu = ctk.CTkFrame(root, fg_color="#E6E6FA", corner_radius=10)
-doctor_management_menu.add_button = ctk.CTkButton(doctor_management_menu, text="Add Doctor", command=add_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8", text_color="black")
+doctor_management_menu.add_button = ctk.CTkButton(doctor_management_menu, text="Add Doctor", command=add_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8", text_color="black", font=("Arial", 12))
 doctor_management_menu.add_button.pack(fill=tk.X, padx=5, pady=2)
-doctor_management_menu.delete_button = ctk.CTkButton(doctor_management_menu, text="Delete Doctor", command=delete_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8", text_color="black")
+doctor_management_menu.delete_button = ctk.CTkButton(doctor_management_menu, text="Delete Doctor", command=delete_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8", text_color="black", font=("Arial", 12))
 doctor_management_menu.delete_button.pack(fill=tk.X, padx=5, pady=2)
 
 # Bind hover event to Doctor Management button and label
@@ -245,12 +245,16 @@ total_doctors_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
 # Table title
 table_title_frame = ctk.CTkFrame(clinic_details_frame, fg_color="#AED6F1")
 table_title_frame.grid(row=3, column=0, columnspan=2, pady=10)
-table_title_label = ctk.CTkLabel(table_title_frame, text="Appointment Request From Patients", font=("Arial", 18), fg_color="#AED6F1")
+table_title_label = ctk.CTkLabel(table_title_frame, text="Appointment Request From Patients", font=("Arial", 20), fg_color="#AED6F1")
 table_title_label.pack()
 
 # Appointment requests table
+style = ttk.Style()
+style.configure("Treeview.Heading", font=("Arial", 14))  # Font size for headings
+style.configure("Treeview", font=("Arial", 12))  # Font size for content
+
 columns = ("patient_name", "appointment_date", "appointment_time", "doctor_name")
-appointment_table = ttk.Treeview(clinic_details_frame, columns=columns, show='headings')
+appointment_table = ttk.Treeview(clinic_details_frame, columns=columns, show='headings', style="Treeview")
 appointment_table.heading("patient_name", text="Patient Name")
 appointment_table.heading("appointment_date", text="Date")
 appointment_table.heading("appointment_time", text="Time")
@@ -260,6 +264,7 @@ appointment_table.column("appointment_date", anchor='center')
 appointment_table.column("appointment_time", anchor='center')
 appointment_table.column("doctor_name", anchor='center')
 appointment_table.grid(row=4, column=0, padx=10, pady=10, sticky="nsew", columnspan=2)
+
 
 # Dictionary to store appointment_ids
 appointment_ids = {}

@@ -68,22 +68,22 @@ def refresh_appointments():
 
     approved_columns = ["Date", "Time", "Reason", "Doctor", "Clinic", "Status"]
     for col in approved_columns:
-        header = ctk.CTkLabel(approved_requests_frame, text=col, font=("Arial", 10, "bold"), fg_color="lightblue")
+        header = ctk.CTkLabel(approved_requests_frame, text=col, font=("Arial", 14, "bold"), fg_color="lightblue")
         header.grid(row=0, column=approved_columns.index(col), sticky="nsew")
 
     for i, request in enumerate(approved_requests):
         for j, value in enumerate(request):
-            label = ctk.CTkLabel(approved_requests_frame, text=value, font=("Arial", 10), fg_color="white")
+            label = ctk.CTkLabel(approved_requests_frame, text=value, font=("Arial", 12), fg_color="white")
             label.grid(row=i+1, column=j, sticky="nsew")
 
     pending_columns = ["Date", "Time", "Reason", "Doctor", "Clinic", "Action"]
     for col in pending_columns:
-        header = ctk.CTkLabel(pending_requests_frame, text=col, font=("Arial", 10, "bold"), fg_color="lightblue")
+        header = ctk.CTkLabel(pending_requests_frame, text=col, font=("Arial", 14, "bold"), fg_color="lightblue")
         header.grid(row=0, column=pending_columns.index(col), sticky="nsew")
 
     for i, request in enumerate(pending_requests):
         for j, value in enumerate(request):
-            label = ctk.CTkLabel(pending_requests_frame, text=value, font=("Arial", 10), fg_color="white")
+            label = ctk.CTkLabel(pending_requests_frame, text=value, font=("Arial", 12), fg_color="white")
             label.grid(row=i+1, column=j, sticky="nsew")
         delete_button = ctk.CTkButton(pending_requests_frame, text="Delete", command=lambda req=request: confirm_delete_appointment(req[0]), fg_color="red", text_color="white", font=("Arial", 10))
         delete_button.grid(row=i+1, column=len(request), sticky="nsew")
@@ -189,14 +189,14 @@ welcome_label = ctk.CTkLabel(main_frame, text=f"Welcome {patient_fullname}", fon
 welcome_label.pack(pady=20)
 
 # Approved/Rejected Requests
-approved_requests_label = ctk.CTkLabel(main_frame, text="APPROVED/REJECTED APPOINTMENT REQUESTS", fg_color="lightblue", font=("Arial", 14))
+approved_requests_label = ctk.CTkLabel(main_frame, text="APPROVED/REJECTED APPOINTMENT REQUESTS", fg_color="lightblue", font=("Arial", 18))
 approved_requests_label.pack(fill=tk.X, pady=(0, 10))
 
 approved_requests_frame = ctk.CTkFrame(main_frame, fg_color="white")
 approved_requests_frame.pack(fill=tk.BOTH, expand=True)
 
 # Pending Requests
-pending_requests_label = ctk.CTkLabel(main_frame, text="PENDING APPOINTMENT REQUESTS", fg_color="lightblue", font=("Arial", 14))
+pending_requests_label = ctk.CTkLabel(main_frame, text="PENDING APPOINTMENT REQUESTS", fg_color="lightblue", font=("Arial", 18))
 pending_requests_label.pack(fill=tk.X, pady=(10, 0))
 
 pending_requests_frame = ctk.CTkFrame(main_frame, fg_color="white")

@@ -114,11 +114,11 @@ def create_prescription_form(appointment_id, doctor_id, patient_name):
 
     prescription_window = ctk.CTkToplevel(root)
     prescription_window.title("Prescription")
-    prescription_window.geometry("400x300")
+    prescription_window.geometry("400x250")
 
     label = ctk.CTkLabel(prescription_window, text=f"Enter Prescription for {patient_name}:")
     label.pack(pady=10)
-    text = ctk.CTkTextbox(prescription_window, height=10, width=40)
+    text = ctk.CTkTextbox(prescription_window, height=90, width=180)
     text.pack(pady=10)
 
     button_frame = ctk.CTkFrame(prescription_window)
@@ -152,32 +152,32 @@ def refresh_appointments():
 
     past_columns = ["Date", "Time", "Patient Name", "Reason", "Prescription"]
     for col in past_columns:
-        header = ctk.CTkLabel(past_appointments_frame, text=col, font=("Arial", 10, "bold"), fg_color="#E0F7FA", padx=5,
+        header = ctk.CTkLabel(past_appointments_frame, text=col, font=("Arial", 14, "bold"), fg_color="#E0F7FA", padx=5,
                               pady=5)
         header.grid(row=0, column=past_columns.index(col), sticky="nsew")
 
     for i, appointment in enumerate(past_appointments):
         for j, value in enumerate(appointment):
-            label = ctk.CTkLabel(past_appointments_frame, text=value, font=("Arial", 10), fg_color="white", padx=5,
+            label = ctk.CTkLabel(past_appointments_frame, text=value, font=("Arial", 12), fg_color="white", padx=5,
                                  pady=5)
             label.grid(row=i + 1, column=j, sticky="nsew")
 
     for col in range(len(past_columns)):
         past_appointments_frame.grid_columnconfigure(col, weight=1)
 
-    upcoming_columns = ["Date", "Time", "Patient Name", "Reason", "Action (Click to generate prescription)"]
+    upcoming_columns = ["Date", "Time", "Patient Name", "Reason", "Action"]
     for col in upcoming_columns:
-        header = ctk.CTkLabel(upcoming_appointments_frame, text=col, font=("Arial", 10, "bold"), fg_color="#E0F7FA",
+        header = ctk.CTkLabel(upcoming_appointments_frame, text=col, font=("Arial", 14, "bold"), fg_color="#E0F7FA",
                               padx=5, pady=5)
         header.grid(row=0, column=upcoming_columns.index(col), sticky="nsew")
 
     for i, appointment in enumerate(upcoming_appointments):
         appointment_id, date, time, patient_name, reason = appointment
         for j, value in enumerate(appointment[1:]):
-            label = ctk.CTkLabel(upcoming_appointments_frame, text=value, font=("Arial", 10), fg_color="white", padx=5,
+            label = ctk.CTkLabel(upcoming_appointments_frame, text=value, font=("Arial", 12), fg_color="white", padx=5,
                                  pady=5)
             label.grid(row=i + 1, column=j, sticky="nsew")
-        prescribe_button = ctk.CTkButton(upcoming_appointments_frame, text="Not prescribed",
+        prescribe_button = ctk.CTkButton(upcoming_appointments_frame, text="Generate prescription",
                                          command=lambda appt_id=appointment_id,
                                                         pt_name=patient_name: create_prescription_form(appt_id,
                                                                                                        doctor_id,
@@ -249,7 +249,7 @@ welcome_label = ctk.CTkLabel(main_frame, text=f"Welcome DR. {doctor_fullname}", 
 welcome_label.pack(pady=20)
 
 # Past appointments section
-past_appointments_label = ctk.CTkLabel(main_frame, text="PAST APPOINTMENTS", fg_color="#AED6F1", font=("Arial", 14))
+past_appointments_label = ctk.CTkLabel(main_frame, text="PAST APPOINTMENTS", fg_color="#AED6F1", font=("Arial", 18))
 past_appointments_label.pack(fill=ctk.X, pady=(0, 10))
 
 past_appointments_frame = ctk.CTkFrame(main_frame, fg_color="white")
@@ -257,7 +257,7 @@ past_appointments_frame.pack(fill=ctk.BOTH, expand=True)
 
 # Upcoming appointments section
 upcoming_appointments_label = ctk.CTkLabel(main_frame, text="UPCOMING APPOINTMENTS", fg_color="#AED6F1",
-                                           font=("Arial", 14))
+                                           font=("Arial", 18))
 upcoming_appointments_label.pack(fill=ctk.X, pady=(10, 0))
 
 upcoming_appointments_frame = ctk.CTkFrame(main_frame, fg_color="white")

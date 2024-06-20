@@ -76,12 +76,22 @@ welcome_label.pack(pady=20)
 registered_clinics_label = ctk.CTkLabel(root, text="Registered Clinics", font=ctk.CTkFont(family="Arial", size=18, weight="bold"))
 registered_clinics_label.pack(pady=10)
 
+# Style for Treeview
+style = ttk.Style()
+style.configure("Custom.Treeview", font=("Arial", 12), rowheight=25)
+style.configure("Custom.Treeview.Heading", font=("Arial", 12, "bold"), anchor="center")
+style.configure("Custom.Treeview", anchor="center")
+
 # Registered clinics table
 columns = ("Clinic Name", "Clinic Address", "Admin Fullname")
-tree = ttk.Treeview(root, columns=columns, show="headings", style="mystyle.Treeview")
+tree = ttk.Treeview(root, columns=columns, show="headings", style="Custom.Treeview")
 tree.heading("Clinic Name", text="Clinic Name")
 tree.heading("Clinic Address", text="Clinic Address")
 tree.heading("Admin Fullname", text="Admin Fullname")
+
+# Centering the columns content
+for col in columns:
+    tree.column(col, anchor="center")
 
 clinics = fetch_registered_clinics()
 for clinic in clinics:

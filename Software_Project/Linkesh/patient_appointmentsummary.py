@@ -75,8 +75,13 @@ main_frame.pack(fill=ctk.BOTH, expand=True, padx=20, pady=20)
 history_frame = ctk.CTkFrame(main_frame, fg_color="lightblue", corner_radius=10)
 history_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
-past_appointments_label = ctk.CTkLabel(history_frame, text="PAST APPOINTMENTS", fg_color="lightblue", font=("Arial", 14))
+past_appointments_label = ctk.CTkLabel(history_frame, text="PAST APPOINTMENTS", fg_color="lightblue", font=("Arial", 18))
 past_appointments_label.pack(fill=ctk.X, pady=(0, 10))
+
+# Style for Treeview
+style = ttk.Style()
+style.configure("Treeview.Heading", font=("Arial", 14, "bold"))
+style.configure("Treeview", font=("Arial", 12), rowheight=25)  # Set font size for the table contents
 
 past_appointments_tree = ttk.Treeview(history_frame, columns=("date", "time", "reason", "doctor", "clinic", "prescriptions"), show='headings')
 past_appointments_tree.heading("date", text="Date")
@@ -90,7 +95,7 @@ past_appointments_tree.pack(fill=ctk.BOTH, expand=True)
 for col in ("date", "time", "reason", "doctor", "clinic", "prescriptions"):
     past_appointments_tree.column(col, anchor="center", width=100, stretch=ctk.YES)
 
-upcoming_appointments_label = ctk.CTkLabel(history_frame, text="UPCOMING APPOINTMENTS", fg_color="lightblue", font=("Arial", 14))
+upcoming_appointments_label = ctk.CTkLabel(history_frame, text="UPCOMING APPOINTMENTS", fg_color="lightblue", font=("Arial", 18))
 upcoming_appointments_label.pack(fill=ctk.X, pady=(10, 0))
 
 upcoming_appointments_tree = ttk.Treeview(history_frame, columns=("date", "time", "reason", "doctor", "clinic"), show='headings')

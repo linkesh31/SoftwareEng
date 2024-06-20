@@ -99,7 +99,7 @@ def create_clinic_register_window():
         path = browse_file()
         if path:
             clinic_license_path = path  # Store the selected file path
-            label.config(text="File uploaded successfully")
+            label.configure(text="File uploaded successfully")
 
     # Clinic admin info section
     clinic_admin_info_label = ctk.CTkLabel(form_frame, text="Clinic Admin info", font=("Helvetica", 16), text_color="black")

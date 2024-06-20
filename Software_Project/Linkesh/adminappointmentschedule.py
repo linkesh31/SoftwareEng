@@ -104,22 +104,22 @@ root.configure(fg_color="#E0F7FA")
 date_label = ctk.CTkLabel(root, text="Select Date:", fg_color="#E0F7FA")
 date_label.pack(pady=5)
 
-date_entry = DateEntry(root, width=12, background='darkblue', foreground='white', borderwidth=2)
+date_entry = DateEntry(root, width=12, background='darkblue', foreground='white', borderwidth=2, font=("Arial", 12))
 date_entry.pack(pady=5)
 
 # Time selection
-time_label = ctk.CTkLabel(root, text="Select Time:", fg_color="#E0F7FA")
+time_label = ctk.CTkLabel(root, text="Select Time:", fg_color="#E0F7FA", font=("Arial", 12))
 time_label.pack(pady=5)
 
 time_frame = ctk.CTkFrame(root, fg_color="#E0F7FA")
 time_frame.pack(pady=5)
 
 # Using Combobox for better time selection
-hour_combobox = ttk.Combobox(time_frame, values=[f"{i:02d}" for i in range(24)], width=3)
+hour_combobox = ttk.Combobox(time_frame, values=[f"{i:02d}" for i in range(24)], width=3, font=("Arial", 12))
 hour_combobox.set("09")  # Default selection
 hour_combobox.pack(side=ctk.LEFT, padx=5)
 
-minute_combobox = ttk.Combobox(time_frame, values=[f"{i:02d}" for i in range(0, 60, 15)], width=3)
+minute_combobox = ttk.Combobox(time_frame, values=[f"{i:02d}" for i in range(0, 60, 15)], width=3, font=("Arial", 12))
 minute_combobox.set("00")  # Default selection
 minute_combobox.pack(side=ctk.LEFT, padx=5)
 
