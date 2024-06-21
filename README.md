@@ -75,5 +75,5 @@ Back to Home
 Click the "Back" button to return to the main menu.
 
 Contributors
-Puki Chips
-Linku Mama
+Harvind Nair Selvam
+Linkesh Jaya Prakash Rao
