@@ -1,8 +1,8 @@
-import customtkinter as ctk
-from tkcalendar import DateEntry
-import mysql.connector
-import sys
-from tkinter import messagebox, ttk
+import customtkinter as ctk  # Import customtkinter for creating custom UI elements
+from tkcalendar import DateEntry  # Import DateEntry from tkcalendar for date selection
+import mysql.connector  # Import mysql.connector for database connectivity
+import sys  # Import sys for handling command line arguments
+from tkinter import messagebox, ttk  # Import messagebox and ttk from tkinter
 
 # Ensure command line arguments are properly passed
 if len(sys.argv) > 2:
@@ -16,17 +16,17 @@ print(f"Clinic ID: {clinic_id}, Admin Fullname: {admin_fullname}")
 
 # Function to fetch and display doctors based on selected date and time
 def fetch_doctors():
-    selected_date = date_entry.get_date()
-    selected_hour = hour_combobox.get()
-    selected_minute = minute_combobox.get()
+    selected_date = date_entry.get_date()  # Get selected date
+    selected_hour = hour_combobox.get()  # Get selected hour
+    selected_minute = minute_combobox.get()  # Get selected minute
 
-    selected_time = f"{selected_hour}:{selected_minute}:00"
-    # Convert the selected date to YYYY-MM-DD format
-    formatted_date = selected_date.strftime("%Y-%m-%d")
+    selected_time = f"{selected_hour}:{selected_minute}:00"  # Format the selected time
+    formatted_date = selected_date.strftime("%Y-%m-%d")  # Convert the selected date to YYYY-MM-DD format
 
     print(f"Selected Date: {formatted_date}, Selected Time: {selected_time}, Clinic ID: {clinic_id}")
 
     try:
+        # Connect to the database
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
@@ -92,8 +92,8 @@ def close_window():
     root.destroy()
 
 # Create main application window
-ctk.set_appearance_mode("light")  # Modes: "light", "dark", "system"
-ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
+ctk.set_appearance_mode("light")  # Set appearance mode
+ctk.set_default_color_theme("blue")  # Set color theme
 
 root = ctk.CTk()
 root.title("Appointment Schedule Page")

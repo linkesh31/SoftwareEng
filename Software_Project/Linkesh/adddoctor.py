@@ -1,9 +1,9 @@
-import customtkinter as ctk
-from tkinter import messagebox
-from tkinter import ttk
-import mysql.connector
-import os
-import sys
+import customtkinter as ctk  # Import customtkinter for creating custom UI elements
+from tkinter import messagebox  # Import messagebox for showing dialog boxes
+from tkinter import ttk  # Import ttk for using Combobox
+import mysql.connector  # Import mysql.connector for database connectivity
+import os  # Import os for running external scripts
+import sys  # Import sys for handling command line arguments
 
 # Get clinic ID and admin full name from command line arguments
 if len(sys.argv) > 2:
@@ -67,6 +67,7 @@ def save_doctor():
         return
 
     try:
+        # Connect to the database
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
@@ -94,11 +95,13 @@ def save_doctor():
                 print("Debug: Clinic ID not found.")  # Debug print statement
                 return
 
+        # Insert new user into users table
         cursor.execute('''
             INSERT INTO users (username, password, email, phone_number, fullname, role, date_of_birth, address)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         ''', (username, password, email, phone, fullname, 'doctor', dob, address))
         user_id = cursor.lastrowid
+        # Insert new doctor into doctors table
         cursor.execute('''
             INSERT INTO doctors (user_id, fullname, clinic_id, is_available, gender, identification_number)
             VALUES (%s, %s, %s, %s, %s, %s)
@@ -114,6 +117,7 @@ def save_doctor():
             cursor.close()
             connection.close()
 
+# Function to handle back action
 def back_action():
     root.destroy()
     os.system(f'python adminclinichome.py {clinic_id} "{admin_fullname}"')
@@ -125,8 +129,8 @@ def limit_ic_length(*args):
         ic_var.set(value[:12])
 
 # Create main window
-ctk.set_appearance_mode("light")  # Modes: system (default), light, dark
-ctk.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
+ctk.set_appearance_mode("light")  # Set appearance mode
+ctk.set_default_color_theme("blue")  # Set color theme
 
 root = ctk.CTk()
 root.title("Add Doctor")
