@@ -297,7 +297,9 @@ def accept_appointment():
     if selected_item:
         row_id = selected_item[0]
         appointment_id = appointment_ids[row_id]
-        update_appointment_status(appointment_id, 'accepted')
+        response = messagebox.askyesno("Confirmation", "Are you sure you want to accept this appointment?")
+        if response:
+            update_appointment_status(appointment_id, 'accepted')
     else:
         messagebox.showerror("Error", "Please select an appointment to accept.")
 
@@ -306,7 +308,9 @@ def reject_appointment():
     if selected_item:
         row_id = selected_item[0]
         appointment_id = appointment_ids[row_id]
-        update_appointment_status(appointment_id, 'rejected')
+        response = messagebox.askyesno("Confirmation", "Are you sure you want to reject this appointment?")
+        if response:
+            update_appointment_status(appointment_id, 'rejected')
     else:
         messagebox.showerror("Error", "Please select an appointment to reject.")
 

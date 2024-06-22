@@ -1,190 +1,297 @@
-import customtkinter as ctk  # Import customtkinter for creating custom UI elements
-from tkinter import messagebox  # Import messagebox for showing dialog boxes
-from PIL import Image, ImageDraw  # Import PIL for image processing
-import mysql.connector  # Import mysql.connector for database connectivity
-from mysql.connector import Error  # Import Error for handling database errors
-import subprocess  # Import subprocess for running external scripts
+import customtkinter as ctk  # Importing the customtkinter library as ctk for custom themed widgets
+from tkinter import messagebox, ttk  # Importing messagebox and ttk modules from tkinter
+from PIL import Image, ImageTk  # Importing Image and ImageTk from PIL for handling images
+import mysql.connector  # Importing the MySQL Connector Python module
+import os  # Importing the os module for interacting with the operating system
+import sys  # Importing the sys module for accessing command line arguments
+import subprocess  # Importing subprocess module for running external processes
 
-# Function to create a rounded image
-def create_rounded_image(image_path, size, corner_radius):
-    # Open and resize the image to the specified size
-    image = Image.open(image_path).resize(size, Image.Resampling.LANCZOS).convert("RGBA")
-    # Create a mask for rounded corners
-    mask = Image.new("L", image.size, 0)
-    draw = ImageDraw.Draw(mask)
-    draw.rounded_rectangle((0, 0, size[0], size[1]), corner_radius, fill=255)
-    # Create a new image with rounded corners using the mask
-    rounded_image = Image.new("RGBA", image.size)
-    rounded_image.paste(image, (0, 0), mask)
-    return rounded_image
-
-# Function to open the register page
-def open_register_page():
-    login_root.destroy()  # Close the login window
-    import register_page  # Import the register page script
-    register_page.create_register_window()  # Open the register window
-
-# Event handler for entry click (focus in)
-def on_entry_click(event, entry, default_text):
-    if entry.get() == default_text:  # Check if the entry contains default text
-        entry.delete(0, "end")  # Clear the entry
-        entry.insert(0, '')  # Insert an empty string
-        entry.configure(text_color='black')  # Change text color to black
-        if entry == password_entry:
-            entry.configure(show='*')  # Mask the password entry for security
-
-# Event handler for focus out (losing focus)
-def on_focusout(event, entry, default_text):
-    if entry.get() == '':  # Check if the entry is empty
-        entry.insert(0, default_text)  # Insert the default text
-        entry.configure(text_color='grey')  # Change text color to grey
-        if entry == password_entry:
-            entry.configure(show='')  # Unmask the password entry if it's empty
-
-# Function to authenticate the user
-def authenticate_user(username, password):
+# Function to fetch doctor's full name
+def get_doctor_fullname(doctor_id):
     try:
-        # Connect to the database
-        connection = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            passwd='calladoctor1234',
-            database='calladoctor'
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="calladoctor1234",
+            database="calladoctor"
         )
-        cursor = connection.cursor()  # Create a cursor object for executing SQL queries
-        # Execute the query to check user credentials
-        cursor.execute("SELECT user_id, role, fullname FROM users WHERE username=%s AND password=%s", (username, password))
-        result = cursor.fetchone()  # Fetch the result of the query
+        cursor = db.cursor()  # Creating a cursor object to interact with the database
+        cursor.execute("SELECT fullname FROM doctors WHERE doctor_id = %s", (doctor_id,))
+        result = cursor.fetchone()  # Fetching one result from the executed query
+        db.close()  # Closing the database connection
         if result:
-            user_id, role, fullname = result
-            if role == 'doctor':
-                # Check if the user is a doctor
-                cursor.execute("SELECT doctor_id FROM doctors WHERE user_id=%s", (user_id,))
-                doctor_result = cursor.fetchone()
-                doctor_id = doctor_result[0] if doctor_result else None
-                connection.close()
-                return role, doctor_id, fullname
-            elif role == 'clinic_admin':
-                # Check if the user is a clinic admin
-                cursor.execute("SELECT c.clinic_id, c.is_approved FROM admin_clinics ac JOIN clinics c ON ac.clinic_id = c.clinic_id WHERE ac.admin_id=%s", (user_id,))
-                clinic_result = cursor.fetchone()
-                clinic_id, is_approved = clinic_result if clinic_result else (None, None)
-                if is_approved == 0:
-                    connection.close()
-                    return None
-                connection.close()
-                return role, clinic_id, fullname
-            elif role == 'patient':
-                # Check if the user is a patient
-                cursor.execute("SELECT patient_id FROM patients WHERE user_id=%s", (user_id,))
-                patient_result = cursor.fetchone()
-                patient_id = patient_result[0] if patient_result else None
-                connection.close()
-                return role, patient_id, fullname
-            else:
-                connection.close()
-                return role, None, fullname
+            return result[0]  # Returning the doctor's full name
         else:
-            connection.close()
-            return None
-    except Error as e:
-        print(f"The error '{e}' occurred")
+            raise ValueError(f"No doctor found with ID {doctor_id}")
+    except mysql.connector.Error as err:
+        print(f"Database Error: {err}")
+        messagebox.showerror("Database Error", f"Error: {err}")
+        return "Doctor"
+
+# Function to fetch patient ID based on appointment ID
+def get_patient_id(appointment_id):
+    try:
+        db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="calladoctor1234",
+            database="calladoctor"
+        )
+        cursor = db.cursor()  # Creating a cursor object to interact with the database
+        cursor.execute("SELECT patient_id FROM appointments WHERE appointment_id = %s", (appointment_id,))
+        result = cursor.fetchone()  # Fetching one result from the executed query
+        db.close()  # Closing the database connection
+        if result:
+            return result[0]  # Returning the patient ID
+        else:
+            raise ValueError(f"No patient found for appointment ID {appointment_id}")
+    except mysql.connector.Error as err:
+        print(f"Database Error: {err}")
+        messagebox.showerror("Database Error", f"Error: {err}")
         return None
 
-# Function to handle login
-def login():
-    username = username_entry.get()  # Get the username from the entry field
-    password = password_entry.get()  # Get the password from the entry field
-    if username == "Username" or password == "Password":
-        messagebox.showerror("Login Failed", "Please fill out all fields")  # Show error if fields are empty
-        return
-    result = authenticate_user(username, password)  # Authenticate the user
-    print(f"Login result: {result}")  # Debug print statement to show login result
-    if result:
-        role, id, fullname = result
-        if role == 'doctor' and id is None:
-            messagebox.showerror("Login Failed", "Doctor ID not found")  # Show error if doctor ID is not found
-            return
-        login_root.destroy()  # Close the login window
-        if role == 'admin':
-            subprocess.run(['python', 'adminhome.py', fullname])  # Run the admin home script
-        elif role == 'clinic_admin':
-            subprocess.run(['python', 'adminclinichome.py', str(id), fullname])  # Run the clinic admin home script
-        elif role == 'doctor':
-            subprocess.run(['python', 'doctorhome.py', str(id)])  # Run the doctor home script
-        elif role == 'patient':
-            subprocess.run(['python', 'patienthome.py', str(id), fullname])  # Run the patient home script
-    else:
-        messagebox.showerror("Login Failed", "Invalid username or password")  # Show error if authentication fails
+# Function to fetch appointments
+def fetch_appointments(doctor_id):
+    try:
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="calladoctor1234",
+            database="calladoctor"
+        )
+        cursor = connection.cursor()  # Creating a cursor object to interact with the database
 
-# Function to open the forgot password page
-def open_forgot_password_page():
-    login_root.destroy()  # Close the login window
-    subprocess.run(['python', 'forgot_password.py'])  # Run the forgot password script
+        # Fetch past appointments
+        cursor.execute("""
+            SELECT a.appointment_date, a.appointment_time, p.fullname, a.reason, IFNULL(pr.medical_report, 'N/A')
+            FROM appointments a
+            JOIN patients p ON a.patient_id = p.patient_id
+            LEFT JOIN prescriptions pr ON a.appointment_id = pr.appointment_id
+            WHERE a.doctor_id = %s AND a.treatment_status = 'done'
+            ORDER BY a.appointment_date DESC
+        """, (doctor_id,))
+        past_appointments = cursor.fetchall()  # Fetching all past appointments
 
-# Function to create the login window
-def create_login_window():
-    global login_root, password_entry, username_entry
-    ctk.set_appearance_mode("light")  # Set the appearance mode to light
-    ctk.set_default_color_theme("blue")  # Set the default color theme to blue
+        # Fetch upcoming appointments
+        cursor.execute("""
+            SELECT a.appointment_id, a.appointment_date, a.appointment_time, p.fullname, a.reason
+            FROM appointments a
+            JOIN patients p ON a.patient_id = p.patient_id
+            WHERE a.doctor_id = %s AND a.treatment_status = 'pending' AND a.appointment_request_status = 'accepted'
+            ORDER BY a.appointment_date ASC
+        """, (doctor_id,))
+        upcoming_appointments = cursor.fetchall()  # Fetching all upcoming appointments
 
-    login_root = ctk.CTk()  # Create the main window
-    login_root.title("Login")  # Set the window title to "Login"
-    width = 880
-    height = 650
-    login_root.geometry(f"{width}x{height}")  # Set the window size
+        cursor.close()  # Closing the cursor
+        connection.close()  # Closing the database connection
 
-    top_frame = ctk.CTkFrame(login_root, fg_color="#ADD8E6", width=width, height=height)
-    top_frame.pack(fill="both", expand=True)  # Create and pack the top frame
+        return past_appointments, upcoming_appointments  # Returning the fetched appointments
+    except mysql.connector.Error as e:
+        print(f"The error '{e}' occurred")
+        return [], []  # Returning empty lists if an error occurs
 
-    logo_path = "C://Users//linke//OneDrive//Documents//GitHub//SoftwareEng//Software_Project//Linkesh//Images//SoftwareLogo.png"
-    logo_image = create_rounded_image(logo_path, (150, 150), 30)  # Create a rounded logo image
-    logo_photo = ctk.CTkImage(light_image=logo_image, size=(150, 150))  # Convert the rounded image to a CTkImage
-    logo_label = ctk.CTkLabel(top_frame, image=logo_photo, fg_color="#ADD8E6", text="")  # Create a label for the logo image
-    logo_label.place(x=width-10, y=10, anchor="ne")  # Place the logo image in the top right corner
+# Function to create prescription form and save the prescription
+def create_prescription_form(appointment_id, doctor_id, patient_name):
+    def save_prescription():
+        prescription = text.get("1.0", ctk.END).strip()  # Getting the text from the textbox
+        if prescription:
+            response = messagebox.askyesno("Confirmation", "This will result in completing the patient's appointment. Do you want to proceed?")
+            if response:
+                try:
+                    connection = mysql.connector.connect(
+                        host="localhost",
+                        user="root",
+                        password="calladoctor1234",
+                        database="calladoctor"
+                    )
+                    cursor = connection.cursor()  # Creating a cursor object to interact with the database
+                    cursor.execute("""
+                        INSERT INTO prescriptions (appointment_id, doctor_id, patient_id, medical_report)
+                        VALUES (%s, %s, (SELECT patient_id FROM appointments WHERE appointment_id = %s), %s)
+                    """, (appointment_id, doctor_id, appointment_id, prescription))
+                    cursor.execute("""
+                        UPDATE appointments
+                        SET treatment_status = 'done'
+                        WHERE appointment_id = %s
+                    """, (appointment_id,))
+                    connection.commit()  # Committing the transaction
+                    cursor.close()  # Closing the cursor
+                    connection.close()  # Closing the database connection
+                    refresh_appointments()
+                    messagebox.showinfo("Success", "Prescription saved successfully.")
+                    prescription_window.destroy()
+                    root.deiconify()  # Re-enable the main window
+                except mysql.connector.Error as err:
+                    print(f"Database Error: {err}")
+                    messagebox.showerror("Database Error", f"Error: {err}")
+        else:
+            messagebox.showwarning("Warning", "Prescription cannot be empty.")
 
-    welcome_label = ctk.CTkLabel(top_frame, text="Welcome to Login", font=("Arial", 24, "bold"), fg_color="#ADD8E6", text_color="#000080")
-    welcome_label.place(relx=0.5, rely=0.2, anchor="center")  # Place the welcome label at the center
+    def go_back():
+        prescription_window.destroy()
+        root.deiconify()  # Re-enable the main window
 
-    user_icon_path = "C://Users//linke//OneDrive//Documents//GitHub//SoftwareEng//Software_Project//Linkesh//Images//Patientnobg.png"
-    user_icon = create_rounded_image(user_icon_path, (150, 150), 20)  # Create a rounded user icon
-    user_photo = ctk.CTkImage(light_image=user_icon, size=(150, 150))  # Convert the rounded user icon to a CTkImage
-    user_icon_label = ctk.CTkLabel(top_frame, image=user_photo, fg_color="#ADD8E6", text="")  # Create a label for the user icon
-    user_icon_label.place(relx=0.5, rely=0.35, anchor="center")  # Place the user icon below the welcome label
+    root.withdraw()  # Disable the main window
 
-    default_username = "Username"
-    default_password = "Password"
+    prescription_window = ctk.CTkToplevel(root)  # Creating a new window for the prescription form
+    prescription_window.title("Prescription")  # Setting the title of the window
+    prescription_window.geometry("400x250")  # Setting the size of the window
 
-    username_entry = ctk.CTkEntry(top_frame, font=("Arial", 16), fg_color="white", text_color='grey', width=300, height=30)
-    username_entry.insert(0, default_username)  # Insert default text into the username entry
-    username_entry.bind('<FocusIn>', lambda event: on_entry_click(event, username_entry, default_username))  # Bind focus in event
-    username_entry.bind('<FocusOut>', lambda event: on_focusout(event, username_entry, default_username))  # Bind focus out event
-    username_entry.place(relx=0.5, rely=0.5, anchor="center")  # Place the username entry at the center
+    label = ctk.CTkLabel(prescription_window, text=f"Enter Prescription for {patient_name}:")  # Creating a label for the textbox
+    label.pack(pady=10)  # Packing the label with padding
+    text = ctk.CTkTextbox(prescription_window, height=110, width=290)  # Creating a textbox for the prescription
+    text.pack(pady=10)  # Packing the textbox with padding
 
-    password_entry = ctk.CTkEntry(top_frame, font=("Arial", 16), fg_color="white", text_color='grey', show='*', width=300, height=30)
-    password_entry.insert(0, default_password)  # Insert default text into the password entry
-    password_entry.bind('<FocusIn>', lambda event: on_entry_click(event, password_entry, default_password))  # Bind focus in event
-    password_entry.bind('<FocusOut>', lambda event: on_focusout(event, password_entry, default_password))  # Bind focus out event
-    password_entry.place(relx=0.5, rely=0.55, anchor="center")  # Place the password entry below the username entry
+    button_frame = ctk.CTkFrame(prescription_window)  # Creating a frame for the buttons
+    button_frame.pack(pady=10)  # Packing the frame with padding
 
-    login_button = ctk.CTkButton(top_frame, text="Login", font=("Arial", 16), command=login, fg_color="#4682B4", hover_color="#5A9BD4", text_color="white")
-    login_button.place(relx=0.5, rely=0.6, anchor="center")  # Create and place the login button below the password entry
+    save_button = ctk.CTkButton(button_frame, text="Save", command=save_prescription)  # Creating a save button
+    save_button.pack(side=ctk.LEFT, padx=5)  # Packing the save button with padding
 
-    forgot_password_label = ctk.CTkLabel(top_frame, text="Forgot Password?", font=("Arial", 12), fg_color="#ADD8E6", text_color="#0000EE", cursor="hand2")
-    forgot_password_label.place(relx=0.5, rely=0.65, anchor="center")  # Create and place the forgot password label below the login button
-    forgot_password_label.bind("<Button-1>", lambda event: open_forgot_password_page())  # Bind click event to open the forgot password page
+    back_button = ctk.CTkButton(button_frame, text="Back", command=go_back)  # Creating a back button
+    back_button.pack(side=ctk.LEFT, padx=5)  # Packing the back button with padding
 
-    login_frame = ctk.CTkFrame(top_frame, fg_color="#ADD8E6")
-    login_frame.place(relx=0.99, rely=0.99, anchor="se")  # Create and place the login frame at the bottom right corner
+# Function to view medical records
+def view_medical_record(appointment_id, patient_name):
+    patient_id = get_patient_id(appointment_id)  # Fetching the patient ID based on the appointment ID
+    if patient_id:
+        root.destroy()  # Destroying the main window
+        subprocess.run(['python', 'view_medical.py', str(doctor_id), str(patient_id)])  # Running the view_medical.py script
 
-    login_label_text = ctk.CTkLabel(login_frame, text="Don't have an account? ", font=("Arial", 16), fg_color="#ADD8E6", text_color="black")
-    login_label_text.pack(side="left")  # Create and place the login label text
+# Function for button actions
+def profile_action():
+    root.destroy()  # Destroying the main window
+    subprocess.run(['python', 'doctorprofile.py', str(doctor_id)])  # Running the doctorprofile.py script
 
-    click_here_register_label = ctk.CTkLabel(login_frame, text="Click here", font=("Arial", 16), fg_color="#ADD8E6", text_color="#0000EE", cursor="hand2")
-    click_here_register_label.pack(side="left")  # Create and place the register label
-    click_here_register_label.bind("<Button-1>", lambda event: open_register_page())  # Bind click event to open the register page
+def logout_action():
+    response = messagebox.askyesno("Logout", "Are you sure you want to logout?")  # Asking for confirmation to logout
+    if response:
+        root.destroy()  # Destroying the main window
+        os.system('python "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/main_page.py"')  # Running the main_page.py script
 
-    login_root.mainloop()  # Start the main loop to display the window
+# Function to refresh the appointments table
+def refresh_appointments():
+    past_appointments, upcoming_appointments = fetch_appointments(doctor_id)  # Fetching the appointments
 
-if __name__ == "__main__":
-    create_login_window()  # Call the function to create the login window
+    for widget in past_appointments_frame.winfo_children():  # Removing all widgets in the past appointments frame
+        widget.destroy()
+    for widget in upcoming_appointments_frame.winfo_children():  # Removing all widgets in the upcoming appointments frame
+        widget.destroy()
+
+    past_columns = ["Date", "Time", "Patient Name", "Reason", "Prescription"]
+    for col in past_columns:
+        header = ctk.CTkLabel(past_appointments_frame, text=col, font=("Arial", 14, "bold"), fg_color="#E0F7FA", padx=5, pady=5)
+        header.grid(row=0, column=past_columns.index(col), sticky="nsew")  # Creating and placing headers for past appointments
+
+    for i, appointment in enumerate(past_appointments):
+        for j, value in enumerate(appointment):
+            label = ctk.CTkLabel(past_appointments_frame, text=value, font=("Arial", 12), fg_color="white", padx=5, pady=5)
+            label.grid(row=i + 1, column=j, sticky="nsew")  # Creating and placing labels for past appointments
+
+    for col in range(len(past_columns)):
+        past_appointments_frame.grid_columnconfigure(col, weight=1)  # Configuring column weights for past appointments frame
+
+    upcoming_columns = ["Date", "Time", "Patient Name", "Reason", "Action"]
+    for col in upcoming_columns:
+        header = ctk.CTkLabel(upcoming_appointments_frame, text=col, font=("Arial", 14, "bold"), fg_color="#E0F7FA", padx=5, pady=5)
+        header.grid(row=0, column=upcoming_columns.index(col), sticky="nsew")  # Creating and placing headers for upcoming appointments
+
+    for i, appointment in enumerate(upcoming_appointments):
+        appointment_id, date, time, patient_name, reason = appointment
+        for j, value in enumerate(appointment[1:]):
+            label = ctk.CTkLabel(upcoming_appointments_frame, text=value, font=("Arial", 12), fg_color="white", padx=5, pady=5)
+            label.grid(row=i + 1, column=j, sticky="nsew")  # Creating and placing labels for upcoming appointments
+
+        button_frame = ctk.CTkFrame(upcoming_appointments_frame, fg_color="white")  # Creating a frame for the action buttons
+        button_frame.grid(row=i + 1, column=len(appointment[1:]), sticky="nsew")
+        
+        prescribe_button = ctk.CTkButton(button_frame, text="Generate Prescription", command=lambda appt_id=appointment_id, pt_name=patient_name: create_prescription_form(appt_id, doctor_id, pt_name), fg_color="blue", text_color="white", font=("Arial", 12))
+        record_button = ctk.CTkButton(button_frame, text="View Medical Record", command=lambda appt_id=appointment_id, pt_name=patient_name: view_medical_record(appt_id, pt_name), fg_color="green", text_color="white", font=("Arial", 12))
+
+        prescribe_button.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)  # Creating and placing the generate prescription button
+        record_button.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)  # Creating and placing the view medical record button
+        
+        button_frame.grid_columnconfigure(0, weight=1)  # Configuring column weights for button frame
+        button_frame.grid_columnconfigure(1, weight=1)  # Configuring column weights for button frame
+
+    for col in range(len(upcoming_columns)):
+        upcoming_appointments_frame.grid_columnconfigure(col, weight=1)  # Configuring column weights for upcoming appointments frame
+
+# Get doctor_id from command-line arguments
+doctor_id = sys.argv[1] if len(sys.argv) > 1 else None  # Getting doctor_id from command line arguments
+if doctor_id:
+    try:
+        doctor_id = int(doctor_id)  # Converting doctor_id to integer
+        doctor_fullname = get_doctor_fullname(doctor_id)  # Fetching the doctor's full name
+    except ValueError as ve:
+        print(f"ValueError: {ve}")
+        doctor_fullname = "Unknown Doctor"
+else:
+    doctor_fullname = "Unknown Doctor"
+
+# Create main window
+ctk.set_appearance_mode("light")  # Setting appearance mode to light
+ctk.set_default_color_theme("blue")  # Setting default color theme to blue
+
+root = ctk.CTk()  # Creating the main tkinter window
+root.title("Doctor Home Page")  # Setting window title
+root.geometry("1000x700")  # Setting window dimensions
+root.configure(fg_color="#AED6F1")  # Configuring the foreground color to light blue
+
+# Image file path
+image_path = "C:/Users/linke/OneDrive/Documents/GitHub/SoftwareEng/Software_Project/Linkesh/Images/"
+
+# Function to load and resize images
+def load_image(image_name, size):
+    img = Image.open(image_path + image_name)  # Opening the image file
+    img = img.resize(size, Image.Resampling.LANCZOS)  # Resizing the image
+    return ctk.CTkImage(light_image=img, size=size)  # Returning the resized image as a CTkImage
+
+# Load images with specified size
+button_size = (40, 40)  # Setting the button size
+profile_img = load_image("profile.png", button_size)  # Loading and resizing the profile image
+logout_img = load_image("logout.png", button_size)  # Loading and resizing the logout image
+
+# Left side menu
+menu_frame = ctk.CTkFrame(root, fg_color="#E6E6FA")  # Creating a frame for the left side menu with light purple color
+menu_frame.pack(side=ctk.LEFT, fill=ctk.Y, padx=10, pady=10)  # Packing the menu frame on the left side with padding
+
+# Menu buttons with images and labels
+def create_button(frame, image, text, command):
+    button_frame = ctk.CTkFrame(frame, fg_color="#E6E6FA")  # Creating a frame for the button with light purple color
+    button_frame.pack(fill=ctk.X, pady=5, padx=5)  # Packing the button frame with padding
+    btn = ctk.CTkButton(button_frame, image=image, command=command, fg_color="white", hover_color="#AED6F1", text="")  # Creating the button
+    btn.pack(pady=0)  # Packing the button with no padding
+    label = ctk.CTkLabel(button_frame, text=text, fg_color="#E6E6FA", font=("Arial", 12, "bold"))  # Creating a label for the button
+    label.pack(pady=5)  # Packing the label with padding
+    return button_frame
+
+create_button(menu_frame, profile_img, "PROFILE", profile_action)  # Creating the profile button
+create_button(menu_frame, logout_img, "LOGOUT", logout_action)  # Creating the logout button
+
+# Main content area
+main_frame = ctk.CTkFrame(root, fg_color="#AED6F1")  # Creating the main frame with light blue color
+main_frame.pack(side=ctk.RIGHT, fill=ctk.BOTH, expand=True, padx=20, pady=20)  # Packing the main frame on the right side with padding
+
+# Welcome text
+welcome_label = ctk.CTkLabel(main_frame, text=f"Welcome DR. {doctor_fullname}", font=("Arial", 24), fg_color="#AED6F1")  # Creating a welcome label with doctor's name
+welcome_label.pack(pady=20)  # Packing the welcome label with padding
+
+# Past appointments section
+past_appointments_label = ctk.CTkLabel(main_frame, text="PAST APPOINTMENTS", fg_color="#AED6F1", font=("Arial", 18))  # Creating a label for past appointments section
+past_appointments_label.pack(fill=ctk.X, pady=(0, 10))  # Packing the label with padding
+
+past_appointments_frame = ctk.CTkFrame(main_frame, fg_color="white")  # Creating a frame for past appointments with white color
+past_appointments_frame.pack(fill=ctk.BOTH, expand=True)  # Packing the frame with both fill and expand options
+
+# Upcoming appointments section
+upcoming_appointments_label = ctk.CTkLabel(main_frame, text="UPCOMING APPOINTMENTS", fg_color="#AED6F1", font=("Arial", 18))  # Creating a label for upcoming appointments section
+upcoming_appointments_label.pack(fill=ctk.X, pady=(10, 0))  # Packing the label with padding
+
+upcoming_appointments_frame = ctk.CTkFrame(main_frame, fg_color="white")  # Creating a frame for upcoming appointments with white color
+upcoming_appointments_frame.pack(fill=ctk.BOTH, expand=True)  # Packing the frame with both fill and expand options
+
+# Fetch appointment data for the specific doctor
+refresh_appointments()  # Calling the function to refresh appointments
+
+root.mainloop()  # Running the main loop to display the window
