@@ -5,7 +5,7 @@ import mysql.connector  # Import mysql.connector for database connectivity
 import os  # Import os for running external scripts
 import sys  # Import sys for handling command line arguments
 
-# Get clinic ID and admin full name from command line arguments
+# Get clinic ID and the admin full name from command line arguments
 if len(sys.argv) > 2:
     clinic_id = sys.argv[1]
     admin_fullname = ' '.join(sys.argv[2:])
