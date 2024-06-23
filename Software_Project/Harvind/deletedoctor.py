@@ -109,7 +109,7 @@ title_label.pack(pady=10)  # Pack the title label with padding
 table_frame = ctk.CTkFrame(root, fg_color="lightblue")  # Create a frame to hold the table
 table_frame.pack(pady=10, padx=100, fill=ctk.BOTH, expand=True)  # Pack the table frame with padding and expand it
 
-# Create the initial header for the table
+# Create initial header for the table
 create_table_header()
 
 # Load doctors into the table
