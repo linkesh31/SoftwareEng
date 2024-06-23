@@ -146,7 +146,7 @@ doctor_menu.pack(pady=5)  # Pack dropdown menu to window
 # Reason text box
 reason_label = tk.Label(root, text="Reason:")  # Create label for reason
 reason_label.pack(pady=5)  # Pack label to window
-reason_entry = tk.Text(root, height=4, width=50)  # Create text box for reason
+reason_entry = tk.Text(root, height=4, width=50)  # Create  the text box for reason
 reason_entry.pack(pady=5)  # Pack text box to window
 
 # Date picker
