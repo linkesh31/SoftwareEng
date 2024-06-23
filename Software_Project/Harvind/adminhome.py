@@ -1,10 +1,10 @@
-import tkinter as tk
-from tkinter import messagebox, ttk
-from PIL import Image, ImageTk
-import customtkinter as ctk
-import mysql.connector
-import os
-import sys
+import tkinter as tk  # Import tkinter for GUI elements
+from tkinter import messagebox, ttk  # Import messagebox and ttk for dialog boxes and treeview
+from PIL import Image  # Import PIL for image handling
+import customtkinter as ctk  # Import customtkinter for custom UI elements
+import mysql.connector  # Import mysql.connector for database connectivity
+import os  # Import os for operating system commands
+import sys  # Import sys for handling command line arguments
 
 # Get admin's full name from command line argument
 if len(sys.argv) > 1:
@@ -16,7 +16,7 @@ else:
 def load_image(image_name, size):
     img = Image.open(image_path + image_name)
     img = img.resize(size, Image.LANCZOS)
-    return ImageTk.PhotoImage(img)
+    return img
 
 # Function for button actions
 def view_clinic_requests():
@@ -31,6 +31,7 @@ def logout_action():
 
 def fetch_registered_clinics():
     try:
+        # Connect to the database
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
@@ -38,6 +39,7 @@ def fetch_registered_clinics():
             database='calladoctor'
         )
         cursor = connection.cursor()
+        # Query to fetch registered clinics
         query = """
         SELECT clinics.clinic_name, clinics.address, users.fullname 
         FROM clinics 
@@ -55,8 +57,8 @@ def fetch_registered_clinics():
         return []
 
 # Create main window
-ctk.set_appearance_mode("light")  # Modes: "light", "dark", "system"
-ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
+ctk.set_appearance_mode("light")  # Set appearance mode (light, dark, system)
+ctk.set_default_color_theme("blue")  # Set color theme (blue, green, dark-blue)
 
 root = ctk.CTk()
 root.title("Admin Home Page")
@@ -66,7 +68,7 @@ root.geometry("800x600")
 image_path = "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/Images/"
 
 # Load images with specified size
-logout_img = load_image("logout.png", (40, 40))
+logout_img = ctk.CTkImage(load_image("logout.png", (40, 40)))
 
 # Welcome text
 welcome_label = ctk.CTkLabel(root, text=f"Welcome {admin_fullname}", font=ctk.CTkFont(family="Arial", size=24, weight="bold"))
@@ -76,13 +78,24 @@ welcome_label.pack(pady=20)
 registered_clinics_label = ctk.CTkLabel(root, text="Registered Clinics", font=ctk.CTkFont(family="Arial", size=18, weight="bold"))
 registered_clinics_label.pack(pady=10)
 
+# Style for Treeview
+style = ttk.Style()
+style.configure("Custom.Treeview", font=("Arial", 12), rowheight=25)  # Set font and row height
+style.configure("Custom.Treeview.Heading", font=("Arial", 12, "bold"), anchor="center")  # Set font and anchor for heading
+style.configure("Custom.Treeview", anchor="center")  # Center the content
+
 # Registered clinics table
 columns = ("Clinic Name", "Clinic Address", "Admin Fullname")
-tree = ttk.Treeview(root, columns=columns, show="headings", style="mystyle.Treeview")
+tree = ttk.Treeview(root, columns=columns, show="headings", style="Custom.Treeview")
 tree.heading("Clinic Name", text="Clinic Name")
 tree.heading("Clinic Address", text="Clinic Address")
 tree.heading("Admin Fullname", text="Admin Fullname")
 
+# Centering the columns content
+for col in columns:
+    tree.column(col, anchor="center")
+
+# Fetch and insert registered clinics data into the treeview
 clinics = fetch_registered_clinics()
 for clinic in clinics:
     tree.insert("", "end", values=(clinic[0], clinic[1], clinic[2]))
@@ -97,4 +110,4 @@ logout_btn.pack(side="left", anchor="s", padx=10, pady=10)
 view_requests_btn = ctk.CTkButton(root, text="View clinic registration request", command=view_clinic_requests, font=ctk.CTkFont(family="Arial", size=12))
 view_requests_btn.pack(pady=10, padx=10, anchor="se", side=tk.RIGHT)
 
-root.mainloop()
+root.mainloop()  # Run the main loop

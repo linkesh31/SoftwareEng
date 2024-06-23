@@ -1,8 +1,8 @@
-import customtkinter as ctk
-from tkcalendar import DateEntry
-import mysql.connector
-import sys
-from tkinter import messagebox, ttk
+import customtkinter as ctk  # Import customtkinter for creating custom UI elements
+from tkcalendar import DateEntry  # Import DateEntry from tkcalendar for date selection
+import mysql.connector  # Import mysql.connector for database connectivity
+import sys  # Import sys for handling command line arguments
+from tkinter import messagebox, ttk  # Import messagebox and ttk from tkinter
 
 # Ensure command line arguments are properly passed
 if len(sys.argv) > 2:
@@ -16,17 +16,17 @@ print(f"Clinic ID: {clinic_id}, Admin Fullname: {admin_fullname}")
 
 # Function to fetch and display doctors based on selected date and time
 def fetch_doctors():
-    selected_date = date_entry.get_date()
-    selected_hour = hour_combobox.get()
-    selected_minute = minute_combobox.get()
+    selected_date = date_entry.get_date()  # Get selected date
+    selected_hour = hour_combobox.get()  # Get selected hour
+    selected_minute = minute_combobox.get()  # Get selected minute
 
-    selected_time = f"{selected_hour}:{selected_minute}:00"
-    # Convert the selected date to YYYY-MM-DD format
-    formatted_date = selected_date.strftime("%Y-%m-%d")
+    selected_time = f"{selected_hour}:{selected_minute}:00"  # Format the selected time
+    formatted_date = selected_date.strftime("%Y-%m-%d")  # Convert the selected date to YYYY-MM-DD format
 
     print(f"Selected Date: {formatted_date}, Selected Time: {selected_time}, Clinic ID: {clinic_id}")
 
     try:
+        # Connect to the database
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
@@ -92,8 +92,8 @@ def close_window():
     root.destroy()
 
 # Create main application window
-ctk.set_appearance_mode("light")  # Modes: "light", "dark", "system"
-ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
+ctk.set_appearance_mode("light")  # Set appearance mode
+ctk.set_default_color_theme("blue")  # Set color theme
 
 root = ctk.CTk()
 root.title("Appointment Schedule Page")
@@ -104,22 +104,22 @@ root.configure(fg_color="#E0F7FA")
 date_label = ctk.CTkLabel(root, text="Select Date:", fg_color="#E0F7FA")
 date_label.pack(pady=5)
 
-date_entry = DateEntry(root, width=12, background='darkblue', foreground='white', borderwidth=2)
+date_entry = DateEntry(root, width=12, background='darkblue', foreground='white', borderwidth=2, font=("Arial", 12))
 date_entry.pack(pady=5)
 
 # Time selection
-time_label = ctk.CTkLabel(root, text="Select Time:", fg_color="#E0F7FA")
+time_label = ctk.CTkLabel(root, text="Select Time:", fg_color="#E0F7FA", font=("Arial", 12))
 time_label.pack(pady=5)
 
 time_frame = ctk.CTkFrame(root, fg_color="#E0F7FA")
 time_frame.pack(pady=5)
 
 # Using Combobox for better time selection
-hour_combobox = ttk.Combobox(time_frame, values=[f"{i:02d}" for i in range(24)], width=3)
+hour_combobox = ttk.Combobox(time_frame, values=[f"{i:02d}" for i in range(24)], width=3, font=("Arial", 12))
 hour_combobox.set("09")  # Default selection
 hour_combobox.pack(side=ctk.LEFT, padx=5)
 
-minute_combobox = ttk.Combobox(time_frame, values=[f"{i:02d}" for i in range(0, 60, 15)], width=3)
+minute_combobox = ttk.Combobox(time_frame, values=[f"{i:02d}" for i in range(0, 60, 15)], width=3, font=("Arial", 12))
 minute_combobox.set("00")  # Default selection
 minute_combobox.pack(side=ctk.LEFT, padx=5)
 

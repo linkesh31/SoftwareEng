@@ -1,8 +1,9 @@
-import customtkinter as ctk
-from tkinter import messagebox
-import mysql.connector
-import os
-import sys
+import customtkinter as ctk  # Import customtkinter for creating custom UI elements
+from tkinter import messagebox  # Import messagebox for showing dialog boxes
+from tkinter import ttk  # Import ttk for using Combobox
+import mysql.connector  # Import mysql.connector for database connectivity
+import os  # Import os for running external scripts
+import sys  # Import sys for handling command line arguments
 
 # Get clinic ID and admin full name from command line arguments
 if len(sys.argv) > 2:
@@ -66,6 +67,7 @@ def save_doctor():
         return
 
     try:
+        # Connect to the database
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
@@ -93,11 +95,13 @@ def save_doctor():
                 print("Debug: Clinic ID not found.")  # Debug print statement
                 return
 
+        # Insert new user into users table
         cursor.execute('''
             INSERT INTO users (username, password, email, phone_number, fullname, role, date_of_birth, address)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         ''', (username, password, email, phone, fullname, 'doctor', dob, address))
         user_id = cursor.lastrowid
+        # Insert new doctor into doctors table
         cursor.execute('''
             INSERT INTO doctors (user_id, fullname, clinic_id, is_available, gender, identification_number)
             VALUES (%s, %s, %s, %s, %s, %s)
@@ -113,6 +117,7 @@ def save_doctor():
             cursor.close()
             connection.close()
 
+# Function to handle back action
 def back_action():
     root.destroy()
     os.system(f'python adminclinichome.py {clinic_id} "{admin_fullname}"')
@@ -124,8 +129,8 @@ def limit_ic_length(*args):
         ic_var.set(value[:12])
 
 # Create main window
-ctk.set_appearance_mode("light")  # Modes: system (default), light, dark
-ctk.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
+ctk.set_appearance_mode("light")  # Set appearance mode
+ctk.set_default_color_theme("blue")  # Set color theme
 
 root = ctk.CTk()
 root.title("Add Doctor")
@@ -155,18 +160,18 @@ for i, label_text in enumerate(labels):
     if label_text == "Gender:":
         entry = ctk.CTkComboBox(form_frame, font=("Helvetica", 14), values=["Male", "Female"], justify="center")
         entry.set("Male")  # Set default value
-        entry.grid(row=i, column=1, pady=5, padx=5, sticky="ew")  # Add this line to grid the combobox
-        entries[label_text] = entry  # Add this line to add the combobox to the entries dictionary
+        entry.grid(row=i, column=1, pady=5, padx=5, sticky="ew")
+        entries[label_text] = entry
     elif label_text == "Date of Birth:":
         dob_frame = ctk.CTkFrame(form_frame, fg_color="#AED6F1")
         dob_frame.grid(row=i, column=1, pady=5, padx=5, sticky="w")
-        year_combobox = ctk.CTkComboBox(dob_frame, font=("Helvetica", 14), values=[str(year) for year in range(1900, 2025)], width=60, justify="center")
+        year_combobox = ttk.Combobox(dob_frame, font=("Helvetica", 14), values=[str(year) for year in range(1900, 2025)], width=4)
         year_combobox.pack(side=ctk.LEFT)
         year_combobox.set("Year")
-        month_combobox = ctk.CTkComboBox(dob_frame, font=("Helvetica", 14), values=[f"{month:02d}" for month in range(1, 13)], width=40, justify="center")
+        month_combobox = ttk.Combobox(dob_frame, font=("Helvetica", 14), values=[f"{month:02d}" for month in range(1, 13)], width=2)
         month_combobox.pack(side=ctk.LEFT, padx=(5, 0))
         month_combobox.set("Month")
-        day_combobox = ctk.CTkComboBox(dob_frame, font=("Helvetica", 14), values=[f"{day:02d}" for day in range(1, 32)], width=40, justify="center")
+        day_combobox = ttk.Combobox(dob_frame, font=("Helvetica", 14), values=[f"{day:02d}" for day in range(1, 32)], width=2)
         day_combobox.pack(side=ctk.LEFT, padx=(5, 0))
         day_combobox.set("Day")
         entries["Year"] = year_combobox
@@ -181,13 +186,13 @@ for i, label_text in enumerate(labels):
 button_frame = ctk.CTkFrame(root, fg_color="#AED6F1")
 button_frame.pack(pady=10, fill=ctk.X)
 
-# Save button
-save_button = ctk.CTkButton(button_frame, text="Save", command=save_doctor, font=("Helvetica", 12))
-save_button.pack(side=ctk.LEFT, padx=15, pady=10)
-
 # Back button
 back_button = ctk.CTkButton(button_frame, text="Back", command=back_action, font=("Helvetica", 12))
-back_button.pack(side=ctk.RIGHT, padx=15, pady=10)
+back_button.pack(side=ctk.LEFT, padx=15, pady=10)
+
+# Save button
+save_button = ctk.CTkButton(button_frame, text="Save", command=save_doctor, font=("Helvetica", 12))
+save_button.pack(side=ctk.RIGHT, padx=15, pady=10)
 
 # Unpack entries for easier access
 fullname_entry = entries["Fullname:"]

@@ -1,12 +1,12 @@
-import tkinter as tk
-from tkinter import messagebox
-from PIL import Image
-from tkinter import ttk
-import os
-import subprocess
-import mysql.connector
-import sys
-import customtkinter as ctk
+import tkinter as tk  # Import tkinter for GUI elements
+from tkinter import messagebox  # Import messagebox for showing dialog boxes
+from PIL import Image  # Import PIL for image handling
+from tkinter import ttk  # Import ttk for Treeview and Combobox
+import os  # Import os for operating system commands
+import subprocess  # Import subprocess for running external scripts
+import mysql.connector  # Import mysql.connector for database connectivity
+import sys  # Import sys for handling command line arguments
+import customtkinter as ctk  # Import customtkinter for custom UI elements
 
 # Get clinic admin's clinic ID and full name from command line arguments
 if len(sys.argv) > 2:
@@ -19,6 +19,7 @@ else:
 # Function to retrieve clinic details
 def get_clinic_details(clinic_id):
     try:
+        # Connect to the database
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
@@ -26,9 +27,11 @@ def get_clinic_details(clinic_id):
             database='calladoctor'
         )
         cursor = connection.cursor()
+        # Fetch clinic name and address
         cursor.execute("SELECT clinic_name, address FROM clinics WHERE clinic_id=%s", (clinic_id,))
         clinic_details = cursor.fetchone()
 
+        # Fetch total number of doctors in the clinic
         cursor.execute("SELECT COUNT(*) FROM doctors WHERE clinic_id=%s", (clinic_id,))
         total_doctors = cursor.fetchone()[0]
 
@@ -46,6 +49,7 @@ def get_clinic_details(clinic_id):
 # Function to retrieve appointment requests
 def get_appointment_requests(clinic_id):
     try:
+        # Connect to the database
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
@@ -53,6 +57,7 @@ def get_appointment_requests(clinic_id):
             database='calladoctor'
         )
         cursor = connection.cursor()
+        # Query to get appointment requests
         query = """
         SELECT a.appointment_id, p.fullname, a.appointment_date, a.appointment_time, d.fullname
         FROM appointments a
@@ -72,6 +77,7 @@ def get_appointment_requests(clinic_id):
 # Function to update appointment request status
 def update_appointment_status(appointment_id, status):
     try:
+        # Connect to the database
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
@@ -79,6 +85,7 @@ def update_appointment_status(appointment_id, status):
             database='calladoctor'
         )
         cursor = connection.cursor()
+        # Update the status of the appointment
         query = "UPDATE appointments SET appointment_request_status = %s WHERE appointment_id = %s"
         cursor.execute(query, (status, appointment_id))
         connection.commit()
@@ -145,10 +152,10 @@ def click_outside(event):
 clinic_name, clinic_address, total_doctors = get_clinic_details(clinic_id)
 
 # Create main window
-ctk.set_appearance_mode("light")  # Modes: "light", "dark", "system"
-ctk.set_default_color_theme("blue")  # Themes: "blue", "green", "dark-blue"
+ctk.set_appearance_mode("light")  # Set appearance mode
+ctk.set_default_color_theme("blue")  # Set color theme
 
-root = ctk.CTk()
+root = ctk.CTk()  # Create main application window
 root.title(f"Clinic Admin Home Page - {clinic_name}")
 root.geometry("1000x700")
 root.configure(fg_color="#AED6F1")  # Set the main window background color
@@ -188,9 +195,9 @@ doctor_management_button_frame = create_button(menu_frame, doctors_management_im
 
 # Create custom hover menu for Doctor Management
 doctor_management_menu = ctk.CTkFrame(root, fg_color="#E6E6FA", corner_radius=10)
-doctor_management_menu.add_button = ctk.CTkButton(doctor_management_menu, text="Add Doctor", command=add_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8", text_color="black")
+doctor_management_menu.add_button = ctk.CTkButton(doctor_management_menu, text="Add Doctor", command=add_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8", text_color="black", font=("Arial", 12))
 doctor_management_menu.add_button.pack(fill=tk.X, padx=5, pady=2)
-doctor_management_menu.delete_button = ctk.CTkButton(doctor_management_menu, text="Delete Doctor", command=delete_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8", text_color="black")
+doctor_management_menu.delete_button = ctk.CTkButton(doctor_management_menu, text="Delete Doctor", command=delete_doctor_action, fg_color="#AED6F1", hover_color="#D6EAF8", text_color="black", font=("Arial", 12))
 doctor_management_menu.delete_button.pack(fill=tk.X, padx=5, pady=2)
 
 # Bind hover event to Doctor Management button and label
@@ -245,12 +252,16 @@ total_doctors_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
 # Table title
 table_title_frame = ctk.CTkFrame(clinic_details_frame, fg_color="#AED6F1")
 table_title_frame.grid(row=3, column=0, columnspan=2, pady=10)
-table_title_label = ctk.CTkLabel(table_title_frame, text="Appointment Request From Patients", font=("Arial", 18), fg_color="#AED6F1")
+table_title_label = ctk.CTkLabel(table_title_frame, text="Appointment Request From Patients", font=("Arial", 20), fg_color="#AED6F1")
 table_title_label.pack()
 
 # Appointment requests table
+style = ttk.Style()
+style.configure("Treeview.Heading", font=("Arial", 14))  # Font size for headings
+style.configure("Treeview", font=("Arial", 12))  # Font size for content
+
 columns = ("patient_name", "appointment_date", "appointment_time", "doctor_name")
-appointment_table = ttk.Treeview(clinic_details_frame, columns=columns, show='headings')
+appointment_table = ttk.Treeview(clinic_details_frame, columns=columns, show='headings', style="Treeview")
 appointment_table.heading("patient_name", text="Patient Name")
 appointment_table.heading("appointment_date", text="Date")
 appointment_table.heading("appointment_time", text="Time")
@@ -311,4 +322,4 @@ refresh_appointment_requests()
 # Initialize hide menu job
 hide_menu_job = None
 
-root.mainloop()
+root.mainloop()  # Run the main loop
