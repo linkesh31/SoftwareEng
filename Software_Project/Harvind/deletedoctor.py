@@ -99,7 +99,7 @@ def create_table_row(index, doctor):
 root = ctk.CTk()
 root.title("Delete Doctor")  # Set window title
 root.geometry("1000x600")  # Set window size
-root.configure(fg_color="lightblue")  # Set window background color
+root.configure(fg_color="lightblue")  # Set the window background color
 
 # Title label
 title_label = ctk.CTkLabel(root, text="Delete Doctor", font=("Helvetica", 24, "bold"), fg_color="lightblue", text_color="black")  # Create a title label
