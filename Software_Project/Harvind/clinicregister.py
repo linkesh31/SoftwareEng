@@ -7,7 +7,7 @@ from mysql.connector import Error  # Import Error for handling database errors
 # Function to submit clinic data to the database
 def submit_clinic_data(clinic_name, clinic_address, clinic_license_path, admin_fullname, admin_username, admin_password, admin_email, admin_phone_number, admin_date_of_birth, admin_address):
     try:
-        # Establish database connection
+        # Establish the database connection
         connection = mysql.connector.connect(
             host='localhost',  # Host where the database server is located
             user='root',  # Database username
