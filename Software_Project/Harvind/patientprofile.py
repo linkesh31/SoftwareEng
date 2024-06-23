@@ -35,7 +35,7 @@ def fetch_patient_details(patient_id):
             connection.close()  # Close database connection
     return None  # Return None if fetching fails
 
-# Function to navigate back to home screen
+# Function to navigate back to the home screen
 def back_to_home(patient_id, patient_fullname):
     root.destroy()  # Destroy the current GUI window
     os.system(f'python "C:/Users/user/Documents/GitHub/SoftwareEng/Software_Project/Harvind/patienthome.py" {patient_id} {patient_fullname}')
