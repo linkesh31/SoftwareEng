@@ -169,7 +169,7 @@ def load_image(image_name, size):
     img = img.resize(size, Image.Resampling.LANCZOS)
     return ctk.CTkImage(light_image=img, size=size)
 
-# Load images with specified size
+# Load images with the specified size
 button_size = (40, 40)
 patients_management_img = load_image("patients_management.png", button_size)
 doctors_management_img = load_image("doctors_management.png", button_size)
