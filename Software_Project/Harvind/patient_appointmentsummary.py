@@ -78,7 +78,7 @@ history_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)  # Packing the 
 past_appointments_label = ctk.CTkLabel(history_frame, text="PAST APPOINTMENTS", fg_color="lightblue", font=("Arial", 18))  # Creating the label for past appointments
 past_appointments_label.pack(fill=ctk.X, pady=(0, 10))  # Packing the past appointments label
 
-# Style for Treeview
+# Style for the Treeview
 style = ttk.Style()  # Creating a ttk Style object
 style.configure("Treeview.Heading", font=("Arial", 14, "bold"))  # Configuring style for headings in Treeview
 style.configure("Treeview", font=("Arial", 12), rowheight=25)  # Configuring style for Treeview
