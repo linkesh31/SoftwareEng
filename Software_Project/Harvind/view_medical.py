@@ -89,7 +89,7 @@ records = fetch_medical_records(patient_id)
 for record in records:
     record_tree.insert("", "end", values=record)  # Inserting each record into the Treeview
 
-# Button to go back to doctor home page
+# Button to go back to the doctor home page
 back_button = ctk.CTkButton(main_frame, text="Back", command=back_action, fg_color="#4BAAC8", text_color="white", font=("Arial", 12))
 back_button.pack(pady=10)  # Packing the back button with padding
 
