@@ -91,7 +91,7 @@ def create_forgot_password_window():
                                 command=lambda: back_to_login(forgot_password_window))
     back_button.pack(pady=10)
 
-    forgot_password_window.mainloop()  # Running the main loop for the window
+    forgot_password_window.mainloop()  # Running main loop for the window
 
 
 if __name__ == "__main__":
