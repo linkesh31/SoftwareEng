@@ -35,7 +35,7 @@ def fetch_doctors():
         )
         cursor = connection.cursor()
 
-        # Clear the treeview before fetching data
+        # Clear treeview before fetching data
         for item in tree.get_children():
             tree.delete(item)
 
