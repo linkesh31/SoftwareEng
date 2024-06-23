@@ -91,7 +91,7 @@ tree.heading("Clinic Name", text="Clinic Name")
 tree.heading("Clinic Address", text="Clinic Address")
 tree.heading("Admin Fullname", text="Admin Fullname")
 
-# Centering the columns content
+# Centering the column content
 for col in columns:
     tree.column(col, anchor="center")
 
