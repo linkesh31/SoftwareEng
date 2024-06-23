@@ -16,7 +16,7 @@ else:
 # Debug: Print received command-line arguments
 print(f"Debug: Received clinic_id = {clinic_id}, admin_fullname = {admin_fullname}")
 
-# Function to validate and save the new doctor's information to the database
+# Function to validate and save the new doctor's information in the database
 def save_doctor():
     fullname = fullname_entry.get()
     username = username_entry.get()
