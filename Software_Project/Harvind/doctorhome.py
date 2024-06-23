@@ -167,7 +167,7 @@ def view_medical_record(appointment_id, patient_name):
             ['python', 'view_medical.py', str(doctor_id), str(patient_id)])  # Running the view_medical.py script
 
 
-# Function for button actions
+# Function for the button actions
 def profile_action():
     root.destroy()  # Destroying the main window
     subprocess.run(['python', 'doctorprofile.py', str(doctor_id)])  # Running the doctorprofile.py script
