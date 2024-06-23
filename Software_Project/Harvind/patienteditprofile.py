@@ -155,7 +155,7 @@ def create_patient_edit_profile_window(patient_id, patient_fullname):
     else:
         messagebox.showerror("Error", "User details not found!")  # Showing error message if user details not found
 
-    root.mainloop()  # Running the main loop
+    root.mainloop()  # Running main loop
 
 if __name__ == "__main__":
     # Checking command-line arguments
