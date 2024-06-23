@@ -146,7 +146,7 @@ def create_prescription_form(appointment_id, doctor_id, patient_name):
                          text=f"Enter Prescription for {patient_name}:")  # Creating a label for the textbox
     label.pack(pady=10)  # Packing the label with padding
     text = ctk.CTkTextbox(prescription_window, height=110, width=290)  # Creating a textbox for the prescription
-    text.pack(pady=10)  # Packing the textbox with padding
+    text.pack(pady=10)  # Packing textbox with padding
 
     button_frame = ctk.CTkFrame(prescription_window)  # Creating a frame for the buttons
     button_frame.pack(pady=10)  # Packing the frame with padding
