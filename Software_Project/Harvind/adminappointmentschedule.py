@@ -20,7 +20,7 @@ def fetch_doctors():
     selected_hour = hour_combobox.get()  # Get selected hour
     selected_minute = minute_combobox.get()  # Get selected minute
 
-    selected_time = f"{selected_hour}:{selected_minute}:00"  # Format the selected time
+    selected_time = f"{selected_hour}:{selected_minute}:00"  # Format selected time
     formatted_date = selected_date.strftime("%Y-%m-%d")  # Convert the selected date to YYYY-MM-DD format
 
     print(f"Selected Date: {formatted_date}, Selected Time: {selected_time}, Clinic ID: {clinic_id}")
