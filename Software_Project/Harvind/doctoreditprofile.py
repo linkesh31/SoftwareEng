@@ -158,7 +158,7 @@ def create_doctor_edit_profile_window(doctor_id):
     else:
         messagebox.showerror("Error", "User details not found!")  # Show error if user details are not found
 
-    root.mainloop()  # Start the Tkinter main loop
+    root.mainloop()  # Start Tkinter main loop
 
 # Entry point of the script
 if __name__ == "__main__":
