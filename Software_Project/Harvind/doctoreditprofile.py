@@ -163,7 +163,7 @@ def create_doctor_edit_profile_window(doctor_id):
 # Entry point of the script
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        doctor_id = int(sys.argv[1])  # Get the doctor ID from command line arguments
+        doctor_id = int(sys.argv[1])  # Get doctor ID from command line arguments
     else:
         doctor_id = 15  # Default doctor ID for testing
 
