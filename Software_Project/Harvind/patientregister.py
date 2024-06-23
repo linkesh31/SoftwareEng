@@ -116,7 +116,7 @@ def create_patient_register_window():
     root = ctk.CTk()  # Create CTk root window
     root.configure(bg='lightblue')  # Set background color for the CTk window
     root.title("Call a Doctor")  # Set the title of the main window
-    root.geometry("800x600")  # Set the initial size of the main window
+    root.geometry("800x600")  # Set initial size of the main window
 
     ctk.set_appearance_mode("light")  # Set the appearance mode of customtkinter
     ctk.set_default_color_theme("blue")  # Set the default color theme of customtkinter
