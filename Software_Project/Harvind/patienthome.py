@@ -122,7 +122,7 @@ def delete_appointment(appointment_date):
             WHERE patient_id = %s AND appointment_date = %s
         """, (patient_id, appointment_date))
         connection.commit()  # Commit the transaction
-        cursor.close()  # Close cursor
+        cursor.close()  # Close the cursor
         connection.close()  # Close database connection
         messagebox.showinfo("Success", "Appointment request cancelled successfully!")  # Show success message
         refresh_appointments()  # Refresh appointments displayed on the screen
