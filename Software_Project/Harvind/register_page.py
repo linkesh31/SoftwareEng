@@ -36,7 +36,7 @@ def open_login_page():
 # Create register window function
 def create_register_window():
     global register_root  # Declare register_root as global
-    ctk.set_appearance_mode("light")  # Set the appearance mode of customtkinter to light
+    ctk.set_appearance_mode("light")  # Set appearance mode of customtkinter to light
     ctk.set_default_color_theme("blue")  # Set the default color theme of customtkinter to blue
 
     register_root = ctk.CTk()  # Create a custom tkinter window
