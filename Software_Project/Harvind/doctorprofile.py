@@ -58,7 +58,7 @@ def create_doctor_profile_window(doctor_id):
     ctk.set_default_color_theme("blue")
 
     root = ctk.CTk()  # Creating the main tkinter window
-    root.title("Doctor Profile")  # Setting the title of the window
+    root.title("Doctor Profile")  # Setting title of the window
     root.geometry("550x550")  # Setting the window size
 
     # Main content area frame
