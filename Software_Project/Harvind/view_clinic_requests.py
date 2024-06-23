@@ -93,9 +93,9 @@ def refresh_table():
     for clinic in pending_clinics:
         tree.insert("", "end", values=(clinic[0], clinic[1], clinic[2]))  # Insert clinic data into Treeview
 
-# Function to view clinic license
+# Function to the view clinic license
 def view_license():
-    selected_item = tree.focus()  # Get currently selected item in the Treeview
+    selected_item = tree.focus()  # Get currently selected item in Treeview
     if not selected_item:
         messagebox.showwarning("No Selection", "Please choose a clinic to view the license.")  # Show warning if no clinic is selected
         return
