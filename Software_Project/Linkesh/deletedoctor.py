@@ -2,6 +2,7 @@ import customtkinter as ctk  # Import customtkinter for custom UI elements
 import mysql.connector  # Import mysql.connector for database connectivity
 import os  # Import os for operating system commands
 import sys  # Import sys for handling command line arguments
+from tkinter import messagebox  # Import messagebox from tkinter
 
 # Get clinic ID and admin full name from command line arguments
 if len(sys.argv) > 2:
@@ -27,10 +28,10 @@ def delete_doctor(doctor_id, user_id):
         # Delete user from users table
         cursor.execute('DELETE FROM users WHERE user_id = %s', (user_id,))
         connection.commit()  # Commit the transaction to the database
-        ctk.CTkMessageBox.show_info("Success", "Doctor deleted successfully!")  # Show success message
+        messagebox.showinfo("Success", "Doctor deleted successfully!")  # Show success message
         load_doctors()  # Refresh the table after deletion
     except mysql.connector.Error as err:
-        ctk.CTkMessageBox.show_error("Database Error", f"Error: {err}")  # Show error message if any database error occurs
+        messagebox.showerror("Database Error", f"Error: {err}")  # Show error message if any database error occurs
     finally:
         if connection.is_connected():
             cursor.close()  # Close the cursor
@@ -61,7 +62,7 @@ def load_doctors():
         for index, doctor in enumerate(doctors):  # Iterate over each doctor
             create_table_row(index, doctor)  # Create a table row for each doctor
     except mysql.connector.Error as err:
-        ctk.CTkMessageBox.show_error("Database Error", f"Error: {err}")  # Show error message if any database error occurs
+        messagebox.showerror("Database Error", f"Error: {err}")  # Show error message if any database error occurs
     finally:
         if connection.is_connected():
             cursor.close()  # Close the cursor
@@ -69,8 +70,8 @@ def load_doctors():
 
 # Function to confirm deletion of a doctor
 def confirm_delete(doctor_id, user_id):
-    response = ctk.CTkMessageBox.ask_yes_no("Confirm Delete", "Are you sure you want to delete this doctor?")  # Show confirmation dialog
-    if response == "yes":  # If user confirms
+    response = messagebox.askyesno("Confirm Delete", "Are you sure you want to delete this doctor?")  # Show confirmation dialog
+    if response:  # If user confirms
         delete_doctor(doctor_id, user_id)  # Delete the doctor
 
 # Function to go back to the previous screen
@@ -99,7 +100,7 @@ def create_table_row(index, doctor):
 root = ctk.CTk()
 root.title("Delete Doctor")  # Set window title
 root.geometry("1000x600")  # Set window size
-root.configure(fg_color="lightblue")  # Set window background color
+root.configure(fg_color="lightblue")  # Set the window background color
 
 # Title label
 title_label = ctk.CTkLabel(root, text="Delete Doctor", font=("Helvetica", 24, "bold"), fg_color="lightblue", text_color="black")  # Create a title label
@@ -109,7 +110,7 @@ title_label.pack(pady=10)  # Pack the title label with padding
 table_frame = ctk.CTkFrame(root, fg_color="lightblue")  # Create a frame to hold the table
 table_frame.pack(pady=10, padx=100, fill=ctk.BOTH, expand=True)  # Pack the table frame with padding and expand it
 
-# Create the initial header for the table
+# Create initial header for the table
 create_table_header()
 
 # Load doctors into the table
