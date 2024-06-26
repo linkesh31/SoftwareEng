@@ -79,6 +79,28 @@ def register(entries, root):
             database='calladoctor'
         )
         cursor = connection.cursor()
+
+        # Check for duplicate entries
+        cursor.execute("SELECT * FROM users WHERE username = %s", (data["Username:"],))
+        if cursor.fetchone() is not None:
+            messagebox.showerror("Error", "Username already exists!")
+            return
+
+        cursor.execute("SELECT * FROM users WHERE email = %s", (data["Email:"],))
+        if cursor.fetchone() is not None:
+            messagebox.showerror("Error", "Email already exists!")
+            return
+
+        cursor.execute("SELECT * FROM users WHERE phone_number = %s", (data["Tel:"],))
+        if cursor.fetchone() is not None:
+            messagebox.showerror("Error", "Phone number already exists!")
+            return
+
+        cursor.execute("SELECT * FROM patients WHERE identification_number = %s", (data["IC:"],))
+        if cursor.fetchone() is not None:
+            messagebox.showerror("Error", "IC number already exists!")
+            return
+
         cursor.execute('''
             INSERT INTO users (username, password, email, phone_number, date_of_birth, address, fullname, role)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
@@ -116,7 +138,7 @@ def create_patient_register_window():
     root = ctk.CTk()  # Create CTk root window
     root.configure(bg='lightblue')  # Set background color for the CTk window
     root.title("Call a Doctor")  # Set the title of the main window
-    root.geometry("800x600")  # Set the initial size of the main window
+    root.geometry("800x600")  # Set initial size of the main window
 
     ctk.set_appearance_mode("light")  # Set the appearance mode of customtkinter
     ctk.set_default_color_theme("blue")  # Set the default color theme of customtkinter
