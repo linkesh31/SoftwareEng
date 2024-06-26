@@ -7,7 +7,7 @@ from mysql.connector import Error  # Import Error for handling database errors
 # Function to submit clinic data to the database
 def submit_clinic_data(clinic_name, clinic_address, clinic_license_path, admin_fullname, admin_username, admin_password, admin_email, admin_phone_number, admin_date_of_birth, admin_address):
     try:
-        # Establish database connection
+        # Establish the database connection
         connection = mysql.connector.connect(
             host='localhost',  # Host where the database server is located
             user='root',  # Database username
@@ -15,6 +15,24 @@ def submit_clinic_data(clinic_name, clinic_address, clinic_license_path, admin_f
             database='calladoctor'  # Name of the database
         )
         cursor = connection.cursor()  # Create a cursor object to execute SQL queries
+
+        # Check if the username already exists
+        cursor.execute("SELECT * FROM users WHERE username = %s", (admin_username,))
+        if cursor.fetchone() is not None:
+            messagebox.showerror("Error", "Clinic username already exists!")  # Show error message if username exists
+            return
+
+        # Check if the email already exists
+        cursor.execute("SELECT * FROM users WHERE email = %s", (admin_email,))
+        if cursor.fetchone() is not None:
+            messagebox.showerror("Error", "Email already exists!")  # Show error message if email exists
+            return
+
+        # Check if the phone number already exists
+        cursor.execute("SELECT * FROM users WHERE phone_number = %s", (admin_phone_number,))
+        if cursor.fetchone() is not None:
+            messagebox.showerror("Error", "Phone number already exists!")  # Show error message if phone number exists
+            return
 
         # Insert clinic data
         with open(clinic_license_path, 'rb') as f:  # Open the clinic license file in binary mode
