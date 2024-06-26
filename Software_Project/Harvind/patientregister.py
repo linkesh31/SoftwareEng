@@ -79,6 +79,28 @@ def register(entries, root):
             database='calladoctor'
         )
         cursor = connection.cursor()
+
+        # Check for duplicate entries
+        cursor.execute("SELECT * FROM users WHERE username = %s", (data["Username:"],))
+        if cursor.fetchone() is not None:
+            messagebox.showerror("Error", "Username already exists!")
+            return
+
+        cursor.execute("SELECT * FROM users WHERE email = %s", (data["Email:"],))
+        if cursor.fetchone() is not None:
+            messagebox.showerror("Error", "Email already exists!")
+            return
+
+        cursor.execute("SELECT * FROM users WHERE phone_number = %s", (data["Tel:"],))
+        if cursor.fetchone() is not None:
+            messagebox.showerror("Error", "Phone number already exists!")
+            return
+
+        cursor.execute("SELECT * FROM patients WHERE identification_number = %s", (data["IC:"],))
+        if cursor.fetchone() is not None:
+            messagebox.showerror("Error", "IC number already exists!")
+            return
+
         cursor.execute('''
             INSERT INTO users (username, password, email, phone_number, date_of_birth, address, fullname, role)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
